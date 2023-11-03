@@ -352,7 +352,7 @@ import { onMounted, ref } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 import Swal from 'sweetalert2';
 
 const route = useRoute();
@@ -496,7 +496,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch('http://localhost:5079/api/estudiantes/create', {
+        const response = await fetch(`${baseBackend}/api/estudiantes/create`, {
             method: 'POST',
             body: formData,
             headers,
