@@ -9,9 +9,9 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 window.axios = axios
-window.axios.defaults.baseURL = 'http://localhost:5079'
+window.axios.defaults.baseURL = baseBackend
 window.axios.defaults.headers.common['Accept'] = 'application/json'
 window.axios.defaults.headers.common['Content-Type'] = 'application/json'
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
