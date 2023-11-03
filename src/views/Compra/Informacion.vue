@@ -16,30 +16,38 @@
             <div class="card border mt-3">
 
                 <div class="card-body">
-                    
-                    <h5><strong>Titulo: </strong>{{ titulo }}</h5>
-                    <h5><strong>Estado: </strong>{{ estado === 'A' ? 'Activo' : estado === 'F' ? 'Finalizado' : estado }}</h5>
-                    <h5><strong>Nombre completo: </strong> {{ nombreEstudiante }} {{ apellidoEstudiante }}</h5>
-                    <h5><strong>Código del estudiante: </strong>{{ codigoBecario }}</h5>
-                    <h5><strong>Fecha de creación: </strong>{{ fechaCreacion }}</h5>
-          
-                    <h5><strong>Total: </strong>{{ total }}</h5>
-                    <h5><strong>Descripción: </strong>{{ descripcion }}</h5>
-                    <h5><strong>Proveedor: </strong>{{ proveedor }}</h5>
-                    <h5><strong>Persona quién recibió: </strong>{{ personaRecibe }}</h5>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-danger " :disabled="botonDeshabilitado"
+                            @click.prevent="exportarPDF"><i class="fa-solid fa-file-pdf"></i> Descargar PDF</button>
+
+                    </div>
+                    <div class="inf" id="exportarElemento">
+
+                        <h5><strong>Titulo: </strong>{{ titulo }}</h5>
+                        <h5><strong>Estado: </strong>{{ estado === 'A' ? 'Activo' : estado === 'F' ? 'Finalizado' : estado
+                        }}</h5>
+                        <h5><strong>Nombre completo: </strong> {{ nombreEstudiante }} {{ apellidoEstudiante }}</h5>
+                        <h5><strong>Código del estudiante: </strong>{{ codigoBecario }}</h5>
+                        <h5><strong>Fecha de creación: </strong>{{ fechaCreacion }}</h5>
+
+                        <h5><strong>Total: </strong>{{ total }}</h5>
+                        <h5><strong>Descripción: </strong>{{ descripcion }}</h5>
+                        <h5><strong>Proveedor: </strong>{{ proveedor }}</h5>
+                        <h5><strong>Persona quién recibió: </strong>{{ personaRecibe }}</h5>
+                        <br>
+                        <h5><strong>Fecha de entrega: </strong>{{ fechaEntrega }}</h5>
+                    </div>
                     <br>
-                    <h5><strong>Fecha de entrega: </strong>{{ fechaEntrega }}</h5>
                     <br>
-                    <br>
-             
+
                     <div class="row">
                         <h4 class="text-success"><strong>Fotografía</strong></h4>
-                    
+
                         <img :src="imgEstudiante" class="img-thumbnail me-1" alt="Fotografía del estudiante"
                             :style="{ 'max-width': isImagenGrandeEstudiante ? '600px' : '250px', 'max-height': isImagenGrandeEstudiante ? '600px' : '250px' }"
                             @click="toggleImagenGrandeEstudiante">
                     </div>
-                   
+
 
                 </div>
 
@@ -55,15 +63,27 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { sendRequest } from '../../functions'
 import Swal from 'sweetalert2';
+import html2pdf from "html2pdf.js"
 
 const route = useRoute();
 const authStore = useAuthStore();
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`;
 
-//Método para imprimir 
-const imprimirFicha = () => {
-    window.print();
-};
+//Inicio metodo para imprimir
+const exportarPDF = () => {
+    var element = document.getElementById('exportarElemento');
+    var opt = {
+        margin: 0.5,
+        filename: 'archivo.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // New Promise-based usage:
+    html2pdf().from(element).set(opt).save();
+}
+//Fin metodo para imprimir
 
 //Método para hacer grandes las imágenes
 //Incion de hacer grande la IMAGEN

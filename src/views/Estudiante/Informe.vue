@@ -77,7 +77,7 @@ buttons1.value = [
 
 
 onMounted(() => {
-    getEstudiante(1)
+    getEstudiante()
 })
 
 const estudiantes = ref([])
@@ -116,14 +116,14 @@ const idEstudiante = ref(0);
 const rows = ref(0);
 
 const load = ref(false)
-const getEstudiante = async (page) => {
+const getEstudiante = async () => {
     try {
-        const response = await axios.get(`/api/Estudiante/getall?pagina=${page}`)
-        estudiantes.value = response.data.estudiantes.map(expense => ({
+        const response = await axios.get(`/api/Estudiante/selectall`)
+        estudiantes.value = response.data.map(expense => ({
             ...expense,
             fechaNacimieto: formatFecha(expense.fechaNacimieto) // Formatea la fecha
         }));
-        rows.value = response.data.totalPaginas;
+        //rows.value = response.data.totalPaginas;
         load.value = true
     } catch (error) {
         console.error('Error al obtener usuarios:', error)

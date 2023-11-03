@@ -14,41 +14,51 @@
                 </div>
             </div>
             <div class="card border mt-3">
-                <h5><strong>Nombre del estudiante: </strong> {{ estudiante }} {{ apellidoEstudiante }}</h5>
-                <h5><strong>Código del estudiante: </strong> {{ codigoBecario }}</h5>
-            </div>
-            <div class="row mt-3">
-                <div class="col-md-12">
-                    <div class="card border border-white text-center" v-if="!load">
-                        <div class="card-body">
-                            <img src="/loading.gif" alt="img-fluid">
-                        </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-danger " :disabled="botonDeshabilitado"
+                            @click.prevent="exportarPDF"><i class="fa-solid fa-file-pdf"></i> Descargar PDF</button>
+
                     </div>
-                    <div class="table-responsive" v-else>
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Patrocinadores</th>
+                    <div class="inf" id="exportarElemento">
+                        <div class="card border mt-3">
+                            <h5><strong>Nombre del estudiante: </strong> {{ estudiante }} {{ apellidoEstudiante }}</h5>
+                            <h5><strong>Código del estudiante: </strong> {{ codigoBecario }}</h5>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="card border border-white text-center" v-if="!load">
+                                    <div class="card-body">
+                                        <img src="/loading.gif" alt="img-fluid">
+                                    </div>
+                                </div>
+                                <div class="table-responsive" v-else>
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Patrocinadores</th>
 
-                                </tr>
-                            </thead>
-                            <tbody class="table-group-divider">
-                                <tr v-for="lp, i in listaPatrocinadores" :key="lp.codigoEstudiantePatrocinador">
-                                    <td>{{ (i + 1) }}</td>
-                                    <td>{{ lp.nombrePatrocinador }}</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-group-divider">
+                                            <tr v-for="lp, i in listaPatrocinadores" :key="lp.codigoEstudiantePatrocinador">
+                                                <td>{{ (i + 1) }}</td>
+                                                <td>{{ lp.nombrePatrocinador }}</td>
 
-                                </tr>
-                            </tbody>
+                                            </tr>
+                                        </tbody>
 
-                        </table>
-                        <Paginate :page-count="rows" :click-handler="getEstudiantePatrocinadores" :prev-text="Prev"
-                            :next-text="Next" :container-class="'pagination'">
-                        </Paginate>
+                                    </table>
+                                    <Paginate :page-count="rows" :click-handler="getEstudiantePatrocinadores"
+                                        :prev-text="Prev" :next-text="Next" :container-class="'pagination'">
+                                    </Paginate>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </template>
@@ -60,12 +70,26 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { sendRequest, confirmation } from '../../functions'
+import html2pdf from "html2pdf.js"
 
 const route = useRoute();
 const authStore = useAuthStore();
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`;
 
+//Para imprimir
+const exportarPDF = () => {
+    var element = document.getElementById('exportarElemento');
+    var opt = {
+        margin: 0.5,
+        filename: 'archivo.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
 
+    // New Promise-based usage:
+    html2pdf().from(element).set(opt).save();
+}
 const estudiante = ref("");
 const apellidoEstudiante = ref("");
 const codigoBecario = ref("");

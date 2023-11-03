@@ -349,16 +349,6 @@ const buscarEstudiantes = () => {
 };
 
 
-//DATOS COMPUTADOS
-/* const estudiantesFiltrados = computed(() => {
-    return buscarEstudiantes();
-}); */
-
-/* watch(busqueda, () => {
-    // Llama a la función de búsqueda cuando cambie el valor de busqueda
-    estudiantesFiltrados.value = buscarEstudiantes();
-}); */
-
 //nueva
 const idEstudiante = ref(0);
 const seleccionarEstudiante = (estudiante) => {

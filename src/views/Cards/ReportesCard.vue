@@ -69,12 +69,12 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
                 <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
                     <div class=" row align-items-center " style="margin-top: -4px;">
                     <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                        <img class="card-img-top" style="height: 10rem;" src="../../../public/graduacion.png"
+                        <img class="card-img-top" style="height: 9rem;" src="../../../public/graduacion.png"
                             alt="Card image cap">
 
                     </div>
                 </div>
-                    <h5 class="card-title text-color-card">Estudiantes por niveles académicso</h5>
+                    <h5 class="card-title text-color-card">Estudiantes por niveles académicos</h5>
                     <RouterLink :to="{ name: 'graphicacademiclevels' }" class="no-underline btn bg-boton">Nuevo registro</RouterLink>
                 </div>
 

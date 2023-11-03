@@ -89,14 +89,14 @@ const idEstudiante = ref(0);
 const rows = ref(0);
 
 const load = ref(false)
-const getFichasCalificaciones = async (page) => {
+const getFichasCalificaciones = async () => {
     try {
-        const response = await axios.get(`/api/fichacalificacion/getall?pagina=${page}`)
-        fichasCalificaciones.value = response.data.fichasCalificaciones.map(expense => ({
+        const response = await axios.get(`/api/fichacalificacion/selectall`)
+        fichasCalificaciones.value = response.data.map(expense => ({
             ...expense,
             cicloEscolar: formatFecha(expense.cicloEscolar) // Formatea la fecha
         }))
-        rows.value = response.data.totalPaginas;
+        //rows.value = response.data.totalPaginas;
         load.value = true
     } catch (error) {
         console.error('Error al obtener usuarios:', error)

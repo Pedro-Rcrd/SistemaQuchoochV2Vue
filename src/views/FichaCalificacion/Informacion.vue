@@ -3,58 +3,75 @@
         <div class="col-md-9 ">
             <h3>Información de la ficha de calificaciones</h3>
             <hr>
+            <div class="col-md-4">
+                <div class="d-grid col-10">
+                    <router-link :to="{ name: 'cards' }">
+
+                        <button class="btn btn-dark">
+                            <i class="fa-solid fa-backward"></i> Regresar
+                        </button>
+                    </router-link>
+                </div>
+            </div>
             <div class="card border ">
 
                 <div class="card-body">
-                    <h4 class="text-success"><strong>Información de la ficha</strong></h4>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-danger " :disabled="botonDeshabilitado"
+                            @click.prevent="exportarPDF"><i class="fa-solid fa-file-pdf"></i> Descargar PDF</button>
 
-                    <h4><strong>Código: </strong>{{ codigoBecario }}</h4>
-                    <h4><strong>Nombre Completo: </strong> {{ nombreEstudiante }} {{ apellidoEstudiante }}</h4>
-                    <h4><strong>Establecimiento: </strong>{{ establecimiento }}</h4>
-                    <h4><strong>Nivel académico: </strong>{{ nivelAcademico }}</h4>
-                    <h4><strong>Grado: </strong>{{ grado }}</h4>
-                    <h4><strong>Carrera: </strong>{{ carrera }}</h4>
-                    <h4><strong>Ciclo escolar: </strong>{{ cicloEscolar }}</h4>
+                    </div>
+                    <div class="inf" id="exportarElemento">
+                        <h4 class="text-success"><strong>Información de la ficha</strong></h4>
 
-                    <br>
+                        <h4><strong>Código: </strong>{{ codigoBecario }}</h4>
+                        <h4><strong>Nombre Completo: </strong> {{ nombreEstudiante }} {{ apellidoEstudiante }}</h4>
+                        <h4><strong>Establecimiento: </strong>{{ establecimiento }}</h4>
+                        <h4><strong>Nivel académico: </strong>{{ nivelAcademico }}</h4>
+                        <h4><strong>Grado: </strong>{{ grado }}</h4>
+                        <h4><strong>Carrera: </strong>{{ carrera }}</h4>
+                        <h4><strong>Ciclo escolar: </strong>{{ cicloEscolar }}</h4>
 
-                    <div class="col-md-12">
-                        <h4 class="text-success"><strong>Ficha de calificaciones</strong></h4>
-                        <div class="card border border-white text-center" v-if="!load">
-                            <div class="card-body">
-                                <img src="/loading.gif" alt="img-fluid">
+                        <br>
+
+                        <div class="col-md-12">
+                            <h4 class="text-success"><strong>Ficha de calificaciones</strong></h4>
+                            <div class="card border border-white text-center" v-if="!load">
+                                <div class="card-body">
+                                    <img src="/loading.gif" alt="img-fluid">
+                                </div>
                             </div>
-                        </div>
-                        <div class="table-responsive" v-else>
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Curso</th>
-                                        <th>Bloque I</th>
-                                        <th>Bloque II</th>
-                                        <th>Bloque III</th>
-                                        <th>Bloque IV</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-group-divider">
-                                    <tr v-for="(curso, i) in bloqueI" :key="curso.codigoCursoFichaCalificacion">
-                                        <td>{{ (i + 1) }}</td>
-                                        <td>{{ curso.curso }}</td>
-                                        <td :class="{ 'text-danger': curso.nota > 0 && curso.nota < 60 }">{{ curso.nota
-                                        }}</td>
-                                        <td :class="{ 'text-danger': bloqueII[i].nota > 0 && bloqueII[i].nota < 60 }">{{
-                                            bloqueII[i].nota }}
-                                        </td>
-                                        <td :class="{ 'text-danger': bloqueIII[i].nota > 0 && bloqueIII[i].nota < 60 }">
-                                            {{ bloqueIII[i].nota }}
-                                        </td>
-                                        <td :class="{ 'text-danger': bloqueIV[i].nota > 0 && bloqueIV[i].nota < 60 }">
-                                            {{ bloqueIV[i].nota }}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive" v-else>
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Curso</th>
+                                            <th>Bloque I</th>
+                                            <th>Bloque II</th>
+                                            <th>Bloque III</th>
+                                            <th>Bloque IV</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-group-divider">
+                                        <tr v-for="(curso, i) in bloqueI" :key="curso.codigoCursoFichaCalificacion">
+                                            <td>{{ (i + 1) }}</td>
+                                            <td>{{ curso.curso }}</td>
+                                            <td :class="{ 'text-danger': curso.nota > 0 && curso.nota < 60 }">{{ curso.nota
+                                            }}</td>
+                                            <td :class="{ 'text-danger': bloqueII[i].nota > 0 && bloqueII[i].nota < 60 }">{{
+                                                bloqueII[i].nota }}
+                                            </td>
+                                            <td :class="{ 'text-danger': bloqueIII[i].nota > 0 && bloqueIII[i].nota < 60 }">
+                                                {{ bloqueIII[i].nota }}
+                                            </td>
+                                            <td :class="{ 'text-danger': bloqueIV[i].nota > 0 && bloqueIV[i].nota < 60 }">
+                                                {{ bloqueIV[i].nota }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <br>
@@ -105,6 +122,7 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { sendRequest } from '../../functions'
 import Swal from 'sweetalert2';
+import html2pdf from "html2pdf.js"
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -114,6 +132,22 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
 const imprimirFicha = () => {
     window.print();
 };
+
+//Inicio metodo para imprimir
+const exportarPDF = () => {
+    var element = document.getElementById('exportarElemento');
+    var opt = {
+        margin: 0.5,
+        filename: 'formato.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // New Promise-based usage:
+    html2pdf().from(element).set(opt).save();
+}
+//Fin metodo para imprimir
 
 //Datos del ficha encabezado
 const codigoBecario = ref("");
@@ -224,14 +258,14 @@ const getImgBloque = async () => {
         imgEstudiante.value = response.data.imgEstudiante,
             imgFicha.value = response.data.imgFichaCalificacion,
             imgCarta.value = response.data.imgCarta
-        
-        if(response.ok){
+
+        if (response.ok) {
             alert("Si hay bloque");
-        }else{
-            
+        } else {
+
         }
 
-       
+
     } catch (error) {
         if (error.response && error.response.status === 404) {
             Swal.fire({

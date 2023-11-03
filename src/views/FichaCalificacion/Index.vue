@@ -11,6 +11,7 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
 
 onMounted(() => {
     getFichasCalificaciones(1)
+    getListaEstudiantes();
 })
 
 const fichasCalificaciones = ref([])
@@ -25,7 +26,7 @@ const rows = ref(0);
 const load = ref(false)
 const getFichasCalificaciones = async (page) => {
     try {
-        const response = await axios.get(`/api/fichacalificacion/getall?pagina=${page}`)
+        const response = await axios.get(`/api/fichacalificacion/getall?pagina=${page}&id=${idEstudiante.value}`)
         fichasCalificaciones.value = response.data.fichasCalificaciones.map(expense => ({
             ...expense,
             cicloEscolar: formatFecha(expense.cicloEscolar) // Formatea la fecha
@@ -37,6 +38,53 @@ const getFichasCalificaciones = async (page) => {
         // Puedes manejar el error de la solicitud aquí
     }
 }
+
+
+//Inicio bloque de buscar estudiante
+const listaEstudiantes = ref([]);
+const visibilidad = ref([]);
+const busqueda = ref('');
+const mostrarLista = ref(true);
+//Consulta
+const listaCompleta = () => {
+    busqueda.value = "";
+    idEstudiante.value = 0;
+    getFichasCalificaciones(1);
+}
+
+const getListaEstudiantes = async () => {
+    try {
+        const response = await axios.get('/api/estudiante/selectAll');
+        listaEstudiantes.value = response.data;
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+    }
+};
+
+//Para buscar texto
+const buscarEstudiantes = () => {
+    const textoBusqueda = busqueda.value.toLowerCase().trim();
+    if (textoBusqueda !== '') {
+        //return []; // Si la búsqueda está vacía, devuelve una lista vacía
+        mostrarLista.value = true;
+        visibilidad.value = listaEstudiantes.value.filter(estudiante =>
+            estudiante.nombreEstudiante.toLowerCase().includes(textoBusqueda));
+    }
+};
+
+const seleccionarEstudiante = (estudiante) => {
+    idEstudiante.value = estudiante.codigoEstudiante;
+    busqueda.value = estudiante.nombreEstudiante;
+    mostrarLista.value = false; // Ocultar la lista después de seleccionar
+    // Aquí puedes realizar cualquier otra lógica que necesites con el estudiante seleccionado
+    console.log(`El id del estudiantes es: ${idEstudiante.value}`);
+};
+
+
+//Fin bloque de buscar estuadiante
+
+
+
 
 const deleteFichaCalificacion = (id, name) => {
     confirmation(name, `/api/FichaCalificacion/delete/${id}`, '/cards', authStore.authToken);
@@ -60,7 +108,32 @@ const formatFecha = (fecha) => {
 .marco {
     background-color: #09801d;
  
-    }
+}
+
+    .listaFiltro {
+    position: absolute;
+    z-index: 1;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    /* border: 1px solid #ccc; */
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.listaFiltro li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.listaFiltro li:hover {
+    background-color: #007bff;
+    color: #fff
+}
 </style>
 
 <template>
@@ -80,7 +153,38 @@ const formatFecha = (fecha) => {
             </div>
         </div>
     </div>
-    <div class="row mt-3">
+    <div class="row">
+            <div class="col-md-4 ">
+                <label for="exampleFormControlInput1" class="form-label">Buscar estudiante</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-n"></i>
+                    </span>
+                    <input class="form-control" autofocus id="codigoEstudiante" required v-model="busqueda"
+                        @input="buscarEstudiantes" type="text" placeholder="Buscar estudiantes">
+                    <div class="ms-1">
+
+                        <button class="btn btn-primary" @click.prevent="getFichasCalificaciones(1)">
+                            <i class="fa-solid fa-save"></i> Buscar</button>
+
+                    </div>
+                </div>
+               
+                <ul class="list-group listaFiltro" v-if="mostrarLista">
+                    <li v-for="estudiante in visibilidad" :key="estudiante.codigoEstudiante"
+                        @click="seleccionarEstudiante(estudiante)">
+                        {{ estudiante.nombreEstudiante }}
+                    </li>
+                </ul>
+                
+                
+            </div >
+            <div class="col-md-8 mt-5 ">
+                        <button class="btn btn-dark float-end" @click.prevent="listaCompleta">
+                            <i class="fa-solid fa-check"></i> Mostar todo</button>
+                    </div>
+        </div>
+    <div class="row mt-1">
         <div class="col-md-12">
             <div class="card border border-white text-center" v-if="!load">
                 <div class="card-body">
