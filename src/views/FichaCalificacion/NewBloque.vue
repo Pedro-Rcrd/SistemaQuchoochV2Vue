@@ -9,6 +9,7 @@ import { useRoute } from 'vue-router';
 import router from '@/router';
 import Swal from 'sweetalert2';
 const route = useRoute();
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 
 const authStore = useAuthStore()
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
@@ -132,7 +133,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch('http://localhost:5079/api/fichacalificacion/createnuevobloque', {
+        const response = await fetch(`${baseBackend}/api/fichacalificacion/createnuevobloque`, {
             method: 'POST',
             body: formData,
             headers,
@@ -148,7 +149,7 @@ const submitForm = async () => {
             });
         } else if (response.ok) {
 
-            const responseCursos = await axios.post('http://localhost:5079/api/fichacalificacion/createcursosnuevobloque', cursoNotas.value);
+            const responseCursos = await axios.post(`${baseBackend}/api/fichacalificacion/createcursosnuevobloque`, cursoNotas.value);
 
             if (responseCursos.status === 200) {
                  Swal.fire({

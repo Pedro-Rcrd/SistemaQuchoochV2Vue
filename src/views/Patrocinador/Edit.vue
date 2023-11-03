@@ -135,6 +135,7 @@ import { useAuthStore } from '../../stores/auth';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -229,7 +230,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch(`http://localhost:5079/api/patrocinador/updateimage/${parametro}`, {
+        const response = await fetch(`${baseBackend}/api/patrocinador/updateimage/${parametro}`, {
             method: 'PUT',
             body: formData,
             headers,
@@ -247,12 +248,21 @@ const submitForm = async () => {
 
 
         } else {
-            alert('Hubo un error al crear el estudiante.');
+            Swal.fire({
+                icon: 'error', // Ícono de éxito
+                title: 'Hubo un error al actualizar datos del patrocinador.',
+                showConfirmButton: false, // Ocultar el botón "Aceptar"
+                timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+            });
             botonDeshabilitado.value = false;
         }
     } catch (error) {
-        console.error('Error al crear el estudiante:', error);
-        alert('Hubo un error al crear el estudiante.');
+        Swal.fire({
+                icon: 'error', // Ícono de éxito
+                title: 'Hubo un error.',
+                showConfirmButton: false, // Ocultar el botón "Aceptar"
+                timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+            });
     }
 };
 </script>

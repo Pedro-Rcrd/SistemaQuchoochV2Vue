@@ -172,6 +172,7 @@ import { useAuthStore } from '../../stores/auth';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -289,7 +290,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch('http://localhost:5079/api/compra/create', {
+        const response = await fetch(`${baseBackend}/api/compra/create`, {
             method: 'POST',
             body: formData,
             headers,
@@ -311,7 +312,12 @@ const submitForm = async () => {
         
 
         } else {
-            alert('Hubo un error al crear el estudiante.');
+            Swal.fire({
+                icon: 'error', // Ícono de éxito
+                title: 'No se pudo registrar la compra.',
+                showConfirmButton: false, // Ocultar el botón "Aceptar"
+                timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+            });
         }
     } catch (error) {
         console.error('Error al crear el estudiante:', error);

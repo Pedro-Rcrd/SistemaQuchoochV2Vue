@@ -263,6 +263,7 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import router from '@/router';
 import Swal from 'sweetalert2';
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -476,7 +477,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch('http://localhost:5079/api/fichacalificacion/createficha', {
+        const response = await fetch(`${baseBackend}/api/fichacalificacion/createficha`, {
             method: 'POST',
             body: formData,
             headers,
@@ -485,7 +486,7 @@ const submitForm = async () => {
 
         if (response.ok) {
 
-            const responseCursos = await axios.post('http://localhost:5079/api/fichacalificacion/createcurso', cursosNotas.value);
+            const responseCursos = await axios.post(`${baseBackend}/api/fichacalificacion/createcurso`, cursosNotas.value);
 
             if (responseCursos.status === 200) {
                 Swal.fire({
@@ -539,27 +540,6 @@ const submitForm = async () => {
     }
 };
 
-//NUEVO METODO:
-/* const cursoNotas = async () => {
-    const cursosNotas2 = [
-        { CodigoCurso: 1, Curso: "MATEMATICA", Nota: 23 },
-        { CodigoCurso: 2, Curso: "FISICA", Nota: 54 },
-        // Agrega más objetos según sea necesario
-    ];
-
-    try {
-        const response = await axios.post('http://localhost:5079/api/fichacalificacion/createcurso', cursosNotas.value);
-
-        if (response.status === 200) {
-            console.log('Cursos y notas guardados con éxito');
-        } else {
-            console.error('Hubo un error al guardar los cursos y notas');
-        }
-    } catch (error) {
-        console.error('Error al enviar cursos y notas:', error);
-    }
-};
- */
 </script>
 <style scoped>
 .contenedor-primario {

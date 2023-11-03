@@ -344,6 +344,7 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { sendRequest } from '../../functions'
 import Swal from 'sweetalert2';
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -441,7 +442,6 @@ const getEstudiantes = async () => {
     try {
         const response = await axios.get(`/api/estudiante/getbyid/${parametro}`);
         nombreEstudiante.value = response.data.nombreEstudiante;
-        console.log(`El nombre del BECARIO es: ${nombreEstudiante.value}`);
         codigoNA.value = response.data.codigoNivelAcademico;
         codigoBecario.value = response.data.codigoBecario;
         codigoComunidad.value = response.data.codigoComunidad;
@@ -569,15 +569,14 @@ const submitForm = async () => {
 
             res = await sendRequest('PUT', form.value, `/api/Estudiante/update/${parametro}`, '/students');
         } else {
-            console.log("Segunda opción con imagen");
-            const response = await fetch(`http://localhost:5079/api/estudiantes/updateimage/${parametro}`, {
+
+            const response = await fetch(`${baseBackend}/api/estudiantes/updateimage/${parametro}`, {
                 method: 'PUT',
                 body: formData,
                 headers,
             });
 
             if (response.ok) {
-                alert('Estudiante creado exitosamente.');
                 Swal.fire({
                     icon: 'success', // Ícono de éxito
                     title: 'Estudiante creado exitosamente.',
@@ -586,7 +585,12 @@ const submitForm = async () => {
                 });
 
             } else {
-                alert('Hubo un error al crear el estudiante.');
+                Swal.fire({
+                    icon: 'error', // Ícono de éxito
+                    title: 'Hubo un error al registrar estudiante.',
+                    showConfirmButton: false, // Ocultar el botón "Aceptar"
+                    timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+                });
             }
 
         }
@@ -595,8 +599,12 @@ const submitForm = async () => {
 
 
     } catch (error) {
-        console.error('Error al crear el estudiante:', error);
-        alert('Hubo un error al crear el estudiante.');
+        Swal.fire({
+            icon: 'error', // Ícono de éxito
+            title: 'Hubo un error al registrar estudiante.',
+            showConfirmButton: false, // Ocultar el botón "Aceptar"
+            timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+        });
     }
 };
 </script>

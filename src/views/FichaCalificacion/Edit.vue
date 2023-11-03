@@ -330,7 +330,7 @@ import axios from 'axios';
 import { confirmation, sendRequest } from '../../functions'
 import Modal from '../../components/Modal.vue'
 import Swal from 'sweetalert2';
-
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -550,8 +550,8 @@ const updateFicha = async () => {
         CodigoNivelAcademico: codigoNA.value,
         CodigoGrado: codigoGrado.value,
         CodigoCarrera: codigoCarrera.value,
-        CicloEscolar: '2023-11-10',
-        FechaRegistro: '2023-12-12'
+        CicloEscolar: cicloEscolar.value,
+        FechaRegistro: fechaRegistro.value
     });
     let res;
     res = await sendRequest('PUT', formInput.value, `/api/fichacalificacion/update/${parametro}`, '/cards');
@@ -671,7 +671,7 @@ const actualizarImgBloque = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch(`http://localhost:5079/api/fichacalificacion/updatefichadetalleimg/${codigoFichaDetalle.value}`, {
+        const response = await fetch(`${baseBackend}/api/fichacalificacion/updatefichadetalleimg/${codigoFichaDetalle.value}`, {
             method: 'PUT',
             body: formData,
             headers,
@@ -680,7 +680,7 @@ const actualizarImgBloque = async () => {
         if (response.ok) {
             Swal.fire({
                 icon: 'success', // Ícono de éxito
-                title: 'Imgágenes actualizadas exitosamente.',
+                title: 'Imágenes actualizadas exitosamente.',
                 showConfirmButton: false, // Ocultar el botón "Aceptar"
                 timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
             });
@@ -703,24 +703,10 @@ const actualizarImgBloque = async () => {
 
 //ENVIAR FORMULARIO
 const submitForm = async () => {
-    /*     if (!imgFicha.value || !codigoCarrera.value || !imgEstudiante.value) {
-            return alert('Completa todos los campos antes de enviar.');
-        } */
-
-    /*  const formData = new FormData();
-     formData.append('CodigoEstudiante', codigoEstudiante.value);
-     formData.append('CodigoEstablecimiento', codigoEstablecimiento.value);
-     formData.append('CodigoNivelAcademico', codigoNA.value);
-     formData.append('CodigoGrado', codigoGrado.value)
-     formData.append('CodigoCarrera', codigoCarrera.value)
-     formData.append('CicloEscolar', cicloEscolar.value)
-     formData.append('ImgEstudiante', imgEstudiante.value);
-     formData.append('ImgFicha', imgFicha.value);
-     formData.append('ImgCarta', imgCarta.value);
-     formData.append('FechaRegistro', fechaRegistro.value); */
+  
     try {
         let res;
-        console.log(`Se llegó a la actualización del cursoNOTA: ${form.value.CodigoCursoFichaCalificacion}`)
+       
         res = await sendRequest('PUT', formFicha.value, `/api/fichacalificacion/update/${parametro}`, '/cards');
         if (res == true) {
             nextTick(() => close.value.click());

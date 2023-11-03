@@ -162,6 +162,7 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { sendRequest } from '../../functions'
+const baseBackend = import.meta.env.VITE_BAKENDAPI;
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -322,7 +323,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-            const response = await fetch(`http://localhost:5079/api/compra/updateimg/${parametro}`, {
+            const response = await fetch(`${baseBackend}/api/compra/updateimg/${parametro}`, {
                 method: 'PUT',
                 body: formData,
                 headers,
@@ -331,7 +332,7 @@ const submitForm = async () => {
             if (response.ok) {
                 Swal.fire({
                     icon: 'success', // Ícono de éxito
-                    title: 'Gasto registrado exitosamente.',
+                    title: 'Compra registrado exitosamente.',
                     showConfirmButton: false, // Ocultar el botón "Aceptar"
                     timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
                 });
@@ -340,12 +341,21 @@ const submitForm = async () => {
 
 
             } else {
-                alert('Hubo un error al crear el estudiante.');
+                Swal.fire({
+                    icon: 'error', // Ícono de éxito
+                    title: 'No se pudo registrar el gasto Gasto.',
+                    showConfirmButton: false, // Ocultar el botón "Aceptar"
+                    timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+                });
             }
         
     } catch (error) {
-        console.error('Error al crear el estudiante:', error);
-        alert('Hubo un error al crear el estudiante.');
+        Swal.fire({
+                    icon: 'error', // Ícono de éxito
+                    title: 'No se pudo registrar el gasto Gasto.',
+                    showConfirmButton: false, // Ocultar el botón "Aceptar"
+                    timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+                });
     }
 };
 </script>
