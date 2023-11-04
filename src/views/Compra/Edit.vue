@@ -343,7 +343,7 @@ const submitForm = async () => {
             } else {
                 Swal.fire({
                     icon: 'error', // Ícono de éxito
-                    title: 'No se pudo registrar el gasto Gasto.',
+                    title: 'No se pudo registrar la compra.',
                     showConfirmButton: false, // Ocultar el botón "Aceptar"
                     timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
                 });

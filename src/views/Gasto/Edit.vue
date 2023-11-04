@@ -150,7 +150,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Imagen de ficha</label>
+                                <label for="exampleFormControlInput1" class="form-label">Imagen del comprobante</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-image"></i>
@@ -160,7 +160,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Imagen de carta</label>
+                                <label for="exampleFormControlInput1" class="form-label">Imagen del estudiante</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-image"></i>
