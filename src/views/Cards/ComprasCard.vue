@@ -79,9 +79,9 @@ const formatFecha = (fecha) => {
 </style>
 
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
-            <div class="row">
+    <div class="row justify-content-center">
+      
+            <div class="row col-10">
             <h2>Menú de Compras</h2> <hr>
 
                 <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
@@ -107,14 +107,6 @@ const formatFecha = (fecha) => {
                     <h5 class="card-title text-color-card">Lista de compras</h5>
                     <RouterLink :to="{ name: 'purchases' }" class="no-underline btn bg-boton">Ver</RouterLink>
                 </div>
-                
-                
-
-               
-            
-
             </div>
-        </div>
-
     </div>
 </template>

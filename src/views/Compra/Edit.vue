@@ -1,8 +1,23 @@
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
-            <h3>Editar datos de la Compra</h3>
+    <div class="row justify-content-center mt-1">
+        <div class="row col-11">
+            <h3>Actualizar Información de la Compra</h3>
             <hr>
+            <div class="row row-cols-auto mb-4">
+                    <div class="col">
+                        <router-link :to="{ path: '/purchasesmenu' }">
+                            Menú de compras
+                        </router-link>
+                    </div> >
+                    <div class="col">
+                        <router-link :to="{ path: '/purchases' }">
+                            Compras
+                        </router-link>
+                    </div>>
+                    <div class="col text-primary">
+                        <a href="#">Actualizar registro</a>
+                    </div>
+                </div>
             <div class="card border border-success">
                 
                 <div class="card-body">

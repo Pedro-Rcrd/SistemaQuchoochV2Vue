@@ -81,114 +81,111 @@ const formatFecha = (fecha) => {
 </style>
 
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
-            <div class="row">
-                <h2>Menú de Mantenimientos</h2>
-                <hr>
+    <div class="row justify-content-center">
 
-                <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card" style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/escuela.png"
-                                alt="Card image cap">
-                        </div>
+        <div class="row col-10">
+            <h2>Menú de Mantenimientos</h2>
+            <hr>
 
+            <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card" style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/escuela.png"
+                            alt="Card image cap">
                     </div>
 
-                    <h5 class="card-title text-color-card">Carreras</h5>
-                    <RouterLink :to="{ name: 'careers' }" class="no-underline btn bg-boton">Ver
-                    </RouterLink>
                 </div>
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/comunidad.png"
-                                alt="Card image cap">
 
-                        </div>
+                <h5 class="card-title text-color-card">Carreras</h5>
+                <RouterLink :to="{ name: 'careers' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
+            </div>
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/comunidad.png"
+                            alt="Card image cap">
+
                     </div>
-                    <h5 class="card-title text-color-card">Comunidades</h5>
-                    <RouterLink :to="{ name: 'communities' }" class="no-underline btn bg-boton">Ver</RouterLink>
                 </div>
+                <h5 class="card-title text-color-card">Comunidades</h5>
+                <RouterLink :to="{ name: 'communities' }" class="no-underline btn bg-boton">Ver</RouterLink>
+            </div>
 
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/escuela.png"
-                                alt="Card image cap">
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/escuela.png"
+                            alt="Card image cap">
 
-                        </div>
                     </div>
-                    <h5 class="card-title text-color-card">Cursos</h5>
-                    <RouterLink :to="{ name: 'courses' }" class="no-underline btn bg-boton">Ver</RouterLink>
                 </div>
+                <h5 class="card-title text-color-card">Cursos</h5>
+                <RouterLink :to="{ name: 'courses' }" class="no-underline btn bg-boton">Ver</RouterLink>
+            </div>
 
 
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top " style="height: 10rem;" src="../../../public/colegio.png"
-                                alt="Card image cap">
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top " style="height: 10rem;" src="../../../public/colegio.png"
+                            alt="Card image cap">
 
-                        </div>
                     </div>
-                    <h5 class="card-title text-color-card">Establecimientos</h5>
-                    <RouterLink :to="{ name: 'establishments' }" class="no-underline btn bg-boton">Ver
-                    </RouterLink>
                 </div>
-               
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/niveles.png"
-                                alt="Card image cap">
+                <h5 class="card-title text-color-card">Establecimientos</h5>
+                <RouterLink :to="{ name: 'establishments' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
+            </div>
 
-                        </div>
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/niveles.png"
+                            alt="Card image cap">
+
                     </div>
-                    <h5 class="card-title text-color-card">Niveles Académicos</h5>
-                    <RouterLink :to="{ name: 'academicLevels' }" class="no-underline btn bg-boton">Ver
-                    </RouterLink>
                 </div>
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/paises.png"
-                                alt="Card image cap">
+                <h5 class="card-title text-color-card">Niveles Académicos</h5>
+                <RouterLink :to="{ name: 'academicLevels' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
+            </div>
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;" >
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/paises.png"
+                            alt="Card image cap">
 
-                        </div>
                     </div>
-                    <h5 class="card-title text-color-card">Paises</h5>
-                    <RouterLink :to="{ name: 'countries' }" class="no-underline btn bg-boton">Ver
-                    </RouterLink>
                 </div>
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/escuela.png"
-                                alt="Card image cap">
+                <h5 class="card-title text-color-card">Paises</h5>
+                <RouterLink :to="{ name: 'countries' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
+            </div>
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/escuela.png"
+                            alt="Card image cap">
 
-                        </div>
                     </div>
-                    <h5 class="card-title text-color-card">Proveedores</h5>
-                    <RouterLink :to="{ name: 'suppliers' }" class="no-underline btn bg-boton">Ver
-                    </RouterLink>
                 </div>
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/usuarios.png"
-                                alt="Card image cap">
+                <h5 class="card-title text-color-card">Proveedores</h5>
+                <RouterLink :to="{ name: 'suppliers' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
+            </div>
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;" v-if="authStore.authUserRol == 1">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/usuarios.png"
+                            alt="Card image cap">
 
-                        </div>
                     </div>
-                    <h5 class="card-title text-color-card">Usuarios</h5>
-                    <RouterLink :to="{ name: 'users' }" class="no-underline btn bg-boton">Ver
-                    </RouterLink>
                 </div>
-
-
+                <h5 class="card-title text-color-card">Usuarios</h5>
+                <RouterLink :to="{ name: 'users' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
             </div>
         </div>
-
-</div></template>
+    </div>
+</template>

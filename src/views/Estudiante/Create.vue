@@ -1,19 +1,26 @@
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
+    <div class="row justify-content-center">
+        <div class="row col-11">
             <h3>Registro de estudiante</h3>
             <hr>
-            <div class="col-md-4">
-                <div class="d-grid col-10">
-                    <router-link :to="{ path: 'students' }">
-
-                        <button class="btn btn-dark">
-                            <i class="fa-solid fa-eye"></i> Lista de estudiantes
-                        </button>
-                    </router-link>
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/registermenu' }">
+                            Menú de registros
+                        </router-link>
+                    </div> >
+                    <div class="col">
+                        <router-link :to="{ path: '/students' }">
+                            Estudiantes
+                        </router-link>
+                    </div>>
+                    <div class="col text-primary">
+                        <a href="#">Nuevo registro</a>
+                    </div>
                 </div>
             </div>
-            <div class="card border border-success mt-3">
+            <div class="card border border-success">
 
                 <div class="card-body">
                     <form enctype="multipart/form-data">
@@ -35,8 +42,8 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-n"></i>
                                     </span>
-                                    <input autofocus id="nombreEstudiante" required type="text" v-model="nombreEstudiante"
-                                        class="form-control">
+                                    <input autofocus id="nombreEstudiante" required type="text"
+                                        v-model="nombreEstudiante" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -63,42 +70,30 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleFormControlInput1" class="form-label">Género</label>
-                                <div class="input-group mb-3">
-                                    <div class="d-flex flex-row">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="generoRadio"
-                                                id="flexRadioDefault1" value="M" v-model="genero">
-                                            <label class="form-check-label" for="flexRadioDefault1">
-                                                Masculino
-                                            </label>
-                                        </div>
-                                        <div class="form-check ps-5">
-                                            <input class="form-check-input" type="radio" name="generoRadio"
-                                                id="flexRadioDefault2" value="F" v-model="genero">
-                                            <label class="form-check-label" for="flexRadioDefault2">
-                                                Femenino
-                                            </label>
-                                        </div>
-                                    </div>
+                                <br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="generoRadio" id="inlineRadio1"
+                                        value="M" v-model="genero">
+                                    <label class="form-check-label" for="inlineRadio1">Masculino</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="generoRadio" id="inlineRadio2"
+                                        value="F" v-model="genero">
+                                    <label class="form-check-label" for="inlineRadio2">Femenino</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleFormControlInput" class="form-label">Estado</label>
-                                <div class="d-flex flex-row">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="estadoRadio"
-                                            id="flexRadioDefault3" value="A" v-model="estado">
-                                        <label class="form-check-label" for="flexRadioDefault3">
-                                            Activo
-                                        </label>
-                                    </div>
-                                    <div class="form-check ps-5">
-                                        <input class="form-check-input" type="radio" name="estadoRadio"
-                                            id="flexRadioDefault4" value="I" v-model="estado">
-                                        <label class="form-check-label" for="flexRadioDefault4">
-                                            Inactivo
-                                        </label>
-                                    </div>
+                                <br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="estadoRadio" id="inlineRadio1"
+                                        value="A" v-model="estado">
+                                    <label class="form-check-label" for="inlineRadio1">Activo</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="estadoRadio" id="inlineRadio2"
+                                        value="I" v-model="estado">
+                                    <label class="form-check-label" for="inlineRadio2">Inactivo</label>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +125,8 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-home"></i>
                                     </span>
-                                    <select class="form-control form-select" id="codigoComunidad" v-model="codigoComunidad">
+                                    <select class="form-control form-select" id="codigoComunidad"
+                                        v-model="codigoComunidad">
                                         <option value="" disabled selected>
                                             Selecciona establecimiento
                                         </option>
@@ -177,7 +173,8 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-graduation-cap"></i>
                                     </span>
-                                    <select class="form-control form-select" id="codigoNivelAcademico" v-model="codigoNA">
+                                    <select class="form-control form-select" id="codigoNivelAcademico"
+                                        v-model="codigoNA">
                                         <option value="" disabled selected>
                                             Selecciona tipo nivel academico
                                         </option>
@@ -310,7 +307,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-8">
-                                <label for="exampleFormControlInput1" class="form-label">Fotografía del estudiante</label>
+                                <label for="exampleFormControlInput1" class="form-label">Fotografía del
+                                    estudiante</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-image"></i>
@@ -332,32 +330,32 @@
                             </div>
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary " :disabled="botonDeshabilitado"
-                                @click.prevent="submitForm"><i class="fa-solid fa-save"></i> Guardar registro</button>
-                            <RouterLink :to="{ name: 'registermenu' }">
-                                <button type="button" class="btn btn-outline-primary">Cancelar</button>
+                            <RouterLink :to="{ name: 'registermenu' }" type="button" class="btn btn-outline-primary ">
+                                Cancelar
                             </RouterLink>
+                            <button type="submit" class="btn btn-primary text-light" :disabled="botonDeshabilitado"
+                                @click.prevent="submitForm"><i class="fa-solid fa-save"></i> Guardar registro</button>
+
                         </div>
-
-
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </template>
-  
+
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-const baseBackend = import.meta.env.VITE_BAKENDAPI;
+const baseApiBackend = import.meta.env.VITE_BAKENDAPI;
 import Swal from 'sweetalert2';
 
 const route = useRoute();
 const authStore = useAuthStore();
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`;
+
 const codigoNA = ref(0);
 const codigoBecario = ref("");
 const codigoComunidad = ref(0);
@@ -555,7 +553,7 @@ const submitForm = async () => {
     }
 };
 </script>
-  
+
 <style scoped>
 .contenedor-primario {
     margin-top: 60px;

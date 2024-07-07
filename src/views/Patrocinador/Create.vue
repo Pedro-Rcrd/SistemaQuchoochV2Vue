@@ -1,19 +1,26 @@
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
+    <div class="row justify-content-center mt-1">
+        <div class="row col-11">
             <h3>Registro de Patrocinador</h3>
             <hr>
-            <div class="col-md-4">
-                <div class="d-grid col-10">
-                    <router-link :to="{ path: 'sponsors' }">
-
-                        <button class="btn btn-dark">
-                            <i class="fa-solid fa-eye"></i> Lista de patrocinadores
-                        </button>
-                    </router-link>
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/registermenu' }">
+                            Menú de registros
+                        </router-link>
+                    </div> >
+                    <div class="col">
+                        <router-link :to="{ path: '/sponsors' }">
+                            Patrocinadores
+                        </router-link>
+                    </div>>
+                    <div class="col text-primary">
+                        <a href="#">Nuevo registro</a>
+                    </div>
                 </div>
             </div>
-            <div class="card border border-success mt-3">
+            <div class="card border border-success">
                 
                 <div class="card-body">
                     <form enctype="multipart/form-data">

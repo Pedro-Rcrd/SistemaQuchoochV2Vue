@@ -199,14 +199,31 @@ const submitForm = async () => {
 </style>
 
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-11">
-            <div class="card border border-success">
-                <div class="card-header bg-success border border-success"></div>
-                <div class="card-body">
-                    <div class="row">
-                        <h2>Nuevo bloque del ciclo</h2>
+    <div class="row justify-content-center mt-1">
+        <div class="row col-11">
+            <h3>Nuevo bloque del ciclo</h3>
+            <hr>
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/registermenu' }">
+                            Menú de registros
+                        </router-link>
+                    </div> >
+                    <div class="col">
+                        <router-link :to="{ path: '/cards' }">
+                            Fichas de calificaciones
+                        </router-link>
+                    </div>>
+                    <div class="col text-primary">
+                        <a href="#">Información</a>
                     </div>
+                </div>
+            </div>
+            <div class="card border border-success">
+            
+                <div class="card-body">
+                    
                     <div class="row mt-3">
                         <div class="col-md-12">
                             <div class="card border border-white text-center" v-if="!load">

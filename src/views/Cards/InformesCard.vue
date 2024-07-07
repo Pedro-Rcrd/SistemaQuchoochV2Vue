@@ -81,76 +81,71 @@ const formatFecha = (fecha) => {
 </style>
 
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
-            <div class="row">
-                <h2>Menú de Informes</h2>
-                <hr>
+    <div class="row justify-content-center">
 
-                <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card" style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/graduacion.png"
-                                alt="Card image cap">
-                        </div>
+        <div class="row col-10">
+            <h2>Menú de Informes</h2>
+            <hr>
 
+            <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card" style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/graduacion.png"
+                            alt="Card image cap">
                     </div>
 
-                    <h5 class="card-title text-color-card">Estudiantes</h5>
-                    <RouterLink :to="{ name: 'exportreportstudents' }" class="no-underline btn bg-boton">Ver</RouterLink>
                 </div>
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/fichanuevo.png"
-                                alt="Card image cap">
 
-                        </div>
+                <h5 class="card-title text-color-card">Estudiantes</h5>
+                <RouterLink :to="{ name: 'exportreportstudents' }" class="no-underline btn bg-boton">Ver</RouterLink>
+            </div>
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/fichanuevo.png"
+                            alt="Card image cap">
+
                     </div>
-                    <h5 class="card-title text-color-card">Fichas de calificaciones</h5>
-                    <RouterLink :to="{ name: 'exportreportcard' }" class="no-underline btn bg-boton">Ver</RouterLink>
                 </div>
+                <h5 class="card-title text-color-card">Fichas de calificaciones</h5>
+                <RouterLink :to="{ name: 'exportreportcard' }" class="no-underline btn bg-boton">Ver</RouterLink>
+            </div>
 
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/patrocinadores.png"
-                                alt="Card image cap">
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/patrocinadores.png"
+                            alt="Card image cap">
 
-                        </div>
                     </div>
-                    <h5 class="card-title text-color-card">Patrocinadores</h5>
-                    <RouterLink :to="{ name: 'exportreportsponsor' }" class="no-underline btn bg-boton">Ver</RouterLink>
                 </div>
+                <h5 class="card-title text-color-card">Patrocinadores</h5>
+                <RouterLink :to="{ name: 'exportreportsponsor' }" class="no-underline btn bg-boton">Ver</RouterLink>
+            </div>
 
 
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top " style="height: 10rem;" src="../../../public/gastos.png"
-                                alt="Card image cap">
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top " style="height: 10rem;" src="../../../public/gastos.png"
+                            alt="Card image cap">
 
-                        </div>
                     </div>
-                    <h5 class="card-title text-color-card">Gastos</h5>
-                    <RouterLink :to="{ name: 'exportreportexpeses' }" class="no-underline btn bg-boton">Ver</RouterLink>
                 </div>
-                <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                            <img class="card-img-top" style="height: 10rem;" src="../../../public/compras.png"
-                                alt="Card image cap">
+                <h5 class="card-title text-color-card">Gastos</h5>
+                <RouterLink :to="{ name: 'exportreportexpeses' }" class="no-underline btn bg-boton">Ver</RouterLink>
+            </div>
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/compras.png"
+                            alt="Card image cap">
 
-                        </div>
                     </div>
-                    <h5 class="card-title text-color-card">Compras</h5>
-                    <RouterLink :to="{ name: 'exportreportpurchases' }" class="no-underline btn bg-boton">Ver</RouterLink>
                 </div>
-                
-
-
+                <h5 class="card-title text-color-card">Compras</h5>
+                <RouterLink :to="{ name: 'exportreportpurchases' }" class="no-underline btn bg-boton">Ver</RouterLink>
             </div>
         </div>
-
     </div>
 </template>

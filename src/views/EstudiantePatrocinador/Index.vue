@@ -47,68 +47,66 @@ const getEstudiante = async (page) => {
 </style>
 
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-
-    
-    <div class="row">
-        <h2>Lista de estudiantes</h2>
-        <div class="col-md-2">
-            <div class="d-grid col-10">
-                <router-link :to="{ path: 'createstudent'}" >
-                                
-                <button class="btn btn-dark">
-                    <i class="fa-solid fa-circle-plus"></i> Agregar
-                </button>
-            </router-link>
-            </div>
-        </div>
-    </div>
-    <div class="row mt-3">
-        <div class="col-md-12">
-            <div class="card border border-white text-center" v-if="!load">
-                <div class="card-body">
-                    <img src="/loading.gif" alt="img-fluid">
+    <div class="row justify-content-center mt-1">
+        <div class="row col-11">
+            <h2>Estudiantes</h2>
+            <hr>
+            <div class="row row-cols-auto">
+                <div class="col">
+                    <router-link :to="{ path: '/assignmenu' }">
+                        Menú de asignaciones
+                    </router-link>
+                </div> >
+                <div class="col text-primary">
+                    <a href="#">Estudiantes</a>
                 </div>
             </div>
-            <div class="table-responsive" v-else>
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Código Becario</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody class="table-group-divider">
-                        <tr v-for="es, i in estudiantes" :key="es.codigoEstudiante">
-                            <td>{{ (i + 1) }}</td>
-                            <td>{{ es.codigoBecario}}</td>
-                            <td>{{ es.nombreEstudiante}}</td>
-                            <td>{{ es.apellidoEstudiante}}</td>
-                            <td class="text-center">
-                                <router-link :to="{ path: 'informationstudentsponsor/' + es.codigoEstudiante }" class="btn btn-secondary active btn-sm">
-                                    <i class="fa-solid fa-eye"></i>
-                                </router-link>
-                            </td>
-                            <td class="text-center">
-                                <router-link :to="{ path: 'assignsponsor/' + es.codigoEstudiante }" class="btn btn-success btn-sm">
-                                    <i class="fa-solid fa-user-plus"></i>
-                                </router-link>
-                            </td>
-                        </tr>
-                    </tbody>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="card border border-white text-center" v-if="!load">
+                        <div class="card-body">
+                            <img src="/loading.gif" alt="img-fluid">
+                        </div>
+                    </div>
+                    <div class="table-responsive" v-else>
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Código Becario</th>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr v-for="es, i in estudiantes" :key="es.codigoEstudiante">
+                                    <td>{{ (i + 1) }}</td>
+                                    <td>{{ es.codigoBecario }}</td>
+                                    <td>{{ es.nombreEstudiante }}</td>
+                                    <td>{{ es.apellidoEstudiante }}</td>
+                                    <td class="text-center">
+                                        <router-link :to="{ path: 'informationstudentsponsor/' + es.codigoEstudiante }"
+                                            class="btn btn-secondary active btn-sm">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </router-link>
+                                    </td>
+                                    <td class="text-center">
+                                        <router-link :to="{ path: 'assignsponsor/' + es.codigoEstudiante }"
+                                            class="btn btn-success btn-sm">
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </router-link>
+                                    </td>
+                                </tr>
+                            </tbody>
 
-                </table>
-                <Paginate :page-count="rows"
-                :click-handler="getEstudiante"
-                :prev-text="Prev"
-                :next-text="Next"
-                :container-class="'pagination'">
-                </Paginate>
+                        </table>
+                        <Paginate :page-count="rows" :click-handler="getEstudiante" :prev-text="Prev" :next-text="Next"
+                            :container-class="'pagination'">
+                        </Paginate>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </template>

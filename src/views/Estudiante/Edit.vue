@@ -1,10 +1,27 @@
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
+    <div class="row justify-content-center">
+        <div class="row col-11">
             <h3>Editar información del estudiante</h3>
             <hr>
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/registermenu' }">
+                            Menú de registros
+                        </router-link>
+                    </div> >
+                    <div class="col">
+                        <router-link :to="{ path: '/students' }">
+                            Estudiantes
+                        </router-link>
+                    </div>>
+                    <div class="col text-primary">
+                        <a href="#">Editar registro</a>
+                    </div>
+                </div>
+            </div>
             <div class="card border border-success">
-                <div class="card-header bg-success border border-success"></div>
+                
                 <div class="card-body">
                     <form enctype="multipart/form-data">
                         <div class="row">

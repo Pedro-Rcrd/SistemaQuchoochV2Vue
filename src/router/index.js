@@ -73,11 +73,6 @@ const router = createRouter({
       component: () => import('../views/Pais/Index.vue')
     },
     {
-      path: '/cargar',
-      name: 'cargar',
-      component: () => import('../components/ImageUploader.vue')
-    },
-    {
       path: '/students',
       name: 'students',
       component: () => import('../views/Estudiante/Index.vue')

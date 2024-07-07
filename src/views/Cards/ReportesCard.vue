@@ -37,9 +37,9 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
 </style>
 
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
-            <div class="row">
+    <div class="row justify-content-center">
+        
+            <div class="row col-10">
             <h2>Menú de Reportes</h2> <hr>
 
                 <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
@@ -83,7 +83,5 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
             
 
             </div>
-        </div>
-
     </div>
 </template>

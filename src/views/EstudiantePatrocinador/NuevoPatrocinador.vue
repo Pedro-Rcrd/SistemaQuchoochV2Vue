@@ -1,10 +1,24 @@
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
+    <div class="row justify-content-center mt-1">
+        <div class="row col-11">
             <h3>Asignación de Patrocinadores</h3>
             <hr>
+            <div class="row row-cols-auto mb-4">
+                <div class="col">
+                    <router-link :to="{ path: '/assignmenu' }">
+                        Menú de asignaciones
+                    </router-link>
+                </div> >
+                <div class="col">
+                    <router-link :to="{ path: '/studentssponsors' }">
+                        Estudiantes
+                    </router-link>
+                </div>>
+                <div class="col text-primary">
+                    <a href="#">Asignación</a>
+                </div>
+            </div>
             <div class="card border border-success">
-                <div class="card-header bg-success border border-success"></div>
                 <div class="card-body">
                     <form enctype="multipart/form-data">
                         <div class="row">

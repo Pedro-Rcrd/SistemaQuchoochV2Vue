@@ -1,19 +1,26 @@
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
+    <div class="row justify-content-center mt-1">
+        <div class="row col-11">
             <h3>Registro de Compra</h3>
             <hr>
-            <div class="col-md-4">
-                <div class="d-grid col-10">
-                    <router-link :to="{ path: 'purchases' }">
-
-                        <button class="btn btn-dark">
-                            <i class="fa-solid fa-eye"></i> Lista de compras
-                        </button>
-                    </router-link>
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/purchasesmenu' }">
+                            Menú de compras
+                        </router-link>
+                    </div> >
+                    <div class="col">
+                        <router-link :to="{ path: '/purchases' }">
+                            Compras
+                        </router-link>
+                    </div>>
+                    <div class="col text-primary">
+                        <a href="#">Nuevo registro</a>
+                    </div>
                 </div>
             </div>
-            <div class="card border border-success mt-3">
+            <div class="card border border-success">
           
                 <div class="card-body">
                     <form enctype="multipart/form-data">
@@ -107,15 +114,83 @@
                                 </div>
                             </div>
                         </div>
+                        <!--Productos-->
                         <div class="row">
-                            <div class="col-md-12">
-                                <label for="exampleFormControlInput1" class="form-label">Descripción</label>
+                            <h4>Información de los productos</h4>
+                            <div class="col-md-4">
+                                <label for="exampleFormControlInput1" class="form-label">Producto</label>
                                 <div class="input-group mb-3">
-                                    <textarea autofocus v-model="descripcion" class="form-control"
-                                        style="height: 200px;"> </textarea>
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-building"></i>
+                                    </span>
+                                    <input autofocus type="text"  class="form-control" placeholder="Producto"
+                                    v-model="nombreProducto">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="Cantidad" class="form-label">Cantidad</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-n"></i>
+                                    </span>
+                                    <input autofocus id="cantidad" type="number" class="form-control"
+                                    v-model="cantidadProducto">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="Precio" class="form-label">Precio Total</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-p"></i>
+                                    </span>
+                                    <input autofocus id="cantidad" type="number" class="form-control"
+                                    v-model="precioProducto">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="Precio" class="form-label">Agrega nuevo producto</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </span>
+                                    <button class="btn btn-primary" @click.prevent="agregarProducto" >Agregar</button>
+                                </div>
+                            </div>
+                            <div class="alert alert-danger" role="alert" v-show="productoYaExiste">
+                                El producto seleccionado ya está en la lista.
+                            </div>
+                        </div>
+                        <!--Mostar lista de productos de la compra-->
+                        <div class="row">
+                            <div class="col-md-8 mb-1  justify-content-center">
+                                <div class="table-container table-responsive">
+                                    <table class="table table-scroll table-striped table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-center">#</th>
+                                                <th scope="col" class="text-center">Producto</th>
+                                                <th scope="col" class="text-center">Cantidad</th>
+                                                <th scope="col" class="text-center">Precio Total</th>
+                                                <th scope="col" class="text-center">Accion</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(producto, index) in productos" :key="index">
+                                                <th scope="row" class="text-center">{{ index + 1 }}</th>
+                                                <td class="text-center">{{ producto.nombreProducto }}</td>
+                                                <td class="text-center">{{ producto.cantidadProducto }}</td>
+                                                <td class="text-center">{{ producto.precioProducto }}</td>
+                                                <td class="text-center">
+                                                    <i @click.prevent="eliminarProducto(index)"
+                                                        class="fa-solid fa-trash text-danger"></i>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
+                        <!--Información de la compra-->
                         <div class="row">
                             <h4>Información de entrega</h4>
                             <div class="col-md-4">
@@ -177,6 +252,43 @@ const baseBackend = import.meta.env.VITE_BAKENDAPI;
 const route = useRoute();
 const authStore = useAuthStore();
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`;
+
+//#region Método de creación de productos
+const productos = ref([]);
+const nombreProducto = ref("");
+const cantidadProducto = ref(0);
+const precioProducto = ref(0);
+const productoYaExiste = ref(false);
+
+const cursoYaExiste = ref(false); //Alerta
+
+const agregarProducto = () => {
+    if (nombreProducto.value !== "" && cantidadProducto.value > 0 && precioProducto.value > 0) {
+        const existeProducto = productos.value.find(a => a.nombreProducto.toUpperCase() === nombreProducto.value.toUpperCase());
+        if (!existeProducto) {
+            productos.value.push({
+                nombreProducto: nombreProducto.value,
+                cantidadProducto: cantidadProducto.value,
+                precioProducto: precioProducto.value
+            });
+            nombreProducto.value = ""; // Limpiar el input después de agregar
+            cantidadProducto.value = "";
+            precioProducto.value = "";
+            productoYaExiste.value = false;
+
+        } else {
+            productoYaExiste.value = true;
+        }
+    }else{
+        alert("Complete todos los campos para guardar un producto")
+    }
+};
+
+//Eliminar producto en el array
+const eliminarProducto = (index) => {
+    productos.value.splice(index, 1);
+};
+//#endregion
 
 
 const codigoEstudiante = ref(0);

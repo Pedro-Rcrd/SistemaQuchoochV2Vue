@@ -6,9 +6,30 @@ import axios from 'axios'
 axios.defaults.headers.common['Content-Type'] = 'multipart/form-data';
 import { createApp, markRaw } from 'vue'
 import { createPinia } from 'pinia'
-
 import App from './App.vue'
 import router from './router'
+
+//inicio vuetify
+// Vuetify
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import '@mdi/font/css/materialdesignicons.css'
+
+import { es } from 'vuetify/locale';
+
+const vuetify = createVuetify({
+  components,
+  directives,
+  locale: {
+    locale: 'es',
+    fallback: 'sv', // Cambia esto si deseas un idioma de respaldo diferente
+    messages: { es }, // Usa el idioma español aquí
+  },
+ 
+})
+//fin vuetify
 const baseBackend = import.meta.env.VITE_BAKENDAPI;
 window.axios = axios
 window.axios.defaults.baseURL = baseBackend
@@ -29,5 +50,5 @@ const app = createApp(App)
 
 app.use(pinia)
 app.use(router)
-
+app.use(vuetify) //vutify
 app.mount('#app')

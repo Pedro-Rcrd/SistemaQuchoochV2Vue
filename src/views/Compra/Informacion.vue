@@ -1,19 +1,24 @@
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center pb-2">
-        <div class="col-md-9 ">
+    <div class="row justify-content-center mt-1">
+        <div class="row col-11">
             <h3>Información de la Compra</h3>
             <hr>
-            <div class="col-md-4">
-                <div class="d-grid col-10">
-                    <router-link :to="{ name: 'purchases' }">
-
-                        <button class="btn btn-dark">
-                            <i class="fa-solid fa-backward"></i> Regresar
-                        </button>
-                    </router-link>
+            <div class="row row-cols-auto mb-4">
+                    <div class="col">
+                        <router-link :to="{ path: '/purchasesmenu' }">
+                            Menú de compras
+                        </router-link>
+                    </div> >
+                    <div class="col">
+                        <router-link :to="{ path: '/purchases' }">
+                            Compras
+                        </router-link>
+                    </div>>
+                    <div class="col text-primary">
+                        <a href="#">Información</a>
+                    </div>
                 </div>
-            </div>
-            <div class="card border mt-3">
+            <div class="card border">
 
                 <div class="card-body">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">

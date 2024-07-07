@@ -1,19 +1,25 @@
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center pb-2">
-        <div class="col-md-9 ">
+    <div class="row justify-content-center mt-1">
+        <div class="row col-11">
             <h3>Información del Gasto</h3>
             <hr>
-            <div class="col-md-4 mb-3">
-                <div class="d-grid col-10">
-                    <router-link :to="{ name: 'expenses' }">
-
-                        <button class="btn btn-dark">
-                            <i class="fa-solid fa-backward"></i> Regresar
-                        </button>
-                    </router-link>
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/registermenu' }">
+                            Menú de registros
+                        </router-link>
+                    </div> >
+                    <div class="col">
+                        <router-link :to="{ path: '/expenses' }">
+                        Gastos
+                        </router-link>
+                    </div>>
+                    <div class="col text-primary">
+                        <a href="#">Información</a>
+                    </div>
                 </div>
             </div>
-
             <div class="card border ">
 
                 <div class="card-body">

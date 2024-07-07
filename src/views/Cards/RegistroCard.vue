@@ -65,12 +65,14 @@ const formatFecha = (fecha) => {
 }
 
 .bg-boton {
-        background-color: #768009;
-        color: #fff;
-        transition: background-color 0.3s; 
-    }
-    .bg-boton:hover {
-    background-color: #5c6e00; /* Color más oscuro al pasar el mouse por encima */
+    background-color: #768009;
+    color: #fff;
+    transition: background-color 0.3s;
+}
+
+.bg-boton:hover {
+    background-color: #5c6e00;
+    /* Color más oscuro al pasar el mouse por encima */
 }
 
 .text-color-card {
@@ -79,83 +81,83 @@ const formatFecha = (fecha) => {
 </style>
 
 <template>
-    <div class="row contenedor-primario d-flex justify-content-center align-items-center">
-        <div class="col-md-9 ">
-            <div class="row">
-            <h2>Menú de Registros</h2> <hr>
+    <div class="row justify-content-center">
+            <div class="row col-10">
+                <h2>Menú de Registros</h2>
+                <hr>
 
                 <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
                     <div class=" row align-items-center " style="margin-top: -4px;">
                         <div class="divimg  mt-1 contenedor-card" style="width: 18rem;">
-                        <img class="card-img-top" style="height: 10rem;" src="../../../public/graduacion.png"
-                            alt="Card image cap">
-                    </div>
-
+                            <img class="card-img-top" style="height: 10rem;" src="../../../public/graduacion.png"
+                                alt="Card image cap">
+                        </div>
                     </div>
                     <RouterLink :to="{ name: 'students' }" class="no-underline mb-1">
                         <h5 class="card-title text-color-card">Estudiantes</h5>
                     </RouterLink>
-             
-                    
-                    <RouterLink :to="{ name: 'createstudent' }" class="no-underline btn bg-boton">Nuevo registro</RouterLink>
+                    <RouterLink :to="{ name: 'createstudent' }" class="no-underline btn bg-boton"
+                    >Nuevo registro
+                    </RouterLink>
+
+
                 </div>
                 <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
                     <div class=" row align-items-center " style="margin-top: -4px;">
-                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                        <img class="card-img-top" style="height: 10rem;" src="../../../public/fichanuevo.png"
-                            alt="Card image cap">
+                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                            <img class="card-img-top" style="height: 10rem;" src="../../../public/fichanuevo.png"
+                                alt="Card image cap">
 
+                        </div>
                     </div>
+                    <RouterLink :to="{ name: 'cards' }" class="no-underline mb-1">
+                        <h5 class="card-title text-color-card">Fichas de calificaciones</h5>
+                    </RouterLink>
+                    <RouterLink :to="{ name: 'createcard' }" class="no-underline btn bg-boton">Nuevo registro
+                    </RouterLink>
                 </div>
-                <RouterLink :to="{ name: 'cards' }" class="no-underline mb-1">
-                    <h5 class="card-title text-color-card">Fichas de calificaciones</h5>
-                </RouterLink>
-                    <RouterLink :to="{ name: 'createcard' }" class="no-underline btn bg-boton">Nuevo registro</RouterLink>
-                </div>
-                
+
                 <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
                     <div class=" row align-items-center " style="margin-top: -4px;">
-                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                        <img class="card-img-top" style="height: 10rem;" src="../../../public/ficha.png"
-                            alt="Card image cap">
+                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                            <img class="card-img-top" style="height: 10rem;" src="../../../public/ficha.png"
+                                alt="Card image cap">
 
+                        </div>
                     </div>
-                </div>
                     <h5 class="card-title text-color-card">Bloques de ficha</h5>
                     <RouterLink :to="{ name: 'cards' }" class="no-underline btn bg-boton">Nuevo registro</RouterLink>
                 </div>
 
-          
+
                 <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
                     <div class=" row align-items-center " style="margin-top: -4px;">
-                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                        <img class="card-img-top " style="height: 10rem;" src="../../../public/patrocinadores.png"
-                            alt="Card image cap">
+                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                            <img class="card-img-top " style="height: 10rem;" src="../../../public/patrocinadores.png"
+                                alt="Card image cap">
 
+                        </div>
                     </div>
-                </div>
-                <RouterLink :to="{ name: 'sponsors' }" class="no-underline mb-1">
-                    <h5 class="card-title text-color-card">Patrocinadores</h5>
-                </RouterLink>
-                    <RouterLink :to="{ name: 'createsponsor' }" class="no-underline btn bg-boton">Nuevo registro</RouterLink>
+                    <RouterLink :to="{ name: 'sponsors' }" class="no-underline mb-1">
+                        <h5 class="card-title text-color-card">Patrocinadores</h5>
+                    </RouterLink>
+                    <RouterLink :to="{ name: 'createsponsor' }" class="no-underline btn bg-boton">Nuevo registro
+                    </RouterLink>
                 </div>
                 <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
                     <div class=" row align-items-center " style="margin-top: -4px;">
-                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
-                        <img class="card-img-top" style="height: 10rem;" src="../../../public/gastos.png"
-                            alt="Card image cap">
+                        <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                            <img class="card-img-top" style="height: 10rem;" src="../../../public/gastos.png"
+                                alt="Card image cap">
 
+                        </div>
                     </div>
+                    <RouterLink :to="{ name: 'expenses' }" class="no-underline mb-1">
+                        <h5 class="card-title text-color-card">Gastos</h5>
+                    </RouterLink>
+                    <RouterLink :to="{ name: 'createexpense' }" class="no-underline btn bg-boton">Nuevo registro
+                    </RouterLink>
                 </div>
-                <RouterLink :to="{ name: 'expenses' }" class="no-underline mb-1">
-                    <h5 class="card-title text-color-card">Gastos</h5>
-                </RouterLink>
-                    <RouterLink :to="{ name: 'createexpense' }" class="no-underline btn bg-boton">Nuevo registro</RouterLink>
-                </div>
-            
-
             </div>
-        </div>
-
     </div>
 </template>
