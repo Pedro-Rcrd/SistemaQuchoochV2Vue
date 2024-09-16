@@ -1,15 +1,312 @@
+<template>
+    <div class="row justify-content-center">
+        <div class="row col-12">
+            <h2>Roles</h2>
+            <hr>
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/settingcard' }">
+                            Menú de mantenimientos
+                        </router-link>
+                    </div>>
+                    <div class="col">
+                        <a class="text-dark" href="#">Roles</a>
+                    </div>
+                </div>
+            </div>
+            <!--Exportación-->
+            <div class="text-light mb-3">
+                <button type="button" class="btn btn-success btn-sm " @click="exportarExcel"><i
+                        class="fa-solid fa-file-excel"></i> Excel</button>
+                <button type="button" class="btn btn-danger btn-sm" @click="exportarPDF"><i
+                        class="fa-solid fa-file-pdf"></i>
+                    PDF</button>
+            </div>
+            <!--Buscador-->
+            <div class="row justify-content-between ">
+                <div class="col-8">
+                    <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro" @input="buscarRol"
+                        type="text" :placeholder="tipoBusqueda">
+                </div>
+                <div class="col-2">
+                    <input
+                        v-model="mostrarTodosLosRoles" type="checkbox" class="form-check-input" id="checkRegistro"
+                        :disabled="desactivarCheckbox">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Mostrar todo
+                    </label>
+                </div>
+                <div class="col-2">
+                    <div class="text-end">
+                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modal"
+                            @click="$event => openModal(1)">
+                            <i class="fa-solid fa-circle-plus"></i> Nuevo
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+            <!--Tabla-->
+            <v-card>
+                <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon class="me-2" size="small" data-bs-toggle="modal" data-bs-target="#modal"
+                            @click="$event => openModal(3, item.codigoRol, item.nombreRol, item.estatus)">
+                            <i class="fa-solid fa-eye text-dark"></i>
+                        </v-icon>
+                        <v-icon class="me-2" size="small" data-bs-toggle="modal" data-bs-target="#modal"
+                            @click="$event => openModal(2, item.codigoRol, item.nombreRol, item.estatus)">
+                            <i class="fa-solid fa-edit text-dark"></i>
+                        </v-icon>
+
+                    </template>
+                </v-data-table>
+            </v-card>
+        </div>
+    </div>
+    <!--Modal-->
+    <Modal :id="'modal'" :title="title">
+        <div class="modal-body">
+            <form @submit.prevent="save">
+                <div class="col-md-12 d-flex justify-content-center">
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-n"></i>
+                            </span>
+                            <input placeholder="Nombre del rol" autofocus id="nombreEstudiante" required type="text"
+                                v-model="form.nombreRol" class="form-control" :disabled="desactivarCheckbox">
+                        </div>
+                        <div class="col-12">
+                            <select v-model="form.estatus" class="form-select" aria-label="Default select example"
+                                :disabled="desactivarCheckbox">
+                                <option selected>Estado</option>
+                                <option value="A">Activo</option>
+                                <option value="I">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!--Permisos-->
+                <div class="container">
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Módulos</p>
+                        </div>
+                        <div class="col-2">
+                            <p>Acceso</p>
+                        </div>
+                        <div class="col-2">
+                            <p>Crear</p>
+                        </div>
+                        <div class="col-2">
+                            <p>Editar</p>
+                        </div>
+                        <div class="col-2">
+                            <p>Exportar</p>
+                        </div>
+                    </div>
+                    <!--modulo registro-->
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Registro</p>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloRegistro, disabledModuloRegistro, 1, 4)"
+                                    v-model="disabledModuloRegistro" type="checkbox" class="form-check-input"
+                                    id="checkRegistro" :disabled="desactivarCheckbox">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloRegistro, crearRegistro, 1, 1)"
+                                    v-model="crearRegistro" :disabled="!disabledModuloRegistro || desactivarCheckbox"
+                                    type="checkbox" class="form-check-input" id="exampleCheck1">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloRegistro, modificarRegistro, 1, 2)"
+                                    v-model="modificarRegistro"
+                                    :disabled="!disabledModuloRegistro || desactivarCheckbox" type="checkbox"
+                                    class="form-check-input" id="exampleCheck1">
+                            </div>
+
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloRegistro, exportarRegistro, 1, 5)"
+                                    v-model="exportarRegistro" :disabled="!disabledModuloRegistro || desactivarCheckbox"
+                                    type="checkbox" class="form-check-input" id="exampleCheck1">
+                            </div>
+                        </div>
+                    </div>
+                    <!--modulo compra-->
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Compra</p>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloCompra, disabledModuloCompra, 2, 4)"
+                                    v-model="disabledModuloCompra" type="checkbox" class="form-check-input"
+                                    id="exampleCheck1" :disabled="desactivarCheckbox">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloCompra, crearCompra, 2, 1)"
+                                    v-model="crearCompra" type="checkbox"
+                                    :disabled="!disabledModuloCompra || desactivarCheckbox" class="form-check-input"
+                                    id="exampleCheck1">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloCompra, modificarCompra, 2, 2)"
+                                    v-model="modificarCompra" type="checkbox"
+                                    :disabled="!disabledModuloCompra || desactivarCheckbox" class="form-check-input"
+                                    id="exampleCheck1">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloCompra, exportarCompra, 2, 5)"
+                                    v-model="exportarCompra" type="checkbox"
+                                    :disabled="!disabledModuloCompra || desactivarCheckbox" class="form-check-input"
+                                    id="exampleCheck1">
+                            </div>
+                        </div>
+                    </div>
+                    <!--modulo asingacion-->
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Asignación</p>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input
+                                    @change="agregarPermiso(disabledModuloAsignacion, disabledModuloAsignacion, 3, 4)"
+                                    v-model="disabledModuloAsignacion" type="checkbox" class="form-check-input"
+                                    id="exampleCheck1" :disabled="desactivarCheckbox">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloAsignacion, crearAsignacion, 3, 1)"
+                                    v-model="crearAsignacion"
+                                    :disabled="!disabledModuloAsignacion || desactivarCheckbox" type="checkbox"
+                                    class="form-check-input" id="exampleCheck1">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloAsignacion, modificarAsignacion, 3, 2)"
+                                    v-model="modificarAsignacion"
+                                    :disabled="!disabledModuloAsignacion || desactivarCheckbox" type="checkbox"
+                                    class="form-check-input" id="exampleCheck1">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloAsignacion, exportarAsignacion, 3, 5)"
+                                    v-model="exportarAsignacion"
+                                    :disabled="!disabledModuloAsignacion || desactivarCheckbox" type="checkbox"
+                                    class="form-check-input" id="exampleCheck1">
+                            </div>
+                        </div>
+                    </div>
+                    <!--modulo informes-->
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Informes</p>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloInforme, disabledModuloInforme, 4, 4)"
+                                    v-model="disabledModuloInforme" type="checkbox" class="form-check-input"
+                                    id="exampleCheck1" :disabled="desactivarCheckbox">
+                            </div>
+                        </div>
+                        <div class="col-2">
+
+                        </div>
+                        <div class="col-2">
+
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloInforme, exportarInforme, 4, 5)"
+                                    v-model="exportarInforme" :disabled="!disabledModuloInforme || desactivarCheckbox"
+                                    type="checkbox" class="form-check-input" id="exampleCheck1">
+                            </div>
+                        </div>
+                    </div>
+                    <!--modulo Reporte-->
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Reporte</p>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloReporte, disabledModuloReporte, 5, 4)"
+                                    v-model="disabledModuloReporte" type="checkbox" class="form-check-input"
+                                    id="exampleCheck1" :disabled="desactivarCheckbox">
+                            </div>
+                        </div>
+                        <div class="col-2">
+
+                        </div>
+                        <div class="col-2">
+
+                        </div>
+
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(disabledModuloReporte, exportarReporte, 5, 5)"
+                                    v-model="exportarReporte" :disabled="!disabledModuloReporte || desactivarCheckbox"
+                                    type="checkbox" class="form-check-input" id="exampleCheck1">
+                            </div>
+                        </div>
+                    </div>
+                    <!--modulo mantenimiento-->
+                    <div class="row">
+                        <div class="col-4">
+                            <p>Mantenimiento</p>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input @change="agregarPermiso(accesoMantenimiento, accesoMantenimiento, 6, 4)"
+                                    v-model="accesoMantenimiento" type="checkbox" class="form-check-input"
+                                    id="exampleCheck1" :disabled="desactivarCheckbox">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="d-grid col-6 mx-auto">
+                    <button class="btn btn-dark" v-show="operation == 1 || operation == 2">
+                        <i class="fa-solid fa-save"></i> Registrar</button>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </Modal>
+</template>
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { confirmation, sendRequest } from '../../functions'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth'
+import { confirmation, sendRequest } from '../../functions'
 import axios from 'axios'
 import Modal from '../../components/Modal.vue'
-import Paginate from 'vuejs-paginate-next'
-
 const authStore = useAuthStore()
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
-
-//Cambiar idioma
 //#region cambiar idima vuetify
 import { useLocale } from 'vuetify';
 const { current } = useLocale();
@@ -21,236 +318,362 @@ function changeLocale(locale) {
 changeLocale('es');
 //#endregion
 
-
+//Tabla
+const headers = [
+    { title: '#', key: 'indice' },
+    { title: 'Nombre', key: 'nombreRol' },
+    { title: 'Acción', key: 'actions', sortable: false }
+]
 onMounted(() => {
-    getUsuarios()
     getRol();
 })
 
-//Header de tabla
-const headers = [
-    { title: '#', key: 'indice' },
-    { title: 'Nombre', key: 'nombreUsuario' },
-    { title: 'Email', key: 'email' },
-    { title: 'Rol', key: 'nombreRol' },
-    { title: 'Fecha de creación', key: 'fechaCreacion' },
-    { title: 'Acción', key: 'actions', sortable: false },
-]
-
-
-
-//GET usuarios
-//#region GET usuarios
-const usuarios = ref([])
-const getUsuarios = async () => {
+//#region GET estudiantes
+const roles = ref([])
+const getRol = async () => {
     try {
-        const response = await axios.get(`/api/Usuario/selectAll`)
-        usuarios.value = response.data.map(expense => ({
-            ...expense,
-            fechaCreacion: formatFecha(expense.fechaCreacion) // Formatea la fecha
-        }));
-        // Filtra los usuarios cuyo estatus es igual a "A", ignorando mayúsculas/minúsculas
-        const datos = usuarios.value.filter(usuario =>
-            usuario.estatus.trim().toUpperCase() === "A"
+        const response = await axios.get(`/api/Rol/selectall`)
+        roles.value = response.data;
+        rolesActivos.value = roles.value.filter(rol =>
+            rol.estatus.trim().toUpperCase() === "A"
         );
-        resultadoFiltrado.value = datos.map((usuario, index) => ({
+
+        rolesSeleccionados.value = rolesActivos.value;
+
+        resultadoFiltrado.value = rolesSeleccionados.value.map((rol, index) => ({
             'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
+            'codigoRol': rol.codigoRol,
+            'nombreRol': rol.nombreRol,
+            'estatus': rol.estatus
         }));
+
     } catch (error) {
         console.error('Error al obtener usuarios:', error)
         // Puedes manejar el error de la solicitud aquí
     }
 }
 //#endregion
+const permisosRol = ref();
+const getPermisosRol = async (codigoRol) => {
+    try {
+        const response = await axios.get(`/api/Rol/permisosRol/${codigoRol}`)
+        const permisosRol = response.data;
 
+        // Recorre los niveles y sus elementos
+        //Método
+        //const permisos = res.data.permisos;
+        const var_moduloRegistro = permisosRol['1'] || null;
+        const var_moduloCompra = permisosRol['2'] || null;
+        const var_moduloAsignacion = permisosRol['3'] || null;
+        const var_moduloInforme = permisosRol['4'] || null;
+        const var_moduloReporte = permisosRol['5'] || null;
+        const var_moduloMantenimiento = permisosRol['6'] || null;
+
+        if (var_moduloRegistro != null) {
+            disabledModuloRegistro.value = true;
+            crearRegistro.value = var_moduloRegistro.includes(1); //Crear
+            modificarRegistro.value = var_moduloRegistro.includes(2); //modificar
+            exportarRegistro.value = var_moduloRegistro.includes(5); //exportar
+        }
+        if (var_moduloCompra != null) {
+            disabledModuloCompra.value = true;
+            crearCompra.value = var_moduloCompra.includes(1); //Crear
+            modificarCompra.value = var_moduloCompra.includes(2); //modificar
+            exportarCompra.value = var_moduloCompra.includes(5); //exportar
+        }
+        if (var_moduloAsignacion != null) {
+            disabledModuloAsignacion.value = true;
+            crearAsignacion.value = var_moduloAsignacion.includes(1); //Crear
+            modificarAsignacion.value = var_moduloAsignacion.includes(2); //modificar
+            exportarAsignacion.value = var_moduloAsignacion.includes(5); //exportar
+        }
+        if (var_moduloInforme != null) {
+            disabledModuloInforme.value = true;
+            exportarInforme.value = var_moduloInforme.includes(5); //exportar
+        }
+        if (var_moduloReporte != null) {
+            disabledModuloReporte.value = true;
+            exportarReporte.value = var_moduloReporte.includes(5); //exportar
+        }
+
+        if (var_moduloMantenimiento != null) {
+            accesoMantenimiento.value = true;
+        }
+        form.value.permisos = [];
+        for (const modulo in permisosRol) {
+            //console.log(`Nivel: ${nivel}`);
+            for (const accion of permisosRol[modulo]) {
+                //console.log(`Acción: ${accion}`);
+                agregarPermiso(modulo, accion, modulo, accion);
+            }
+        }
+        console.log("datos guardados");
+        console.log(form.value.permisos);
+
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error)
+        // Puedes manejar el error de la solicitud aquí
+    }
+}
 
 
 //#region Método del FILTRO de datos
-const tipoBusqueda = ref('Buscar usuario')
+const rolesSeleccionados = ref();
+const rolesActivos = ref();
+const tipoBusqueda = ref('Buscar rol')
 const filtro = ref('');
 const resultadoFiltrado = ref([]);
-const tipoFiltro = ref('datosUsuario');
+const tipoFiltro = ref('nombreRol');
 
 //Metodo del filtro de datos en la tabla
-const buscarEstudiantes = () => {
+const buscarRol = () => {
     const textoBusqueda = filtro.value.toLowerCase().trim();
+    let datosFiltrados;// Por defecto, usa todos los usuarios
 
     if (textoBusqueda !== '') {
-        if (tipoFiltro.value === 'datosUsuario') {
-            const datos = usuarios.value.filter(usuario =>
-                usuario.nombreUsuario.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((usuario, index) => ({
-                'indice': index + 1,
-                'codigoUsuario': usuario.codigoUsuario,
-                'nombreRol': usuario.nombreRol,
-                'codigoRol': usuario.codigoRol,
-                'nombreUsuario': usuario.nombreUsuario,
-                'email': usuario.email,
-                'fechaCreacion': usuario.fechaCreacion,
-            }));
 
-        } else if (tipoFiltro.value === 'email') {
-            const datos = usuarios.value.filter(usuario =>
-                usuario.email.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((usuario, index) => ({
-                'indice': index + 1,
-                'codigoUsuario': usuario.codigoUsuario,
-                'nombreRol': usuario.nombreRol,
-                'codigoRol': usuario.codigoRol,
-                'nombreUsuario': usuario.nombreUsuario,
-                'email': usuario.email,
-                'fechaCreacion': usuario.fechaCreacion,
-            }));
-        } else if (tipoFiltro.value === 'rol') {
-            const datos = usuarios.value.filter(usuario =>
-                usuario.nombreRol.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((usuario, index) => ({
-                'indice': index + 1,
-                'codigoUsuario': usuario.codigoUsuario,
-                'nombreRol': usuario.nombreRol,
-                'codigoRol': usuario.codigoRol,
-                'nombreUsuario': usuario.nombreUsuario,
-                'email': usuario.email,
-                'fechaCreacion': usuario.fechaCreacion,
-            }));
-
-        }
-    }
-    else {
-        const datos = usuarios.value.filter(usuario =>
-            usuario.estatus.trim().toUpperCase() === "A"
-        );
-        resultadoFiltrado.value = datos.map((usuario, index) => ({
+        datosFiltrados = rolesSeleccionados.value.filter(rol => {
+            const campoFiltro = rol[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
+            return campoFiltro?.includes(textoBusqueda);
+        });
+        resultadoFiltrado.value = datosFiltrados.map((rol, index) => ({
             'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
+            'codigoRol': rol.codigoRol,
+            'nombreRol': rol.nombreRol,
+            'estatus': rol.estatus
         }));
 
     }
-};
+    else {
+        console.log("Rellenando informacion");
+        resultadoFiltrado.value = rolesSeleccionados.value.map((rol, index) => ({
+            'indice': index + 1,
+            'codigoRol': rol.codigoRol,
+            'nombreRol': rol.nombreRol,
+            'estatus': rol.estatus
+        }));
+
+    }
+}
 //#endregion
+const desactivarCheckbox = ref(false);
+const desactivarTodosLosCheckboxes = (valor) => {
+    desactivarCheckbox.value = valor
+}
 
 
-//const usuarios = ref([])
-const form = ref({
-    codigoRol: 0,
-    nombreUsuario: '',
-    email: '',
-    fechaCreacion: '',
-    contrasenia: '',
-    contraseniaNueva: '',
-    estatus: 'A'
-});
-
+//#region Modal
 const title = ref('');
 const nameInput = ref('');
 const operation = ref(1);
 const id = ref('');
 const close = ref([]);
-
-const deleteUsuario = (id, name) => {
-    confirmation(name, `/api/Usuario/delete/${id}`, '/users', authStore.authToken);
-};
-
-//Formatear FECHA
-const formatFecha = (fecha) => {
-    const date = new Date(fecha)
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    return `${year}-${month}-${day}`
-}
-
-const FichaUsuario = ref([])
-const openModal = (op, codigoUsuario, codigoRol, nombreUsuario, email, fechaCreacion) => {
+const codigoRolToUpdate = ref(0);
+const openModal = (op, codigoRol, nombreRol, estatus) => {
+    clearCheckboxes();
     clear();
     setTimeout(() => nextTick(() => nameInput.value.focus()), 600);
     operation.value = op;
-    id.value = codigoUsuario;
+
     if (op == 1) {
         title.value = 'Crear Registro'
-
+        desactivarTodosLosCheckboxes(false);
     } else if (op == 2) {
         title.value = 'Actualizar Registro';
-        form.value.codigoRol = codigoRol;
-        form.value.nombreUsuario = nombreUsuario;
-        form.value.email = email;
-        form.value.fechaCreacion = fechaCreacion;
-        form.value.contrasenia = '';
-    } else {
-        getFichaUsuario(codigoUsuario);
+        form.value.nombreRol = nombreRol;
+        form.value.estatus = estatus;
+        codigoRolToUpdate.value = codigoRol;
+        getPermisosRol(codigoRol);
+        console.log(form.value);
+        desactivarTodosLosCheckboxes(false);
 
+
+    } else {
+        form.value.nombreRol = nombreRol;
+        form.value.estatus = estatus;
+        getPermisosRol(codigoRol);
         title.value = 'Información';
-        form.value.codigoRol = codigoRol;
-        form.value.nombreUsuario = nombreUsuario;
-        form.value.email = email;
-        form.value.fechaCreacion = fechaCreacion;
-        form.value.contrasenia = '';
+        desactivarTodosLosCheckboxes(true);
     }
 }
+//#endregion
 
-const getFichaUsuario = async (codigoUsuario) => {
-    try {
-        const response = await axios.get(`/api/Usuario/userInformation/${codigoUsuario}`)
-        FichaUsuario.value = response.data;
-        console.log("se ejecutó el metodo de ficha de usuario");
-        console.log(FichaUsuario.value);
-    } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-        // Puedes manejar el error de la solicitud aquí
+//#region habilitar checkbox
+const disabledModuloRegistro = ref(false);
+const disabledModuloCompra = ref(false);
+const disabledModuloAsignacion = ref(false);
+const disabledModuloInforme = ref(false);
+const disabledModuloReporte = ref(false);
+
+
+const crearRegistro = ref(false);
+const modificarRegistro = ref(false);
+const exportarRegistro = ref(false);
+const isDisabled = () => {
+    crearRegistro.value = false;
+    modificarRegistro.value = false;
+    exportarRegistro.value = false;
+}
+const crearCompra = ref(false);
+const modificarCompra = ref(false);
+const exportarCompra = ref(false);
+const isDisabledCompra = () => {
+    crearCompra.value = false;
+    modificarCompra.value = false;
+    exportarCompra.value = false;
+}
+const crearAsignacion = ref(false);
+const modificarAsignacion = ref(false);
+const exportarAsignacion = ref(false);
+
+const isDisabledAsignacion = () => {
+    crearAsignacion.value = false;
+    modificarAsignacion.value = false;
+    exportarAsignacion.value = false;
+}
+
+
+const exportarInforme = ref(false);
+const isDisabledInforme = () => {
+    exportarInforme.value = false;
+}
+
+const exportarReporte = ref(false);
+const isDisabledReporte = () => {
+    exportarReporte.value = false;
+}
+
+const accesoMantenimiento = ref(false);
+
+//#endregion
+
+//#region CRUD rol
+
+const form = ref({
+    nombreRol: '', // Asignar el nombre del rol
+    estatus: '',
+    permisos: []
+});
+
+
+const agregarPermiso = (modulo, accion, codigoModulo, codigoAccion) => {
+    if (modulo && accion) {
+        const var_codigoModulo = parseInt(codigoModulo);
+        form.value.permisos.push({
+            codigoModulo: var_codigoModulo,
+            codigoAccion: codigoAccion
+        });
+        console.log("Se insertó nuevo registro");
+    } else {
+        console.log("Se eliminó");
+        eliminarPermiso(codigoModulo, codigoAccion);
+    }
+    console.log("Datos en permisos");
+    console.log(form.value);
+};
+// Método para eliminar un permiso utilizando dos campos: codigoModulo y codigoAccion
+const eliminarPermiso = (codigoModulo, codigoAccion) => {
+    console.log("Modulo: ", codigoModulo);
+    console.log("Accion: ", codigoAccion)
+    // Encontrar el índice del permiso a eliminar
+    const index = form.value.permisos.findIndex(
+        permiso => permiso.codigoModulo === codigoModulo && permiso.codigoAccion === codigoAccion
+    );
+
+    // Verificar si se encontró el permiso (findIndex retorna -1 si no lo encuentra)
+    if (index !== -1) {
+        form.value.permisos.splice(index, 1); // Eliminar el permiso del array
+    }
+};
+
+const eliminarPorCodigoModulo = (codigoModulo) => {
+    form.value.permisos = form.value.permisos.filter(permiso => permiso.codigoModulo !== codigoModulo);
+};
+
+const save = async () => {
+
+    let res;
+    if (operation.value == 1) {
+        console.log("datos que se envia: ");
+        console.log(form.value);
+        res = await sendRequest('POST', form.value, '/api/Rol/create', '');
+        getRol();
+        if (res == true) {
+            clear();
+            nextTick(() => nameInput.value.focus());
+            getRol();
+        }
+    } else {
+        res = await sendRequest('PUT', form.value, `/api/Rol/update/${codigoRolToUpdate.value}`, '');
+
+        if (res == true) {
+            nextTick(() => close.value.click());
+            getRol();
+        }
     }
 }
 
 const clear = () => {
-    form.value.codigoRol = '';
-    form.value.nombreUsuario = '';
-    form.value.fechaCreacion = '';
-    form.value.contrasenia = '';
-    form.value.contraseniaNueva = '';
-
+    form.value.nombreRol = '';
 }
+//#endregion
 
-const save = async () => {
-    let res;
-    //console.log(`que esta en form ${form.value.nombreNivelAcademico}`)
-    if (operation.value == 1) {
-        res = await sendRequest('POST', form.value, '/api/Usuario/create', '');
 
-        if (res == true) {
-            clear();
-            nextTick(() => nameInput.value.focus());
-            getUsuarios();
-        }
-    } else {
-        /*         for (let i = 0; i < form.value.length; i++) {
-                    console.log(form.value[i]);
-                }
-                console.log("llegó aquí") */
-
-        res = await sendRequest('PUT', form.value, `/api/Usuario/update/${id.value}`, '');
-
-        if (res == true) {
-            nextTick(() => close.value.click());
-            getUsuarios();
-        }
+watch(mostrarTodosLosRoles, (newValue) => {
+    if (!newValue) {
+        
     }
+});
+
+// Watch para observar cambios en `disabledModuloRegistro`
+watch(disabledModuloRegistro, (newValue) => {
+    if (!newValue) {
+        isDisabled();
+        eliminarPorCodigoModulo(1);
+    }
+});
+watch(disabledModuloCompra, (newValue) => {
+    if (!newValue) {
+        isDisabledCompra();
+        eliminarPorCodigoModulo(2);
+    }
+});
+watch(disabledModuloAsignacion, (newValue) => {
+    if (!newValue) {
+        isDisabledAsignacion();
+        eliminarPorCodigoModulo(3);
+    }
+});
+watch(disabledModuloInforme, (newValue) => {
+    if (!newValue) {
+        isDisabledInforme();
+        eliminarPorCodigoModulo(4);
+    }
+});
+watch(disabledModuloReporte, (newValue) => {
+    if (!newValue) {
+        isDisabledReporte();
+        eliminarPorCodigoModulo(5);
+    }
+});
+
+const clearCheckboxes = () => {
+    isDisabled();
+    isDisabledCompra();
+    isDisabledAsignacion();
+    isDisabledInforme();
+    isDisabledReporte();
+    accesoMantenimiento.value = false;
+
+    disabledModuloRegistro.value = false;
+    disabledModuloCompra.value = false;
+    disabledModuloAsignacion.value = false;
+    disabledModuloInforme.value = false;
+    disabledModuloReporte.value = false;
 }
 
-//Habilitar/desabilitar campo nueva contraseña
-const isDisabled = ref(true);
+
+
 
 //Metodo del PDF
 //#region Método del PDF
@@ -302,25 +725,21 @@ const descargarPDF = async (datos) => {
     doc.addImage(imgData, 'JPEG', 0, 0, 10, 10);
     // Título del documento
     doc.setTextColor(255, 0, 0);
-    doc.text("Reporte de Usuarios", 10, 30);
+    doc.text("Reporte de Roles", 10, 30);
 
     //doc.setTextColor(144, 153, 9);
     //doc.text("Reporte de Estudiantes", 10, 35);
     // Encabezados de la tabla
     const headers2 = ['No.',
         'Nombre',
-        'Email',
-        'Rol',
-        'Fecha de creación'
+        'Estado'
     ];
 
     // Datos de la tabla
-    const data = datos.map((usuario, index) => [
+    const data = datos.map((rol, index) => [
         index + 1,
-        usuario.nombreUsuario,
-        usuario.email,
-        usuario.nombreRol,
-        usuario.fechaCreacion
+        rol.nombreRol,
+        rol.estatus
     ]);
 
     // Estilos para el encabezado de la tabla
@@ -361,12 +780,10 @@ const exportarExcel = () => {
     // ];
 
     // Mapeo de datos con nombres de columnas
-    const data = datos.map((usuario, index) => ({
+    const data = datos.map((rol, index) => ({
         'indice': index + 1,
-        'nombreUsuario': usuario.nombreUsuario,
-        'email': usuario.email,
-        'nombreRol': usuario.nombreRol,
-        'fechaCreacion': usuario.fechaCreacion,
+        'nombreRol': rol.nombreRol,
+        "estatus": rol.estatus
     }));
     // Insertar encabezados al principio de los datos
     //data.unshift(encabezados);
@@ -395,223 +812,4 @@ const exportarExcel = () => {
     window.URL.revokeObjectURL(url);
 };
 //#endregion
-
-
-//#region GET estudiantes
-const roles = ref([])
-const getRol = async () => {
-    try {
-        const response = await axios.get(`/api/Rol/selectall`)
-        roles.value = response.data.filter(rol =>
-            rol.estatus.trim().toUpperCase() === "A"
-        );
-
-    } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-        // Puedes manejar el error de la solicitud aquí
-    }
-}
-//#endregion
-
 </script>
-
-<style scoped>
-.contenedor-primario {
-    margin-top: 60px;
-    margin-left: 85px;
-}
-</style>
-
-<template>
-    <div class="row justify-content-center">
-        <div class="row col-12">
-            <h2>Lista de Usuarios</h2>
-            <hr>
-            <!--Menún de navegación-->
-            <div class="container text-center mb-4">
-                <div class="row row-cols-auto">
-                    <div class="col">
-                        <router-link :to="{ path: '/settingcard' }">
-                            Menú de mantenimiento
-                        </router-link>
-                    </div>>
-                    <div class="col text-primary">
-                        <a href="#">Usuarios</a>
-                    </div>
-                </div>
-            </div>
-            <!--Fin de menu de navegación-->
-            <!--Exportación-->
-            <div class="text-light mb-3">
-                <button type="button" class="btn btn-success btn-sm " @click="exportarExcel"><i
-                        class="fa-solid fa-file-excel"></i> Excel</button>
-                <button type="button" class="btn btn-danger btn-sm" @click="exportarPDF"><i
-                        class="fa-solid fa-file-pdf"></i>
-                    PDF</button>
-            </div>
-            <!--Buscador-->
-            <div class="row justify-content-between ">
-                <div class="col-8">
-                    <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro"
-                        @input="buscarEstudiantes" type="text" :placeholder="tipoBusqueda">
-                </div>
-                <div class="col-2">
-                    <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
-                        <option selected>Filtrar por:</option>
-                        <option value="datosUsuario">Nombre del usuario</option>
-                        <option value="email">Email</option>
-                        <option value="rol">Rol</option>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <div class="text-end">
-                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modal"
-                            @click="$event => openModal(1)">
-                            <i class="fa-solid fa-circle-plus"></i> Nuevo
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-            <!--Tabla-->
-            <v-card>
-                <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
-                    <template v-slot:item.actions="{ item }">
-                        <v-icon class="me-2" size="small" data-bs-toggle="modal"
-                            data-bs-target="#MostrarInformacionUsuario"
-                            @click="$event => openModal(3, item.codigoUsuario, item.codigoRol, item.nombreUsuario, item.email, item.fechaCreacion)">
-                            <i class="fa-solid fa-eye text-dark"></i>
-                        </v-icon>
-                        <v-icon class="me-2" size="small" data-bs-toggle="modal" data-bs-target="#modal"
-                            @click="$event => openModal(2, item.codigoUsuario, item.codigoRol, item.nombreUsuario, item.email, item.fechaCreacion)">
-                            <i class="fa-solid fa-edit text-dark"></i>
-
-                        </v-icon>
-                        <v-icon size="small" @click="$event => deleteUsuario(item.codigoUsuario, item.nombreUsuario)">
-
-                            <i class="fa-solid fa-trash text-dark"></i>
-
-                        </v-icon>
-
-
-                    </template>
-                </v-data-table>
-            </v-card>
-
-        </div>
-        <Modal :id="'MostrarInformacionUsuario'" :title="title">
-            <div class="modal-body">
-                <div class="text-center">
-                    <h5><strong>{{ form.nombreUsuario }}</strong></h5>
-                    <h5>{{ FichaUsuario.rol }}</h5>
-                </div>
-                <hr>
-
-
-                <div>
-
-                    <!--Tabla-->
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr class="text-center">
-                                <th scope="col">#</th>
-                                <th scope="col">Módulo</th>
-                                <th scope="col">Permisos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(modulo, index) in FichaUsuario.modulos" :key="modulo.id">
-                                <td>{{ index + 1 }}</td>
-                                <td>{{ modulo.nombreModulo }}</td>
-                                <td>
-                                    <span v-for="(permiso, idx) in modulo.permisos" :key="idx" class="permiso">
-                                        {{ permiso }}<span v-if="idx < modulo.permisos.length - 1">, </span>
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </Modal>
-
-        <Modal :id="'modal'" :title="title">
-            <div class="modal-body">
-                <form @submit.prevent="save">
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <input autofocus type="text" v-model="form.nombreUsuario" placeholder="Usuario" required
-                            class="fomr-control" ref="nameInput">
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <div class="d-grid col-5">
-                            <select class="form-control form-select" id="codigoComunidad" v-model="form.codigoRol">
-                                <option value="" disabled selected>
-                                    Selecciona el rol
-                                </option>
-                                <template v-for="tipo in roles" :key="tipo.codigoRol">
-                                    <option :value="tipo.codigoRol">
-                                        {{ tipo.nombreRol }}
-                                    </option>
-                                </template>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-at"></i>
-                        </span>
-                        <div class="d-grid col-5 ">
-                            <input autofocus type="email" v-model="form.email" placeholder="Correo electrónico" required
-                                class="fomr-control" ref="nameInput">
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input autofocus type="text" v-model="form.contrasenia" placeholder="Contraseña" required
-                            class="fomr-control" ref="nameInput">
-                    </div>
-                    <div class="input-group mb-3" v-show="operation == 2">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input autofocus type="text" :disabled="isDisabled" v-model="form.contraseniaNueva"
-                            placeholder="Nueva contraseña" class="fomr-control" ref="nameInput">
-                        <div class="">
-                            <input type="checkbox" v-model="isDisabled">
-                        </div>
-
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <div class="d-grid col-5 ">
-                            <input autofocus type="date" v-model="form.fechaCreacion" placeholder="Fecha de creación"
-                                required class="fomr-control" ref="nameInput">
-                        </div>
-                    </div>
-
-                    <div class="d-grid col-6 mx-auto">
-                        <button class="btn btn-dark">
-                            <i class="fa-solid fa-save"></i> Registrar</button>
-                    </div>
-                </form>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-
-
-            </div>
-
-        </Modal>
-    </div>
-</template>

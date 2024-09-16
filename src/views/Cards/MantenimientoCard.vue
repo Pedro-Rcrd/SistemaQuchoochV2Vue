@@ -186,6 +186,18 @@ const formatFecha = (fecha) => {
                 <RouterLink :to="{ name: 'users' }" class="no-underline btn bg-boton">Ver
                 </RouterLink>
             </div>
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;" v-if="authStore.authUserRol == 1">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/ajustes.png"
+                            alt="Card image cap">
+
+                    </div>
+                </div>
+                <h5 class="card-title text-color-card">Roles</h5>
+                <RouterLink :to="{ name: 'roles' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
+            </div>
         </div>
     </div>
 </template>

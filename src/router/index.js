@@ -286,7 +286,12 @@ const router = createRouter({
       path: '/exportreportexpeses/',
       name: 'exportreportexpeses',
       component: () => import('../views/Gasto/Informe.vue')
-    }
+    },
+    {
+      path: '/roles',
+      name: 'roles',
+      component: () => import('../views/Rol/Index.vue')
+    },
     
   ]
 })

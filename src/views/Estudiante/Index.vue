@@ -6,21 +6,23 @@
       <div class="container text-center mb-4">
         <div class="row row-cols-auto">
           <div class="col">
-            <router-link :to="{ path: '/registermenu'}">
-            Menú de registros
-          </router-link>
+            <router-link :to="{ path: '/registermenu' }">
+              Menú de registros
+            </router-link>
           </div>>
           <div class="col text-primary">
-            <a href="#" >Estudiantes</a>
+            <a href="#">Estudiantes</a>
           </div>
         </div>
       </div>
+      <!--Exportación-->
       <div class="text-light mb-3">
         <button type="button" class="btn btn-success btn-sm " @click="exportarExcel"><i
             class="fa-solid fa-file-excel"></i> Excel</button>
         <button type="button" class="btn btn-danger btn-sm" @click="exportarPDF"><i class="fa-solid fa-file-pdf"></i>
           PDF</button>
       </div>
+      <!--Buscador-->
       <div class="row justify-content-between ">
         <div class="col-8">
           <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro" @input="buscarEstudiantes"
@@ -47,6 +49,7 @@
 
         </div>
       </div>
+      <!--Tabla-->
       <v-card>
         <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
           <template v-slot:item.actions="{ item }">
