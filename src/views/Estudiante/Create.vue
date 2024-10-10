@@ -15,15 +15,15 @@
                             Estudiantes
                         </router-link>
                     </div>>
-                    <div class="col text-primary">
-                        <a href="#">Nuevo registro</a>
+                    <div class="col">
+                        <a class="text-dark" href="#">Nuevo registro</a>
                     </div>
                 </div>
             </div>
             <div class="card border border-success">
 
                 <div class="card-body">
-                    <form enctype="multipart/form-data">
+                    <form enctype="multipart/form-data" @submit.prevent="submitForm">
                         <div class="row">
                             <h4>Información del estudiante</h4>
                             <div class="col-md-4">
@@ -126,7 +126,7 @@
                                         <i class="fa-solid fa-home"></i>
                                     </span>
                                     <select class="form-control form-select" id="codigoComunidad"
-                                        v-model="codigoComunidad">
+                                        v-model="codigoComunidad" required>
                                         <option value="" disabled selected>
                                             Selecciona establecimiento
                                         </option>
@@ -153,7 +153,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-street-view"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="numerocasa" class="form-control">
+                                    <input autofocus type="text" v-model="numeroCasa" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -174,7 +174,7 @@
                                         <i class="fa-solid fa-graduation-cap"></i>
                                     </span>
                                     <select class="form-control form-select" id="codigoNivelAcademico"
-                                        v-model="codigoNA">
+                                        v-model="codigoNivelAcademico" required>
                                         <option value="" disabled selected>
                                             Selecciona tipo nivel academico
                                         </option>
@@ -193,7 +193,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-stairs"></i>
                                     </span>
-                                    <select class="form-control form-select" id="codigoGrado" v-model="codigoGrado">
+                                    <select class="form-control form-select" id="codigoGrado" v-model="codigoGrado" required>
                                         <option value="" disabled selected>
                                             Selecciona grado
                                         </option>
@@ -212,7 +212,7 @@
                                         <i class="fa-solid fa-book "></i>
                                     </span>
                                     <select class="form-control form-select" id="codigoCarrera" v-model="codigoCarrera">
-                                        <option value="" disabled selected>
+                                        <option value="" selected>
                                             Selecciona carrera
                                         </option>
                                         <template v-for="tipo in carreras" :key="tipo.codigoCarrera">
@@ -225,20 +225,39 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-8">
                                 <label for="exampleFormControlInput1" class="form-label">Establecimiento</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-school"></i>
                                     </span>
                                     <select class="form-control form-select" id="codigoGrado"
-                                        v-model="codigoEstablecimiento">
+                                        v-model="codigoEstablecimiento" required>
                                         <option value="" disabled selected>
                                             Selecciona establecimiento
                                         </option>
                                         <template v-for="tipo in establecimientos" :key="tipo.codigoEstablecimiento">
                                             <option :value="tipo.codigoEstablecimiento">
                                                 {{ tipo.nombreEstablecimiento }}
+                                            </option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleFormControlInput1" class="form-label">Modalidad</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-home"></i>
+                                    </span>
+                                    <select class="form-control form-select" id="codigoModalidad"
+                                        v-model="codigoModalidadEstudio" required>
+                                        <option value="" disabled selected>
+                                            Selecciona modalidad
+                                        </option>
+                                        <template v-for="tipo in modalidadesEstudios" :key="tipo.codigoModalidadEstudio">
+                                            <option :value="tipo.codigoModalidadEstudio">
+                                                {{ tipo.nombreModalidadEstudio}}
                                             </option>
                                         </template>
                                     </select>
@@ -253,7 +272,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="nombrePadre" class="form-control">
+                                    <input autofocus type="text" v-model="nombrePadre" class="form-control" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -262,7 +281,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-phone"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="telefonoPadre" class="form-control">
+                                    <input autofocus type="text" v-model="telefonoPadre" class="form-control" maxLength="8">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -271,7 +290,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-business-time"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="oficioPadre" class="form-control">
+                                    <input autofocus type="text" v-model="oficioPadre" class="form-control" required>
                                 </div>
                             </div>
                         </div>
@@ -282,7 +301,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="nombreMadre" class="form-control">
+                                    <input autofocus type="text" v-model="nombreMadre" class="form-control" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -291,7 +310,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-phone"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="telefonoMadre" class="form-control">
+                                    <input autofocus type="text" v-model="telefonoMadre" class="form-control" maxLength="8">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -300,7 +319,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-business-time"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="oficioMadre" class="form-control">
+                                    <input autofocus type="text" v-model="oficioMadre" class="form-control" required>
                                 </div>
                             </div>
 
@@ -334,7 +353,7 @@
                                 Cancelar
                             </RouterLink>
                             <button type="submit" class="btn btn-primary text-light" :disabled="botonDeshabilitado"
-                                @click.prevent="submitForm"><i class="fa-solid fa-save"></i> Guardar registro</button>
+                            ><i class="fa-solid fa-save"></i> Guardar registro</button>
 
                         </div>
                     </form>
@@ -349,19 +368,20 @@ import { onMounted, ref } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-const baseApiBackend = import.meta.env.VITE_BAKENDAPI;
+const baseApiBackend = import.meta.env.VITE_BACKEND_API;
 import Swal from 'sweetalert2';
 
 const route = useRoute();
 const authStore = useAuthStore();
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`;
 
-const codigoNA = ref(0);
+const codigoNivelAcademico = ref(0);
 const codigoBecario = ref("");
 const codigoComunidad = ref(0);
 const codigoGrado = ref(0);
 const codigoCarrera = ref(0);
 const codigoEstablecimiento = ref(0);
+const codigoModalidadEstudio = ref(0);
 const nombreEstudiante = ref("");
 const apellidoEstudiante = ref("");
 const fechaNacimiento = ref("");
@@ -370,7 +390,7 @@ const estado = ref("A");
 const telefonoEstudiante = ref("");
 const email = ref("");
 const sector = ref(0);
-const numerocasa = ref("");
+const numeroCasa = ref("");
 const descripcion = ref("");
 const nombrePadre = ref("");
 const telefonoPadre = ref("");
@@ -389,56 +409,101 @@ const carreras = ref([]);
 const establecimientos = ref([]);
 const comunidades = ref([]);
 
-const getNivelAcademico = async () => {
+const getNivelesAcademicos = async () => {
     try {
-        const response = await axios.get('/api/nivelacademico/getall');
-        nivelesAcademicos.value = response.data.nivelesAcademicos;
+        const response = await axios.get('/api/nivelAcademico/selectAll');
+        nivelesAcademicos.value = response.data.filter(nivelAcademico =>
+        nivelAcademico.estatus.trim().toUpperCase() === "A"
+        );
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+      Swal.fire({
+      title: 'Error',
+      text: `Hubo un error al intentar obtener la lista de niveles académicos.`,
+      icon: 'error',
+      footer: 'Por favor, intente nuevamente más tarde.'
+    });
     }
 };
 
 const getGrados = async () => {
     try {
-        const response = await axios.get('/api/grado/getall');
-        grados.value = response.data;
+        const response = await axios.get('/api/grado/selectAll');
+        grados.value = response.data.filter(grado => grado.estatus.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+    Swal.fire({
+      title: 'Error',
+      text: `Hubo un error al intentar obtener la lista de grados académicos.`,
+      icon: 'error',
+      footer: 'Por favor, intente nuevamente más tarde.'
+    });
     }
 };
 
 const getCarreras = async () => {
     try {
-        const response = await axios.get('/api/carrera/getall');
-        carreras.value = response.data.carreras;
+        const response = await axios.get('/api/carrera/selectAll');
+        carreras.value = response.data.filter(carrera => carrera.estatus.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+      title: 'Error',
+      text: `Hubo un error al intentar obtener la lista de carreras.`,
+      icon: 'error',
+      footer: 'Por favor, intente nuevamente más tarde.'
+    });
     }
 };
 
 const getEstablecimientos = async () => {
     try {
-        const response = await axios.get('/api/establecimiento/getall');
-        establecimientos.value = response.data.establecimientos;
+        const response = await axios.get('/api/establecimiento/selectAll');
+        establecimientos.value = response.data.filter(establecimiento => establecimiento.estatus.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+      Swal.fire({
+      title: 'Error',
+      text: `Hubo un error al intentar obtener la lista de establecimientos.`,
+      icon: 'error',
+      footer: 'Por favor, intente nuevamente más tarde.'
+    });
     }
 };
 
 const getComunidades = async () => {
     try {
-        const response = await axios.get('/api/comunidad/getall');
-        comunidades.value = response.data.comunidades;
+        const response = await axios.get('/api/comunidad/selectAll');
+        comunidades.value = response.data.filter(comunidad => comunidad.estatus.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+        title: 'Error',
+        text: `Hubo un error al intentar obtener la lista de comunidades.`,
+        icon: 'error',
+        footer: 'Por favor, intente nuevamente más tarde.'
+    });
     }
 };
+const modalidadesEstudios = ref();
+const getModalidadesEstudios = async () => {
+    try {
+        const response = await axios.get('/api/modalidadEstudio/selectAll');
+        modalidadesEstudios.value = response.data.filter(modalidad =>
+        modalidad.estatus.trim().toUpperCase() === "A"
+        );
+    } catch (error) {
+      Swal.fire({
+      title: 'Error',
+      text: `Hubo un error al intentar obtener la lista de modalidades de estudios.`,
+      icon: 'error',
+      footer: 'Por favor, intente nuevamente más tarde.'
+    });
+    }
+};
+
 onMounted(async () => {
-    getNivelAcademico();
+    getNivelesAcademicos();
     getGrados();
     getCarreras();
     getEstablecimientos();
     getComunidades();
+    getModalidadesEstudios();
 });
 
 
@@ -447,9 +512,10 @@ const handleFileChange = (event) => {
 };
 
 const submitForm = async () => {
-    if (!nombreEstudiante.value || !codigoGrado.value || !imagen.value ||
-        !apellidoEstudiante.value || !codigoNA.value || !codigoBecario.value ||
-        !codigoEstablecimiento.value || !codigoCarrera.value || !codigoComunidad.value) {
+    if (!codigoBecario.value || !nombreEstudiante.value || !apellidoEstudiante.value ||
+        !fechaNacimiento.value || !genero.value || !estado.value || !codigoComunidad.value ||
+        !codigoNivelAcademico.value || !codigoGrado.value ||
+        !codigoEstablecimiento.value || !nombrePadre.value || !nombreMadre.value || !oficioPadre.value || !oficioMadre.value || !imagen.value || !fechaRegistro.value) {
         return Swal.fire({
             icon: 'warning',
             title: "Completa todos los campos antes de enviar",
@@ -462,19 +528,20 @@ const submitForm = async () => {
     const formData = new FormData();
     formData.append('CodigoBecario', codigoBecario.value);
     formData.append('CodigoComunidad', codigoComunidad.value);
-    formData.append('CodigoNivelAcademico', codigoNA.value);
+    formData.append('CodigoNivelAcademico', codigoNivelAcademico.value);
     formData.append('CodigoGrado', codigoGrado.value);
     formData.append('CodigoCarrera', codigoCarrera.value);
     formData.append('CodigoEstablecimiento', codigoEstablecimiento.value);
+    formData.append('CodigoModalidadEstudio', codigoModalidadEstudio.value);
     formData.append('NombreEstudiante', nombreEstudiante.value);
     formData.append('ApellidoEstudiante', apellidoEstudiante.value);
-    formData.append('FechaNacimieto', fechaNacimiento.value);
+    formData.append('FechaNacimiento', fechaNacimiento.value);
     formData.append('Genero', genero.value);
     formData.append('Estado', estado.value);
     formData.append('TelefonoEstudiante', telefonoEstudiante.value);
     formData.append('Email', email.value);
     formData.append('Sector', sector.value);
-    formData.append('NumeroCasa', numerocasa.value);
+    formData.append('numeroCasa', numeroCasa.value);
     formData.append('Descripcion', descripcion.value);
     formData.append('NombrePadre', nombrePadre.value);
     formData.append('TelefonoPadre', telefonoPadre.value);
@@ -494,7 +561,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch(`${baseBackend}/api/estudiantes/create`, {
+        const response = await fetch(`${baseApiBackend}/api/estudiante/create`, {
             method: 'POST',
             body: formData,
             headers,
@@ -509,11 +576,11 @@ const submitForm = async () => {
                 timer: 2000, // Tiempo en milisegundos antes de que se cierre automáticamente
             });
 
-            codigoNA.value = (0);
+            codigoNivelAcademico.value = (0);
             codigoBecario.value = ("");
             codigoComunidad.value = (0);
             codigoGrado.value = (0);
-            codigoCarrera.value = (0);
+            codigoCarrera.value = ("");
             codigoEstablecimiento.value = (0);
             nombreEstudiante.value = '';
             apellidoEstudiante.value = '';
@@ -523,7 +590,7 @@ const submitForm = async () => {
             telefonoEstudiante.value = '';
             email.value = '';
             sector.value = '';
-            numerocasa.value = '';
+            numeroCasa.value = '';
             descripcion.value = '';
             nombrePadre.value = '';
             telefonoPadre.value = '';
@@ -543,7 +610,6 @@ const submitForm = async () => {
             });
         }
     } catch (error) {
-        console.error('Error al crear el estudiante:', error);
         Swal.fire({
             icon: 'error',
             title: "Hubo un error al crear el estudiante",

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { confirmation, sendRequest } from '../../functions'
 import { useAuthStore } from '../../stores/auth'
 import axios from 'axios'
@@ -34,6 +34,7 @@ const headers = [
     { title: 'Email', key: 'email' },
     { title: 'Rol', key: 'nombreRol' },
     { title: 'Fecha de creación', key: 'fechaCreacion' },
+    { title: 'Estado', key: 'estatus' },
     { title: 'Acción', key: 'actions', sortable: false },
 ]
 
@@ -42,6 +43,8 @@ const headers = [
 //GET usuarios
 //#region GET usuarios
 const usuarios = ref([])
+const usuariosActivos = ref([]);
+const usuariosSeleccionados = ref([]);
 const getUsuarios = async () => {
     try {
         const response = await axios.get(`/api/Usuario/selectAll`)
@@ -50,10 +53,15 @@ const getUsuarios = async () => {
             fechaCreacion: formatFecha(expense.fechaCreacion) // Formatea la fecha
         }));
         // Filtra los usuarios cuyo estatus es igual a "A", ignorando mayúsculas/minúsculas
-        const datos = usuarios.value.filter(usuario =>
+        usuariosActivos.value = usuarios.value.filter(usuario =>
             usuario.estatus.trim().toUpperCase() === "A"
         );
-        resultadoFiltrado.value = datos.map((usuario, index) => ({
+
+        usuariosSeleccionados.value = usuariosActivos.value;
+
+    
+
+        resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
             'indice': index + 1,
             'codigoUsuario': usuario.codigoUsuario,
             'nombreRol': usuario.nombreRol,
@@ -61,6 +69,7 @@ const getUsuarios = async () => {
             'nombreUsuario': usuario.nombreUsuario,
             'email': usuario.email,
             'fechaCreacion': usuario.fechaCreacion,
+            'estatus': usuario.estatus
         }));
     } catch (error) {
         console.error('Error al obtener usuarios:', error)
@@ -69,24 +78,25 @@ const getUsuarios = async () => {
 }
 //#endregion
 
-
-
 //#region Método del FILTRO de datos
 const tipoBusqueda = ref('Buscar usuario')
 const filtro = ref('');
 const resultadoFiltrado = ref([]);
-const tipoFiltro = ref('datosUsuario');
+const tipoFiltro = ref('nombreUsuario');
+const mostrarTodosLosUsuarios = ref(false);
 
 //Metodo del filtro de datos en la tabla
 const buscarEstudiantes = () => {
     const textoBusqueda = filtro.value.toLowerCase().trim();
+    let datosFiltrados;// Por defecto, usa todos los usuarios
 
     if (textoBusqueda !== '') {
-        if (tipoFiltro.value === 'datosUsuario') {
-            const datos = usuarios.value.filter(usuario =>
-                usuario.nombreUsuario.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((usuario, index) => ({
+        datosFiltrados = usuariosSeleccionados.value.filter(usuario => {
+            const campoFiltro = usuario[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
+            return campoFiltro?.includes(textoBusqueda);
+        });
+
+        resultadoFiltrado.value = datosFiltrados.map((usuario, index) => ({
                 'indice': index + 1,
                 'codigoUsuario': usuario.codigoUsuario,
                 'nombreRol': usuario.nombreRol,
@@ -94,55 +104,44 @@ const buscarEstudiantes = () => {
                 'nombreUsuario': usuario.nombreUsuario,
                 'email': usuario.email,
                 'fechaCreacion': usuario.fechaCreacion,
+                'estatus': usuario.estatus
             }));
 
-        } else if (tipoFiltro.value === 'email') {
-            const datos = usuarios.value.filter(usuario =>
-                usuario.email.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((usuario, index) => ({
-                'indice': index + 1,
-                'codigoUsuario': usuario.codigoUsuario,
-                'nombreRol': usuario.nombreRol,
-                'codigoRol': usuario.codigoRol,
-                'nombreUsuario': usuario.nombreUsuario,
-                'email': usuario.email,
-                'fechaCreacion': usuario.fechaCreacion,
-            }));
-        } else if (tipoFiltro.value === 'rol') {
-            const datos = usuarios.value.filter(usuario =>
-                usuario.nombreRol.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((usuario, index) => ({
-                'indice': index + 1,
-                'codigoUsuario': usuario.codigoUsuario,
-                'nombreRol': usuario.nombreRol,
-                'codigoRol': usuario.codigoRol,
-                'nombreUsuario': usuario.nombreUsuario,
-                'email': usuario.email,
-                'fechaCreacion': usuario.fechaCreacion,
-            }));
-
-        }
     }
     else {
-        const datos = usuarios.value.filter(usuario =>
-            usuario.estatus.trim().toUpperCase() === "A"
-        );
-        resultadoFiltrado.value = datos.map((usuario, index) => ({
-            'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
-        }));
+        resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
+                'indice': index + 1,
+                'codigoUsuario': usuario.codigoUsuario,
+                'nombreRol': usuario.nombreRol,
+                'codigoRol': usuario.codigoRol,
+                'nombreUsuario': usuario.nombreUsuario,
+                'email': usuario.email,
+                'fechaCreacion': usuario.fechaCreacion,
+                'estatus': usuario.estatus
+            }));
 
     }
-};
+}
+watch(mostrarTodosLosUsuarios, (newValue) => {
+    if (!newValue) {
+        console.log("Opcion de mostrar todo DESHABILITADO")
+        usuariosSeleccionados.value = usuariosActivos.value;
+    }else{
+        console.log("Opciona de mostrar todo HABILITADO")
+        usuariosSeleccionados.value = usuarios.value;
+    }
+    resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
+                'indice': index + 1,
+                'codigoUsuario': usuario.codigoUsuario,
+                'nombreRol': usuario.nombreRol,
+                'codigoRol': usuario.codigoRol,
+                'nombreUsuario': usuario.nombreUsuario,
+                'email': usuario.email,
+                'fechaCreacion': usuario.fechaCreacion,
+                'estatus': usuario.estatus
+            }));
+});
 //#endregion
-
 
 //const usuarios = ref([])
 const form = ref({
@@ -311,7 +310,8 @@ const descargarPDF = async (datos) => {
         'Nombre',
         'Email',
         'Rol',
-        'Fecha de creación'
+        'Fecha de creación',
+        'Estado'
     ];
 
     // Datos de la tabla
@@ -320,7 +320,8 @@ const descargarPDF = async (datos) => {
         usuario.nombreUsuario,
         usuario.email,
         usuario.nombreRol,
-        usuario.fechaCreacion
+        usuario.fechaCreacion,
+        usuario.estatus
     ]);
 
     // Estilos para el encabezado de la tabla
@@ -367,6 +368,7 @@ const exportarExcel = () => {
         'email': usuario.email,
         'nombreRol': usuario.nombreRol,
         'fechaCreacion': usuario.fechaCreacion,
+        'Estado': usuario.estatus
     }));
     // Insertar encabezados al principio de los datos
     //data.unshift(encabezados);
@@ -435,8 +437,8 @@ const getRol = async () => {
                             Menú de mantenimiento
                         </router-link>
                     </div>>
-                    <div class="col text-primary">
-                        <a href="#">Usuarios</a>
+                    <div class="col">
+                        <a  class="text-dark" href="#">Usuarios</a>
                     </div>
                 </div>
             </div>
@@ -451,17 +453,25 @@ const getRol = async () => {
             </div>
             <!--Buscador-->
             <div class="row justify-content-between ">
-                <div class="col-8">
+                <div class="col-6">
                     <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro"
                         @input="buscarEstudiantes" type="text" :placeholder="tipoBusqueda">
                 </div>
                 <div class="col-2">
                     <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
                         <option selected>Filtrar por:</option>
-                        <option value="datosUsuario">Nombre del usuario</option>
+                        <option value="nombreUsuario">Nombre del usuario</option>
                         <option value="email">Email</option>
-                        <option value="rol">Rol</option>
+                        <option value="nombreRol">Rol</option>
+                        <option value="estatus">Estado</option>
                     </select>
+                </div>
+                <div class="col-2">
+                    <input
+                        v-model="mostrarTodosLosUsuarios" type="checkbox" class="form-check-input" id="checkRegistro">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Mostrar todo
+                    </label>
                 </div>
                 <div class="col-2">
                     <div class="text-end">

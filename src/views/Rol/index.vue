@@ -25,9 +25,16 @@
             </div>
             <!--Buscador-->
             <div class="row justify-content-between ">
-                <div class="col-8">
+                <div class="col-6">
                     <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro" @input="buscarRol"
                         type="text" :placeholder="tipoBusqueda">
+                </div>
+                <div class="col-2">
+                    <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
+                        <option selected>Filtrar por:</option>
+                        <option value="nombreRol">Nombre del rol</option>
+                        <option value="estatus">Estado</option>
+                    </select>
                 </div>
                 <div class="col-2">
                     <input
@@ -322,6 +329,7 @@ changeLocale('es');
 const headers = [
     { title: '#', key: 'indice' },
     { title: 'Nombre', key: 'nombreRol' },
+    {title: 'Estado', key: 'estatus'},
     { title: 'Acción', key: 'actions', sortable: false }
 ]
 onMounted(() => {
@@ -619,10 +627,23 @@ const clear = () => {
 //#endregion
 
 
+const mostrarTodosLosRoles = ref(false);
 watch(mostrarTodosLosRoles, (newValue) => {
     if (!newValue) {
-        
+        console.log("Opcion de mostrar todo DESHABILITADO")
+        rolesSeleccionados.value = rolesActivos.value;
+        console.log(rolesSeleccionados.value);
+    }else{
+        console.log("Opciona de mostrar todo HABILITADO")
+        rolesSeleccionados.value = roles.value;
+        console.log(rolesSeleccionados.value);
     }
+    resultadoFiltrado.value = rolesSeleccionados.value.map((rol, index) => ({
+            'indice': index + 1,
+            'codigoRol': rol.codigoRol,
+            'nombreRol': rol.nombreRol,
+            'estatus': rol.estatus
+        }));
 });
 
 // Watch para observar cambios en `disabledModuloRegistro`

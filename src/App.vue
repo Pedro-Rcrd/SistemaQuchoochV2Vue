@@ -8,7 +8,7 @@ const showAlert = ref(null);
 const timeOut = ref(10); // Tiempo en segundos
 const authStore = useAuthStore();
 const resetTimer = () => {
-  timeOut.value = 50; // Reinicia el tiempo de cuenta regresiva
+  timeOut.value = 1000; // Reinicia el tiempo de cuenta regresiva
 };
 
 const handleUserActivity = () => {
@@ -45,7 +45,7 @@ const stopTracking = () => {
 watch(() => authStore.authToken, () => {
   if(authStore.authToken != null){
     //alert("Se inició la Sesión")
-    timeOut.value = 50;
+    timeOut.value = 1000;
     startTracking();
     
   }else{

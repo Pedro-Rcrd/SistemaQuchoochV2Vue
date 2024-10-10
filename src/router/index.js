@@ -35,7 +35,7 @@ const router = createRouter({
     {
       path: '/communities',
       name: 'communities',
-      component: () => import('../views/Comunidades/Index.vue')
+      component: () => import('../views/Comunidad/Index.vue')
     },
     {
       path: '/createcommunity',

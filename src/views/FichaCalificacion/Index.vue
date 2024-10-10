@@ -10,8 +10,8 @@
                             Menú de registros
                         </router-link>
                     </div> >
-                    <div class="col text-primary">
-                        <a href="#">Fichas de calificaciones</a>
+                    <div class="col">
+                        <a class="text-dark" href="#">Fichas de calificaciones</a>
                     </div>
                 </div>
             </div>
@@ -24,20 +24,27 @@
                     PDF</button>
             </div>
             <div class="row justify-content-between ">
-                <div class="col-8">
+                <div class="col-6">
                     <input class="form-control" autofocus id="codigoFichaCalificacion" v-model="filtro"
-                        @input="buscarEstudiantes" type="text" :placeholder="tipoBusqueda">
+                        @input="buscarfichasCalificaciones" type="text" :placeholder="tipoBusqueda">
                 </div>
                 <div class="col-2">
                     <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
-                        <option selected>Filtrar por:</option>
-                        <option value="nombreEstudiante">Nombre del estudiante</option>
-                        <option value="codigoBecario">Código</option>
+                        <option selected disabled>Filtrar por:</option>
+                        <option value="nombreEstudiante">Nombre</option>
+                        <option value="apellidoEstudiante">Apellido</option>
                         <option value="establecimiento">Establecimiento</option>
                         <option value="nivelAcademico">Nivel Académico</option>
                         <option value="carrera">Carrera</option>
-                        <option value="cicloEscolar">Ciclo Escolar</option>
+                        <option value="estatus">Estado</option>
                     </select>
+                </div>
+                <div class="col-2">
+                    <input v-model="mostrarTodasLasfichasCalificaciones" type="checkbox" class="form-check-input"
+                        id="checkRegistro">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Mostrar todo
+                    </label>
                 </div>
                 <div class="col-2">
                     <div class="text-end">
@@ -48,9 +55,8 @@
 
                 </div>
             </div>
-            <v-card >
-                <v-data-table density="compact"
-                :items="resultadoFiltrado" :headers="headers">
+            <v-card>
+                <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
                     <template v-slot:item.actions="{ item }">
                         <v-icon class="me-2" size="small">
                             <router-link :to="{ path: '/informationcard/' + item.codigoFichaCalificacion }">
@@ -62,7 +68,7 @@
                                 <i class="fa-solid fa-edit text-dark"></i>
                             </router-link>
                         </v-icon>
-                        <v-icon  size="small">
+                        <v-icon size="small">
                             <router-link :to="{ path: '/newblock/' + item.codigoFichaCalificacion }">
                                 <i class="fa-solid fa-circle-plus text-dark"></i>
                             </router-link>
@@ -75,7 +81,7 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import axios from 'axios'
 const authStore = useAuthStore()
@@ -85,35 +91,58 @@ onMounted(() => {
     getFichasCalificaciones()
 })
 
-//#region GET ficha de calificaciones
-
-const fichasCalificaciones = ref([]);
-const resultadoFiltrado = ref([]);
+//GET fichasCalificaciones
+//#region GET fichasCalificaciones
+const fichasCalificaciones = ref([])
+const fichasCalificacionesActivas = ref([]);
+const fichasCalificacionesSeleccionadas = ref([]);
+const mostrarTodasLasfichasCalificaciones = ref(false);
 const getFichasCalificaciones = async () => {
     try {
-        const response = await axios.get(`/api/fichacalificacion/selectAll`)
+        const response = await axios.get(`/api/FichaCalificacion/selectall`)
         fichasCalificaciones.value = response.data.map(expense => ({
             ...expense,
             cicloEscolar: formatFecha(expense.cicloEscolar) // Formatea la fecha
         }))
-        
-        const datos = fichasCalificaciones.value;
-        resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
-            'indice': index + 1,
-            'codigoBecario': fichaCalificacion.codigoBecario,
-            'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
-            'nombreEstudiante': fichaCalificacion.estudiante,
-            'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
-            'nivelAcademico': fichaCalificacion.nivelAcademico,
-            'grado': fichaCalificacion.grado,
-            'carrera': fichaCalificacion.carrera,
-            'establecimiento': fichaCalificacion.establecimiento,
-            'cicloEscolar': fichaCalificacion.cicloEscolar
-        }));
+
+
+        fichasCalificacionesActivas.value = fichasCalificaciones.value.filter(ficha => ficha.estatus.trim().toUpperCase() === "A");
+
+        if (mostrarTodasLasfichasCalificaciones.value) {
+            fichasCalificacionesSeleccionadas.value = fichasCalificaciones.value;
+        } else {
+            fichasCalificacionesSeleccionadas.value = fichasCalificacionesActivas.value;
+        }
+
+        mapeoDeDato(fichasCalificacionesSeleccionadas.value);
+
     } catch (error) {
-        console.error('Error al obtener usuarios:', error)
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de los fichasCalificaciones.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 }
+//#endregion
+
+const mapeoDeDato = (datos) => {
+    resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
+        'indice': index + 1,
+        'codigoBecario': fichaCalificacion.codigoBecario,
+        'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
+        'nombreEstudiante': fichaCalificacion.estudiante,
+        'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
+        'nivelAcademico': fichaCalificacion.nivelAcademico,
+        'grado': fichaCalificacion.grado,
+        'carrera': fichaCalificacion.carrera,
+        'establecimiento': fichaCalificacion.establecimiento,
+        'cicloEscolar': fichaCalificacion.cicloEscolar,
+        'estatus': fichaCalificacion.estatus
+    }));
+}
+
 
 // Función para formatear la fecha
 const formatFecha = (fecha) => {
@@ -121,12 +150,11 @@ const formatFecha = (fecha) => {
     const year = date.getFullYear();
     return year.toString();
 }
-//#endregion
+
 
 //#region DATOS de la tabla
 const headers = [
     { title: '#', key: 'indice' },
-    { title: 'Código', key: 'codigoBecario' },
     { title: 'Nombre', key: 'nombreEstudiante' },
     { title: 'Apellido', key: 'apellidoEstudiante' },
     { title: 'Nivel Académico', key: 'nivelAcademico' },
@@ -134,135 +162,45 @@ const headers = [
     { title: 'Carrera', key: 'carrera' },
     { title: 'Establecimiento', key: 'establecimiento' },
     { title: 'Ciclo Escolar', key: 'cicloEscolar' },
+    { title: 'Estado', key: 'estatus' },
     { title: 'Acción', key: 'actions', sortable: false },
 ]
 //#endregion
 
+
 //#region Método del FILTRO de datos
 const tipoBusqueda = ref('Buscar estudiante')
 const filtro = ref('');
-const tipoFiltro = ref('nombreEstudiante');
+const resultadoFiltrado = ref([]);
+const tipoFiltro = ref('estudiante');
 
 //Metodo del filtro de datos en la tabla
-const buscarEstudiantes = () => {
+const buscarfichasCalificaciones = () => {
     const textoBusqueda = filtro.value.toLowerCase().trim();
+    let datosFiltrados;// Por defecto, usa todos los establecimientos
 
     if (textoBusqueda !== '') {
-        if (tipoFiltro.value === 'nombreEstudiante') {
-            const datos = fichasCalificaciones.value.filter(fichaCalificacion =>
-                fichaCalificacion.estudiante.toLowerCase().includes(textoBusqueda) ||
-                fichaCalificacion.apellidoEstudiante.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
-                'indice': index + 1,
-                'codigoBecario': fichaCalificacion.codigoBecario,
-                'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
-                'nombreEstudiante': fichaCalificacion.estudiante,
-                'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
-                'nivelAcademico': fichaCalificacion.nivelAcademico,
-                'grado': fichaCalificacion.grado,
-                'carrera': fichaCalificacion.carrera,
-                'establecimiento': fichaCalificacion.establecimiento,
-                'cicloEscolar': fichaCalificacion.cicloEscolar
-            }));
-        } else if (tipoFiltro.value === 'codigoBecario') {
-            const datos = fichasCalificaciones.value.filter(fichaCalificacion =>
-                fichaCalificacion.codigoBecario.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
-                'indice': index + 1,
-                'codigoBecario': fichaCalificacion.codigoBecario,
-                'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
-                'nombreEstudiante': fichaCalificacion.estudiante,
-                'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
-                'nivelAcademico': fichaCalificacion.nivelAcademico,
-                'grado': fichaCalificacion.grado,
-                'carrera': fichaCalificacion.carrera,
-                'establecimiento': fichaCalificacion.establecimiento,
-                'cicloEscolar': fichaCalificacion.cicloEscolar
-            }));
-        } else if (tipoFiltro.value === 'nivelAcademico') {
-            const datos = fichasCalificaciones.value.filter(fichaCalificacion =>
-                fichaCalificacion.nivelAcademico.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
-                'indice': index + 1,
-                'codigoBecario': fichaCalificacion.codigoBecario,
-                'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
-                'nombreEstudiante': fichaCalificacion.estudiante,
-                'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
-                'nivelAcademico': fichaCalificacion.nivelAcademico,
-                'grado': fichaCalificacion.grado,
-                'carrera': fichaCalificacion.carrera,
-                'establecimiento': fichaCalificacion.establecimiento,
-                'cicloEscolar': fichaCalificacion.cicloEscolar
-            }));
-        } else if (tipoFiltro.value === 'carrera') {
-            const datos = fichasCalificaciones.value.filter(fichaCalificacion =>
-                fichaCalificacion.carrera.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
-                'indice': index + 1,
-                'codigoBecario': fichaCalificacion.codigoBecario,
-                'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
-                'nombreEstudiante': fichaCalificacion.estudiante,
-                'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
-                'nivelAcademico': fichaCalificacion.nivelAcademico,
-                'grado': fichaCalificacion.grado,
-                'carrera': fichaCalificacion.carrera,
-                'establecimiento': fichaCalificacion.establecimiento,
-                'cicloEscolar': fichaCalificacion.cicloEscolar
-            }));
-        } else if (tipoFiltro.value === 'establecimiento') {
-            const datos = fichasCalificaciones.value.filter(fichaCalificacion =>
-                fichaCalificacion.establecimiento.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
-                'indice': index + 1,
-                'codigoBecario': fichaCalificacion.codigoBecario,
-                'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
-                'nombreEstudiante': fichaCalificacion.estudiante,
-                'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
-                'nivelAcademico': fichaCalificacion.nivelAcademico,
-                'grado': fichaCalificacion.grado,
-                'carrera': fichaCalificacion.carrera,
-                'establecimiento': fichaCalificacion.establecimiento,
-                'cicloEscolar': fichaCalificacion.cicloEscolar
-            }));
-        } else if (tipoFiltro.value === 'cicloEscolar') {
-            const datos = fichasCalificaciones.value.filter(fichaCalificacion =>
-                fichaCalificacion.cicloEscolar.toLowerCase().includes(textoBusqueda)
-            );
-            resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
-                'indice': index + 1,
-                'codigoBecario': fichaCalificacion.codigoBecario,
-                'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
-                'nombreEstudiante': fichaCalificacion.estudiante,
-                'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
-                'nivelAcademico': fichaCalificacion.nivelAcademico,
-                'grado': fichaCalificacion.grado,
-                'carrera': fichaCalificacion.carrera,
-                'establecimiento': fichaCalificacion.establecimiento,
-                'cicloEscolar': fichaCalificacion.cicloEscolar
-            }));
-        }
+        datosFiltrados = fichasCalificacionesSeleccionadas.value.filter(ficha => {
+            const campoFiltro = ficha[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
+            return campoFiltro?.includes(textoBusqueda);
+        });
+
+        mapeoDeDato(datosFiltrados);
     }
     else {
-        const datos = fichasCalificaciones.value;
-        resultadoFiltrado.value = datos.map((fichaCalificacion, index) => ({
-            'indice': index + 1,
-            'codigoBecario': fichaCalificacion.codigoBecario,
-            'codigoFichaCalificacion': fichaCalificacion.codigoFichaCalificacion,
-            'nombreEstudiante': fichaCalificacion.estudiante,
-            'apellidoEstudiante': fichaCalificacion.apellidoEstudiante,
-            'nivelAcademico': fichaCalificacion.nivelAcademico,
-            'grado': fichaCalificacion.grado,
-            'carrera': fichaCalificacion.carrera,
-            'establecimiento': fichaCalificacion.establecimiento,
-            'cicloEscolar': fichaCalificacion.cicloEscolar
-        }));
+        mapeoDeDato(fichasCalificacionesSeleccionadas.value);
     }
-};
+}
+watch(mostrarTodasLasfichasCalificaciones, (newValue) => {
+    if (!newValue) {
+        //checkbox deshabilitado
+        fichasCalificacionesSeleccionadas.value = fichasCalificacionesActivas.value;
+    } else {
+        //checkbox habilitado
+        fichasCalificacionesSeleccionadas.value = fichasCalificaciones.value;
+    }
+    mapeoDeDato(fichasCalificacionesSeleccionadas.value);
+});
 //#endregion
 
 //#region Método del PDF
@@ -314,10 +252,10 @@ const descargarPDF = async (datos) => {
     doc.addImage(imgData, 'JPEG', 0, 0, 10, 10);
     // Título del documento
     doc.setTextColor(255, 0, 0);
-    doc.text("Reporte de Estudiantes", 10, 30);
+    doc.text("Reporte de fichasCalificaciones", 10, 30);
 
     doc.setTextColor(144, 153, 9);
-    doc.text("Reporte de Estudiantes", 10, 35);
+    doc.text("Reporte de fichasCalificaciones", 10, 35);
     // Encabezados de la tabla
     const headerPDF = ['#',
         'Código',

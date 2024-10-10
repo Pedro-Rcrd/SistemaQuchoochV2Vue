@@ -11,7 +11,7 @@
             </router-link>
           </div>>
           <div class="col text-primary">
-            <a href="#">Estudiantes</a>
+            <a class="text-dark" href="#">Estudiantes</a>
           </div>
         </div>
       </div>
@@ -19,26 +19,35 @@
       <div class="text-light mb-3">
         <button type="button" class="btn btn-success btn-sm " @click="exportarExcel"><i
             class="fa-solid fa-file-excel"></i> Excel</button>
+
         <button type="button" class="btn btn-danger btn-sm" @click="exportarPDF"><i class="fa-solid fa-file-pdf"></i>
           PDF</button>
       </div>
       <!--Buscador-->
       <div class="row justify-content-between ">
-        <div class="col-8">
-          <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro" @input="buscarEstudiantes"
+        <div class="col-6">
+          <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro" @input="buscarEstudiante"
             type="text" :placeholder="tipoBusqueda">
         </div>
         <div class="col-2">
           <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
-            <option selected>Filtrar por:</option>
-            <option value="datosEstudiante">Nombre del estudiante</option>
+            <option selected disabled>Filtrar por:</option>
+            <option value="nombreEstudiante">Nombre</option>
+            <option value="apellidoEstudiante">Apellido</option>
             <option value="codigoBecario">Código</option>
             <option value="establecimiento">Establecimiento</option>
             <option value="nivelAcademico">Nivel Académico</option>
             <option value="carrera">Carrera</option>
             <option value="comunidad">Comunidad</option>
             <option value="genero">Género</option>
+            <option value="estado">Estado</option>
           </select>
+        </div>
+        <div class="col-2">
+          <input v-model="mostrarTodosLosEstudiantes" type="checkbox" class="form-check-input" id="checkRegistro">
+          <label class="form-check-label" for="flexCheckDefault">
+            Mostrar todo
+          </label>
         </div>
         <div class="col-2">
           <div class="text-end">
@@ -58,7 +67,7 @@
                 <i class="fa-solid fa-eye text-dark"></i>
               </router-link>
             </v-icon>
-            <v-icon size="small" @click="editarItem(item)">
+            <v-icon size="small">
               <router-link :to="{ path: '/editstudent/' + item.codigoEstudiante }">
                 <i class="fa-solid fa-edit text-dark"></i>
               </router-link>
@@ -73,15 +82,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import axios from 'axios'
+import Swal from 'sweetalert2';
 
 const authStore = useAuthStore()
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
 
 onMounted(() => {
-  getEstudiante()
+  getEstudiantes()
 })
 
 //Cambiar idioma
@@ -105,6 +115,7 @@ const headers = [
   { title: 'Carrera', key: 'carrera' },
   { title: 'Establecimiento', key: 'establecimiento' },
   { title: 'Fecha de registro', key: 'fechaRegistro' },
+  { title: 'Estado', key: 'estado' },
   { title: 'Acción', key: 'actions', sortable: false },
 ]
 
@@ -113,7 +124,10 @@ const headers = [
 //GET estudiantes
 //#region GET estudiantes
 const estudiantes = ref([])
-const getEstudiante = async () => {
+const estudiantesActivos = ref([]);
+const estudiantesSeleccionados = ref([]);
+const mostrarTodosLosEstudiantes = ref(false);
+const getEstudiantes = async () => {
   try {
     const response = await axios.get(`/api/Estudiante/selectall`)
     estudiantes.value = response.data.map(expense => ({
@@ -121,27 +135,42 @@ const getEstudiante = async () => {
       fechaNacimieto: formatFecha(expense.fechaNacimieto), // Formatea la fecha
       fechaRegistro: formatFecha(expense.fechaRegistro) // Formatea la fecha
     }));
-    const datos = estudiantes.value;
-    resultadoFiltrado.value = datos.map((estudiante, index) => ({
-      'indice': index + 1,
-      'codigoBecario': estudiante.codigoBecario,
-      'codigoEstudiante': estudiante.codigoEstudiante,
-      'nombreEstudiante': estudiante.nombreEstudiante,
-      'apellidoEstudiante': estudiante.apellidoEstudiante,
-      'nivelAcademico': estudiante.nivelAcademico,
-      'grado': estudiante.grado,
-      'carrera': estudiante.carrera,
-      'establecimiento': estudiante.establecimiento,
-      'fechaRegistro': estudiante.fechaRegistro
-    }));
+    estudiantesActivos.value = estudiantes.value.filter(estudiante => estudiante.estado.trim().toUpperCase() === "A");
 
+    if (mostrarTodosLosEstudiantes.value) {
+      estudiantesSeleccionados.value = estudiantes.value;
+    } else {
+      estudiantesSeleccionados.value = estudiantesActivos.value;
+    }
+
+    mapeoDeDato(estudiantesSeleccionados.value);
 
   } catch (error) {
-    console.error('Error al obtener usuarios:', error)
-    // Puedes manejar el error de la solicitud aquí
+    Swal.fire({
+      title: 'Error',
+      text: `Hubo un error al intentar obtener la lista de los estudiantes.`,
+      icon: 'error',
+      footer: 'Por favor, intente nuevamente más tarde.'
+    });
   }
 }
 //#endregion
+
+const mapeoDeDato = (datos) => {
+  resultadoFiltrado.value = datos.map((estudiante, index) => ({
+    'indice': index + 1,
+    'codigoBecario': estudiante.codigoBecario,
+    'codigoEstudiante': estudiante.codigoEstudiante,
+    'nombreEstudiante': estudiante.nombreEstudiante,
+    'apellidoEstudiante': estudiante.apellidoEstudiante,
+    'nivelAcademico': estudiante.nivelAcademico,
+    'grado': estudiante.grado,
+    'carrera': estudiante.carrera,
+    'establecimiento': estudiante.establecimiento,
+    'fechaRegistro': estudiante.fechaRegistro,
+    'estado': estudiante.estado
+  }));
+}
 
 // Función para formatear la fecha
 const formatFecha = (fecha) => {
@@ -153,6 +182,41 @@ const formatFecha = (fecha) => {
 }
 //Fin consulta
 
+//#region Método del FILTRO de datos
+const tipoBusqueda = ref('Buscar estudiante')
+const filtro = ref('');
+const resultadoFiltrado = ref([]);
+const tipoFiltro = ref('nombreEstudiante');
+
+//Metodo del filtro de datos en la tabla
+const buscarEstudiante = () => {
+  console.log("Buscando...")
+  const textoBusqueda = filtro.value.toLowerCase().trim();
+  let datosFiltrados;// Por defecto, usa todos los establecimientos
+
+  if (textoBusqueda !== '') {
+    datosFiltrados = estudiantesSeleccionados.value.filter(estudiante => {
+      const campoFiltro = estudiante[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
+      return campoFiltro?.includes(textoBusqueda);
+    });
+
+    mapeoDeDato(datosFiltrados);
+  }
+  else {
+    mapeoDeDato(estudiantesSeleccionados.value);
+  }
+}
+watch(mostrarTodosLosEstudiantes, (newValue) => {
+  if (!newValue) {
+    //checkbox deshabilitado
+    estudiantesSeleccionados.value = estudiantesActivos.value;
+  } else {
+    //checkbox habilitado
+    estudiantesSeleccionados.value = estudiantes.value;
+  }
+  mapeoDeDato(estudiantesSeleccionados.value);
+});
+//#endregion
 //Metodo del PDF
 //#region Método del PDF
 import { jsPDF } from "jspdf";
@@ -246,151 +310,6 @@ const descargarPDF = async (datos) => {
   // Guardar el documento como un archivo PDF
   doc.save("ReporteEstudiantes.pdf");
 }
-//#endregion
-
-//#region Método del FILTRO de datos
-const tipoBusqueda = ref('Buscar estudiante')
-const filtro = ref('');
-const resultadoFiltrado = ref([]);
-const tipoFiltro = ref('datosEstudiante');
-
-//Metodo del filtro de datos en la tabla
-const buscarEstudiantes = () => {
-  const textoBusqueda = filtro.value.toLowerCase().trim();
-
-  if (textoBusqueda !== '') {
-    if (tipoFiltro.value === 'datosEstudiante') {
-      const datos = estudiantes.value.filter(estudiante =>
-        estudiante.nombreEstudiante.toLowerCase().includes(textoBusqueda) ||
-        estudiante.apellidoEstudiante.toLowerCase().includes(textoBusqueda)
-      );
-      resultadoFiltrado.value = datos.map((estudiante, index) => ({
-        'indice': index + 1,
-        'codigoBecario': estudiante.codigoBecario,
-        'codigoEstudiante': estudiante.codigoEstudiante,
-        'nombreEstudiante': estudiante.nombreEstudiante,
-        'apellidoEstudiante': estudiante.apellidoEstudiante,
-        'nivelAcademico': estudiante.nivelAcademico,
-        'grado': estudiante.grado,
-        'carrera': estudiante.carrera,
-        'establecimiento': estudiante.establecimiento,
-        'fechaRegistro': estudiante.fechaRegistro
-      }));
-    } else if (tipoFiltro.value === 'codigoBecario') {
-      const datos = estudiantes.value.filter(estudiante =>
-        estudiante.codigoBecario.toLowerCase().includes(textoBusqueda)
-      );
-      resultadoFiltrado.value = datos.map((estudiante, index) => ({
-        'indice': index + 1,
-        'codigoBecario': estudiante.codigoBecario,
-        'codigoEstudiante': estudiante.codigoEstudiante,
-        'nombreEstudiante': estudiante.nombreEstudiante,
-        'apellidoEstudiante': estudiante.apellidoEstudiante,
-        'nivelAcademico': estudiante.nivelAcademico,
-        'grado': estudiante.grado,
-        'carrera': estudiante.carrera,
-        'establecimiento': estudiante.establecimiento,
-        'fechaRegistro': estudiante.fechaRegistro,
-      }));
-    } else if (tipoFiltro.value === 'genero') {
-      const datos = estudiantes.value.filter(estudiante =>
-        estudiante.genero.toLowerCase().includes(textoBusqueda)
-      );
-      resultadoFiltrado.value = datos.map((estudiante, index) => ({
-        'indice': index + 1,
-        'codigoBecario': estudiante.codigoBecario,
-        'codigoEstudiante': estudiante.codigoEstudiante,
-        'nombreEstudiante': estudiante.nombreEstudiante,
-        'apellidoEstudiante': estudiante.apellidoEstudiante,
-        'nivelAcademico': estudiante.nivelAcademico,
-        'grado': estudiante.grado,
-        'carrera': estudiante.carrera,
-        'establecimiento': estudiante.establecimiento,
-        'fechaRegistro': estudiante.fechaRegistro,
-      }));
-
-    } else if (tipoFiltro.value === 'nivelAcademico') {
-      const datos = estudiantes.value.filter(estudiante =>
-        estudiante.nivelAcademico.toLowerCase().includes(textoBusqueda)
-      );
-      resultadoFiltrado.value = datos.map((estudiante, index) => ({
-        'indice': index + 1,
-        'codigoBecario': estudiante.codigoBecario,
-        'codigoEstudiante': estudiante.codigoEstudiante,
-        'nombreEstudiante': estudiante.nombreEstudiante,
-        'apellidoEstudiante': estudiante.apellidoEstudiante,
-        'nivelAcademico': estudiante.nivelAcademico,
-        'grado': estudiante.grado,
-        'carrera': estudiante.carrera,
-        'establecimiento': estudiante.establecimiento,
-        'fechaRegistro': estudiante.fechaRegistro,
-      }));
-    } else if (tipoFiltro.value === 'carrera') {
-      const datos = estudiantes.value.filter(estudiante =>
-        estudiante.carrera.toLowerCase().includes(textoBusqueda)
-      );
-      resultadoFiltrado.value = datos.map((estudiante, index) => ({
-        'indice': index + 1,
-        'codigoBecario': estudiante.codigoBecario,
-        'codigoEstudiante': estudiante.codigoEstudiante,
-        'nombreEstudiante': estudiante.nombreEstudiante,
-        'apellidoEstudiante': estudiante.apellidoEstudiante,
-        'nivelAcademico': estudiante.nivelAcademico,
-        'grado': estudiante.grado,
-        'carrera': estudiante.carrera,
-        'establecimiento': estudiante.establecimiento,
-        'fechaRegistro': estudiante.fechaRegistro,
-      }));
-    } else if (tipoFiltro.value === 'establecimiento') {
-      const datos = estudiantes.value.filter(estudiante =>
-        estudiante.establecimiento.toLowerCase().includes(textoBusqueda)
-      );
-      resultadoFiltrado.value = datos.map((estudiante, index) => ({
-        'indice': index + 1,
-        'codigoBecario': estudiante.codigoBecario,
-        'codigoEstudiante': estudiante.codigoEstudiante,
-        'nombreEstudiante': estudiante.nombreEstudiante,
-        'apellidoEstudiante': estudiante.apellidoEstudiante,
-        'nivelAcademico': estudiante.nivelAcademico,
-        'grado': estudiante.grado,
-        'carrera': estudiante.carrera,
-        'establecimiento': estudiante.establecimiento,
-        'fechaRegistro': estudiante.fechaRegistro,
-      }));
-    } else if (tipoFiltro.value === 'comunidad') {
-      const datos = estudiantes.value.filter(estudiante =>
-        estudiante.comunidad.toLowerCase().includes(textoBusqueda)
-      );
-      resultadoFiltrado.value = datos.map((estudiante, index) => ({
-        'indice': index + 1,
-        'codigoBecario': estudiante.codigoBecario,
-        'codigoEstudiante': estudiante.codigoEstudiante,
-        'nombreEstudiante': estudiante.nombreEstudiante,
-        'apellidoEstudiante': estudiante.apellidoEstudiante,
-        'nivelAcademico': estudiante.nivelAcademico,
-        'grado': estudiante.grado,
-        'carrera': estudiante.carrera,
-        'establecimiento': estudiante.establecimiento,
-        'fechaRegistro': estudiante.fechaRegistro,
-      }));
-    }
-  }
-  else {
-    const datos = estudiantes.value;
-    resultadoFiltrado.value = datos.map((estudiante, index) => ({
-      'indice': index + 1,
-      'codigoBecario': estudiante.codigoBecario,
-      'codigoEstudiante': estudiante.codigoEstudiante,
-      'nombreEstudiante': estudiante.nombreEstudiante,
-      'apellidoEstudiante': estudiante.apellidoEstudiante,
-      'nivelAcademico': estudiante.nivelAcademico,
-      'grado': estudiante.grado,
-      'carrera': estudiante.carrera,
-      'establecimiento': estudiante.establecimiento,
-      'fechaRegistro': estudiante.fechaRegistro
-    }));
-  }
-};
 //#endregion
 
 //#region Metodo de EXCEL

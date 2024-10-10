@@ -1,6 +1,7 @@
 <template>
     <div class="row justify-content-center mt-1">
         <div class="col-md-11">
+
             <h3>Registro de Ficha de calificaciones</h3>
             <hr>
             <div class="container text-center mb-4">
@@ -15,26 +16,40 @@
                             Fichas de calificaciones
                         </router-link>
                     </div>>
-                    <div class="col text-primary">
-                        <a href="#">Nuevo registro</a>
+                    <div class="col">
+                        <a class="text-dark" href="#">Nuevo registro</a>
                     </div>
                 </div>
             </div>
             <div class="card border border-success ">
-                
+
                 <div class="card-body">
                     <form enctype="multipart/form-data">
                         <div class="row">
+                            <p class="placeholder-glow" v-if="deshabilitarComponentes">
+                                <span class="placeholder col-12 text-success"></span>
+                            </p>
                             <h4>Información de la Ficha</h4>
-                            <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Fecha Registro</label>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="exampleFormControlInput1" class="form-label">Estudiante</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
-                                        <i class="fa-solid fa-calendar-days"></i>
+                                        <i class="fa-solid fa-n"></i>
                                     </span>
-                                    <input autofocus id="fechaRegistro" v-model="fechaRegistro" required type="date"
-                                        class="form-control">
+                                    <input class="form-control" autofocus id="codigoEstudiante" required
+                                        v-model="busqueda" @input="buscarEstudiantes" type="text"
+                                        placeholder="Buscar estudiante" :disabled="deshabilitarComponentes">
+
                                 </div>
+                                <ul class="list-group listaFiltro" v-if="mostrarLista">
+                                    <li v-for="estudiante in visibilidad" :key="estudiante.codigoEstudiante"
+                                        @click="seleccionarEstudiante(estudiante)">
+                                        {{ estudiante.nombreEstudiante }}
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                         <div class="row">
@@ -44,17 +59,21 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-calendar-days"></i>
                                     </span>
-                                    <input autofocus id="nombreEstudiante" required type="date" class="form-control"
-                                        v-model="cicloEscolar">
+                                    <input autofocus id="cicloEscolar" required type="date" class="form-control"
+                                        v-model="cicloEscolar" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-8">
                                 <label for="exampleFormControlInput1" class="form-label">Establecimiento</label>
+                                <span><i data-bs-toggle="modal" data-bs-target="#modalEstablecimiento"
+                                        style="font-size: 14px;" class="fas fa-circle-plus"
+                                        @click="noMostrarAlertas()"></i></span>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
                                     </span>
-                                    <select class="form-control" id="codigoEstablecimiento" v-model="codigoEstablecimiento">
+                                    <select class="form-control form-select" id="codigoEstablecimiento"
+                                        v-model="codigoEstablecimiento" :disabled="deshabilitarComponentes">
                                         <option value="" disabled selected>
                                             Selecciona establecimiento
                                         </option>
@@ -76,7 +95,9 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
                                     </span>
-                                    <select class="form-control" id="tipocliente" v-model="codigoNA">
+                                    <select class="form-control form-select" id="tipocliente"
+                                        v-model="codigoNivelAcademico" @change="opcionSeleccionada"
+                                        :disabled="deshabilitarComponentes">
                                         <option value="" disabled selected>
                                             Selecciona tipo nivel academico
                                         </option>
@@ -94,7 +115,8 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
                                     </span>
-                                    <select class="form-control" id="codigoGrado" v-model="codigoGrado">
+                                    <select class="form-control form-select" id="codigoGrado" v-model="codigoGrado"
+                                        :disabled="deshabilitarComponentes">
                                         <option value="" disabled selected>
                                             Selecciona el grado
                                         </option>
@@ -107,37 +129,54 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Estudiante</label>
+                                <label for="exampleFormControlInput1" class="form-label">Bloque</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-n"></i>
                                     </span>
-                                    <input class="form-control" autofocus id="codigoEstudiante" required v-model="busqueda"
-                                        @input="buscarEstudiantes" type="text" placeholder="Buscar estudiantes">
-
+                                    <input autofocus id="nombreEstudiante" type="number" class="form-control"
+                                        v-model="bloque" :disabled="deshabilitarComponentes">
                                 </div>
-                                <ul class="list-group listaFiltro" v-if="mostrarLista">
-                                    <li v-for="estudiante in visibilidad" :key="estudiante.codigoEstudiante"
-                                        @click="seleccionarEstudiante(estudiante)">
-                                        {{ estudiante.nombreEstudiante }}
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
-                                <label for="exampleFormControlInput1" class="form-label">Carrera</label>
+                            <div class="col-md-8">
+                                <label for="exampleFormControlInput1" class="form-label">Carrera</label> <span><i
+                                        data-bs-toggle="modal" data-bs-target="#modalCarrera" style="font-size: 14px;"
+                                        class="fas fa-circle-plus" @click="noMostrarAlertas()"
+                                        :disabled="deshabilitarComponentes"></i></span>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
                                     </span>
-                                    <select class="form-control" id="codigoCarrera" v-model="codigoCarrera">
-                                        <option value="" disabled selected>
+                                    <select class="form-control form-select" id="codigoCarrera" v-model="codigoCarrera"
+                                        :disabled="bloquearComponenteCarrera">
+                                        <option value="" selected>
                                             Selecciona carrera
                                         </option>
-                                        <template v-for="tipo in carreras" :key="tipo.codigoCarrera">
+                                        <template v-for="tipo in carrerasFiltradas" :key="tipo.codigoCarrera">
                                             <option :value="tipo.codigoCarrera">
                                                 {{ tipo.nombreCarrera }}
+                                            </option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleFormControlInput1" class="form-label">Modalidad</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-home"></i>
+                                    </span>
+                                    <select class="form-control form-select" id="codigoModalidad"
+                                        v-model="codigoModalidadEstudio" required :disabled="deshabilitarComponentes">
+                                        <option value="" disabled selected>
+                                            Selecciona modalidad
+                                        </option>
+                                        <template v-for="tipo in modalidadesEstudios"
+                                            :key="tipo.codigoModalidadEstudio">
+                                            <option :value="tipo.codigoModalidadEstudio">
+                                                {{ tipo.nombreModalidadEstudio }}
                                             </option>
                                         </template>
                                     </select>
@@ -148,16 +187,20 @@
                         <div class="row">
                             <h4>Información de los cursos</h4>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Curso</label>
+                                <label for="exampleFormControlInput1" class="form-label">Curso</label> <span><i
+                                        data-bs-toggle="modal" data-bs-target="#modalCurso" style="font-size: 14px;"
+                                        class="fas fa-circle-plus" @click="noMostrarAlertas()"
+                                        :disabled="deshabilitarComponentes"></i></span>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
                                     </span>
-                                    <select class="form-control" id="codigoCurso" v-model="codigoCurso">
+                                    <select class="form-control form-select" id="codigoCurso" v-model="codigoCurso"
+                                        :disabled="deshabilitarComponentes">
                                         <option value="" disabled selected>
                                             Selecciona curso
                                         </option>
-                                        <template v-for="tipo in cursos" :key="tipo.codigoCurso">
+                                        <template v-for="tipo in cursosFiltrados" :key="tipo.codigoCurso">
                                             <option :value="tipo.codigoCurso">
                                                 {{ tipo.nombreCurso }}
                                             </option>
@@ -171,18 +214,17 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-n"></i>
                                     </span>
-                                    <input autofocus id="nombreEstudiante" type="number" class="form-control"
-                                        v-model="notaInput">
+                                    <input autofocus id="notaCurso" type="number" class="form-control"
+                                        v-model="notaInput" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-4">
-
-                                <div class="input-group mb-3 mt-4">
-                                    <span class="input-group-text">
-                                        <i class="fa-solid fa-a"></i>
+                                <label for="exampleFormControlInput1" class="form-label">Agregar</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" @click.prevent="agregarCurso">
+                                        <i style="font-size: 24px;" class="fa-solid fa-circle-plus"></i>
                                     </span>
-                                    <button class="btn btn-dark" @click.prevent="agregarCurso">
-                                        <i class="fa-solid fa-save"></i>Agregar</button>
+
                                 </div>
                             </div>
                             <div class="alert alert-danger" role="alert" v-show="cursoYaExiste">
@@ -199,7 +241,7 @@
                                                 <th scope="col" class="text-center">#</th>
                                                 <th scope="col" class="text-center">Curso</th>
                                                 <th scope="col" class="text-center">Nota</th>
-                                                <th scope="col" class="text-center">x</th>
+                                                <th scope="col" class="text-center">Acción</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -209,7 +251,8 @@
                                                 <td class="text-center">{{ cursoNota.nota }}</td>
                                                 <td class="text-center">
                                                     <i @click.prevent="eliminarCurso(index)"
-                                                        class="fa-solid fa-trash btn btn-danger"></i>
+                                                        class="fa-solid fa-trash text-red"
+                                                        :disabled="deshabilitarComponentes"></i>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -219,13 +262,14 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Fotografía del estudiante</label>
+                                <label for="exampleFormControlInput1" class="form-label">Fotografía del
+                                    estudiante</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-image"></i>
                                     </span>
                                     <input class="form-control" type="file" id="imagen" @change="handleFileChange"
-                                        accept="image/*" required>
+                                        accept="image/*" required :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -234,8 +278,9 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-image"></i>
                                     </span>
-                                    <input class="form-control" type="file" id="imagenFicha" @change="handleFileChangeFicha"
-                                        accept="image/*" required>
+                                    <input class="form-control" type="file" id="imagenFicha"
+                                        @change="handleFileChangeFicha" accept="image/*" required
+                                        :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -244,24 +289,180 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-image"></i>
                                     </span>
-                                    <input class="form-control" type="file" id="imagenCarta" @change="handleFileChangeCarta"
-                                        accept="image/*" required>
+                                    <input class="form-control" type="file" id="imagenCarta"
+                                        @change="handleFileChangeCarta" accept="image/*"
+                                        :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                         </div>
-
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="exampleFormControlInput1" class="form-label">Fecha de registro</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </span>
+                                    <input autofocus id="fechaRegistro" v-model="fechaRegistro" required type="date"
+                                        class="form-control" :disabled="deshabilitarComponentes">
+                                </div>
+                            </div>
+                        </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary " :disabled="botonDeshabilitado"
-                                @click.prevent="submitForm"><i class="fa-solid fa-save"></i> Guardar registro</button>
-                            <RouterLink :to="{ name: 'registermenu' }">
-                                <button type="button" class="btn btn-outline-primary">Cancelar</button>
+                            <p v-if="deshabilitarComponentes">Cargando...</p>
+                            <div v-if="deshabilitarComponentes" class="spinner-border text-dark" role="status"></div>
+
+                            <RouterLink :to="{ name: 'registermenu' }" type="button" class="btn btn-outline-primary">
+                                Cancelar
                             </RouterLink>
+                            <button type="submit" @click.prevent="submitForm" class="btn btn-primary text-light"
+                                :disabled="deshabilitarComponentes"><i class="fa-solid fa-save"></i> Guardar
+                                registro</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <!--Modal para establecimientos-->
+    <Modal :id="'modalEstablecimiento'" :title="title">
+        <div class="modal-body">
+            <div class="alert alert-success text-center" role="alert" v-show="mostrarAlertaSuccess">
+                ¡El establecimiento fue creado correctamente!
+            </div>
+            <div class="alert alert-danger text-center" role="alert" v-show="mostrarAlertaDanger">
+                ¡Hubo un error al intentar guardar el establecimiento!
+                <p> Por favor, intente nuevamente más tarde.</p>
+            </div>
+            <div class="text-center pb-3" v-show="mostrarLoading">
+                <div class="card-body">
+                    <img style="max-width: 25px; max-height: 25px;" src="/loading.gif" alt="img-fluid">
+                </div>
+            </div>
+            <div class="row col-11">
+                <form @submit.prevent="save(1)">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <input autofocus type="text" v-model="formEstablecimiento.nombreEstablecimiento"
+                            placeholder="Establecimiento" required class="form-control" ref="nameInput">
+                    </div>
+                    <div class="d-grid col-6 mx-auto">
+                        <button class="btn btn-dark">
+                            <i class="fa-solid fa-save"></i> Registrar</button>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </Modal>
+    <Modal :id="'modalCarrera'" :title="title">
+        <div class="modal-body">
+            <div class="alert alert-success text-center" role="alert" v-show="mostrarAlertaSuccess">
+                ¡La carrera fue creada correctamente!
+            </div>
+            <div class="alert alert-danger text-center" role="alert" v-show="mostrarAlertaDanger">
+                ¡Hubo un error al intentar guardar la carrera!
+                <p> Por favor, intente nuevamente más tarde.</p>
+            </div>
+            <div class="text-center pb-3" v-show="mostrarLoading">
+                <div class="card-body">
+                    <img style="max-width: 25px; max-height: 25px;" src="/loading.gif" alt="img-fluid">
+                </div>
+            </div>
+            <div class="row col-11">
+                <form @submit.prevent="save(2)">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <input autofocus type="text" v-model="formCarrera.nombreCarrera" placeholder="Carrera" required
+                            class="form-control" ref="nameInput">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <div class="d-grid col-8">
+                            <select class="form-control form-select" id="codigoComunidad"
+                                v-model="formCarrera.codigoNivelAcademico">
+                                <option value="" disabled selected>
+                                    Selecciona el nivel académico
+                                </option>
+                                <template v-for="tipo in nivelesAcademicos" :key="tipo.codigoNivelAcademico">
+                                    <option :value="tipo.codigoNivelAcademico">
+                                        {{ tipo.nombreNivelAcademico }}
+                                    </option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-grid col-6 mx-auto">
+                        <button class="btn btn-dark">
+                            <i class="fa-solid fa-save"></i> Registrar</button>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </Modal>
+    <Modal :id="'modalCurso'" :title="title">
+        <div class="modal-body">
+            <div class="alert alert-success text-center" role="alert" v-show="mostrarAlertaSuccess">
+                ¡El curso fue creado correctamente!
+            </div>
+            <div class="alert alert-danger text-center" role="alert" v-show="mostrarAlertaDanger">
+                ¡Hubo un error al intentar guardar el curso!
+                <p> Por favor, intente nuevamente más tarde.</p>
+            </div>
+            <div class="text-center pb-3" v-show="mostrarLoading">
+                <div class="card-body">
+                    <img style="max-width: 25px; max-height: 25px;" src="/loading.gif" alt="img-fluid">
+                </div>
+            </div>
+            <div class="row col-11">
+                <form @submit.prevent="save(3)">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <input autofocus type="text" v-model="formCurso.nombreCurso" placeholder="Curso" required
+                            class="form-control" ref="nameInput">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <div class="d-grid col-8">
+                            <select class="form-control form-select" id="codigoComunidad"
+                                v-model="formCurso.codigoNivelAcademico">
+                                <option value="" disabled selected>
+                                    Selecciona el nivel académico
+                                </option>
+                                <template v-for="tipo in nivelesAcademicos" :key="tipo.codigoNivelAcademico">
+                                    <option :value="tipo.codigoNivelAcademico">
+                                        {{ tipo.nombreNivelAcademico }}
+                                    </option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-grid col-6 mx-auto">
+                        <button class="btn btn-dark">
+                            <i class="fa-solid fa-save"></i> Registrar</button>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </Modal>
 </template>
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue';
@@ -270,31 +471,123 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import router from '@/router';
 import Swal from 'sweetalert2';
-const baseBackend = import.meta.env.VITE_BAKENDAPI;
+import Modal from '../../components/Modal.vue'
+import Datepicker from 'vue3-datepicker';
+const baseApiBackend = import.meta.env.VITE_BACKEND_API;
 
 const route = useRoute();
 const authStore = useAuthStore();
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`;
 
+//Disable
+const title = ref("Nuevo Registro");
+const mostrarAlertaSuccess = ref(false);
+const mostrarAlertaDanger = ref(false);
+const mostrarLoading = ref(false);
 
+const deshabilitarComponentes = ref(false);
+const cursoYaExiste = ref(false);
+
+const noMostrarAlertas = () => {
+    mostrarAlertaSuccess.value = false
+    mostrarAlertaDanger.value = false
+    mostrarLoading.value = false
+    formCarrera.value.nombreCarrera = "";
+    formCarrera.value.codigoNivelAcademico = "";
+    formCurso.value.nombreCurso = "";
+    formCurso.value.codigoNivelAcademico = "";
+    formEstablecimiento.value.nombreEstablecimiento = "";
+}
+
+const formEstablecimiento = ref({
+    nombreEstablecimiento: '',
+    estatus: 'A'
+});
+const formCarrera = ref({
+    codigoNivelAcademico: 0,
+    nombreCarrera: '',
+    estatus: 'A'
+});
+
+const formCurso = ref({
+    codigoNivelAcademico: 0,
+    nombreCurso: '',
+    estatus: 'A'
+});
+const save = async (opcion) => {
+    if (opcion == 1) {
+        try {
+            mostrarLoading.value = true;
+            const response = await axios.post('/api/establecimiento/create', formEstablecimiento.value);
+            mostrarLoading.value = false;
+            if (response.data.estatus = true) {
+                mostrarAlertaSuccess.value = true;
+                await getEstablecimientos();
+                opcionSeleccionada();
+            } else {
+                mostrarAlertaDanger.value = true;
+            }
+        } catch {
+            mostrarLoading.value = false;
+            mostrarAlertaDanger.value = true;
+        }
+    } else if (opcion == 2) {
+        try {
+            mostrarLoading.value = true;
+            const response = await axios.post('/api/carrera/create', formCarrera.value);
+            mostrarLoading.value = false;
+            if (response.data.estatus = true) {
+                mostrarAlertaSuccess.value = true;
+                await getCarreras();
+                opcionSeleccionada();
+            } else {
+                mostrarAlertaDanger.value = true;
+            }
+        } catch {
+            mostrarLoading.value = false;
+            mostrarAlertaDanger.value = true;
+        }
+    } else {
+        try {
+            mostrarLoading.value = true;
+            const response = await axios.post('/api/curso/create', formCurso.value);
+            mostrarLoading.value = false;
+            if (response.data.estatus = true) {
+                mostrarAlertaSuccess.value = true;
+                await getCursos();
+                opcionSeleccionada();
+
+            } else {
+                mostrarAlertaDanger.value = true;
+            }
+        } catch {
+            mostrarLoading.value = false;
+            mostrarAlertaDanger.value = true;
+        }
+
+    }
+
+}
 
 const fechaRegistro = ref('');
 const cicloEscolar = ref(0);
-const codigoEstablecimiento = ref(0);
-const codigoNA = ref(0);
-const codigoGrado = ref(0);
+const codigoEstablecimiento = ref("");
+const codigoNivelAcademico = ref("");
+const codigoModalidadEstudio = ref("");
+const codigoGrado = ref("");
 const codigoEstudiante = ref(0);
-const codigoCarrera = ref(0);
+const codigoCarrera = ref("");
 const codigoCurso = ref(0);
 const bloque = ref(1);
-const nota = ref(0);
 const imgEstudiante = ref(null);
 const imgFicha = ref(null);
 const imgCarta = ref(null);
+const estatusFicha = ref("A");
+
 
 //boton
-const botonDeshabilitado = ref(false);
-const cursoYaExiste = ref(false);
+
+
 
 const cursosNotas = ref([]);
 
@@ -315,11 +608,12 @@ const visibilidad = ref([]);
 
 const notaInput = ref(0);
 const agregarCurso = () => {
+    console.log(codigoCurso.value)
     if (notaInput.value !== 0 && notaInput.value !== "" && codigoCurso.value !== 0) {
-        const codigoCursoExistente = cursosNotas.value.find(curso => curso.CodigoCurso === codigoCurso.value);
+        const codigoCursoExistente = cursosNotas.value.find(curso => curso.codigoCurso === codigoCurso.value);
         if (!codigoCursoExistente) {
             cursosNotas.value.push({
-                CodigoCurso: codigoCurso.value,
+                codigoCurso: codigoCurso.value,
                 curso: getNombreCurso(codigoCurso.value),
                 nota: notaInput.value
             });
@@ -368,57 +662,111 @@ const seleccionarEstudiante = (estudiante) => {
 };
 
 
-
-const getNivelAcademico = async () => {
+const getNivelesAcademicos = async () => {
     try {
-        const response = await axios.get('/api/nivelacademico/getall');
-        nivelesAcademicos.value = response.data.nivelesAcademicos;
+        const response = await axios.get('/api/nivelAcademico/selectAll');
+        nivelesAcademicos.value = response.data.filter(nivelAcademico =>
+            nivelAcademico.estatus.trim().toUpperCase() === "A"
+        );
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de niveles académicos.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
+
 
 const getGrados = async () => {
     try {
-        const response = await axios.get('/api/grado/getall');
-        grados.value = response.data;
+        const response = await axios.get('/api/grado/selectAll');
+        grados.value = response.data.filter(grado => grado.estatus.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de grados académicos.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
 
+const carrerasFiltradas = ref("");
 const getCarreras = async () => {
     try {
-        const response = await axios.get('/api/carrera/getall');
-        carreras.value = response.data.carreras;
+        const response = await axios.get('/api/carrera/selectAll');
+        carreras.value = response.data.filter(carrera => carrera.estatus.trim().toUpperCase() === "A");
+        carrerasFiltradas.value = carreras.value;
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de carreras.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
 
 const getEstablecimientos = async () => {
     try {
-        const response = await axios.get('/api/establecimiento/getall');
-        establecimientos.value = response.data.establecimientos;
+        const response = await axios.get('/api/establecimiento/selectAll');
+        establecimientos.value = response.data.filter(establecimiento => establecimiento.estatus.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de establecimientos.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
+
+const cursosFiltrados = ref("");
 const getCursos = async () => {
     try {
-        const response = await axios.get('/api/curso/getall');
-        cursos.value = response.data.cursos;
+        const response = await axios.get('/api/curso/selectAll');
+        cursos.value = response.data.filter(curso => curso.estatus.trim().toUpperCase() === "A");
+        cursosFiltrados.value = cursos.value;
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de los cursos.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
 
 const getEstudiantes = async () => {
     try {
         const response = await axios.get('/api/estudiante/selectAll');
-        estudiantes.value = response.data;
+        estudiantes.value = response.data.filter(estudiante => estudiante.estado.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de estudiantes.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
+    }
+};
+
+const modalidadesEstudios = ref();
+const getModalidadesEstudios = async () => {
+    try {
+        const response = await axios.get('/api/modalidadEstudio/selectAll');
+        modalidadesEstudios.value = response.data.filter(modalidad =>
+            modalidad.estatus.trim().toUpperCase() === "A"
+        );
+    } catch (error) {
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de modalidades de estudios.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
 
@@ -435,46 +783,55 @@ const handleFileChangeCarta = (event) => {
 };
 
 onMounted(async () => {
-    getNivelAcademico();
+    getNivelesAcademicos();
     getGrados();
     getCarreras();
     getEstablecimientos();
     getCursos();
     getEstudiantes();
+    getModalidadesEstudios();
 });
 
 
 //ENVIAR FORMULARIO
 const submitForm = async () => {
-    if (!codigoCarrera.value ||
-        !fechaRegistro.value ||
+    if (!fechaRegistro.value ||
         !codigoEstablecimiento.value ||
         !cursosNotas.value ||
         !idEstudiante.value ||
-        !codigoNA.value ||
-        !codigoGrado.value) {
+        !codigoNivelAcademico.value ||
+        !codigoGrado.value ||
+        !codigoModalidadEstudio.value) {
 
         return Swal.fire({
             icon: 'warning',
             title: "Completa todos los campos antes de enviar",
-            showConfirmButton: false, // Ocultar el botón "Aceptar"
+            showConfirmButton: true, // Ocultar el botón "Aceptar"
             timer: 1500, // Tiempo en milisegundos antes de que se cierre automáticamente
         });
     }
-    botonDeshabilitado.value = true;
+    deshabilitarComponentes.value = true;
 
     const formData = new FormData();
     formData.append('CodigoEstudiante', idEstudiante.value);
     formData.append('CodigoEstablecimiento', codigoEstablecimiento.value);
-    formData.append('CodigoNivelAcademico', codigoNA.value);
+    formData.append('CodigoNivelAcademico', codigoNivelAcademico.value);
     formData.append('CodigoGrado', codigoGrado.value)
     formData.append('CodigoCarrera', codigoCarrera.value)
+    formData.append('CodigoModalidadEstudio', codigoModalidadEstudio.value)
     formData.append('CicloEscolar', cicloEscolar.value)
     formData.append('ImgEstudiante', imgEstudiante.value);
     formData.append('ImgFicha', imgFicha.value);
     formData.append('ImgCarta', imgCarta.value);
     formData.append('FechaRegistro', fechaRegistro.value);
+    formData.append('Bloque', bloque.value)
+    formData.append('Estatus', estatusFicha.value)
 
+    // Agregando cada curso en el array "cursosNotas"
+    cursosNotas.value.forEach((curso, index) => {
+        formData.append(`Cursos[${index}].CodigoCurso`, curso.codigoCurso);
+        formData.append(`Cursos[${index}].Nota`, curso.nota);
+    });
     try {
         if (!authStore.token) {
             return alert('No estás autorizado para realizar esta acción.');
@@ -484,7 +841,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch(`${baseBackend}/api/fichacalificacion/createficha`, {
+        const response = await fetch(`${baseApiBackend}/api/fichacalificacion/createficha`, {
             method: 'POST',
             body: formData,
             headers,
@@ -492,61 +849,78 @@ const submitForm = async () => {
 
 
         if (response.ok) {
-
-            const responseCursos = await axios.post(`${baseBackend}/api/fichacalificacion/createcurso`, cursosNotas.value);
-
-            if (responseCursos.status === 200) {
-                Swal.fire({
-                    icon: 'success',
-                    title: "Ficha de calificación creado satisfactoriamente",
-                    showConfirmButton: false, // Ocultar el botón "Aceptar"
-                    timer: 2000, // Tiempo en milisegundos antes de que se cierre automáticamente
-                });
-
-                //router.push({ name: 'cards' });
-                idEstudiante.value = "";
-                busqueda.value = "";
-                codigoEstablecimiento.value = "";
-                codigoNA.value = "";
-                codigoGrado.value = "";
-                codigoCarrera.value = "";
-                cicloEscolar.value = "";
-                imgEstudiante.value = "";
-                imgFicha.value = "";
-                imgCarta.value = "";
-                fechaRegistro.value = "";
-                cursosNotas.value = [];
-                codigoCurso.value = "";
-                botonDeshabilitado.value = false;
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: "Hubo un error al guardar los cursos y notas",
-                    showConfirmButton: false, // Ocultar el botón "Aceptar"
-                    timer: 2000, // Tiempo en milisegundos antes de que se cierre automáticamente
-                });
-
-            }
-        } else {
+            console.log(response.data);
+            console.log(response);
             Swal.fire({
-                icon: 'error',
-                title: "Hubo un error al crear ficha del estudiante.",
-                showConfirmButton: false, // Ocultar el botón "Aceptar"
-                timer: 2000, // Tiempo en milisegundos antes de que se cierre automáticamente
+                title: '¡Creado!',
+                text: `La ficha de calificaciones se ha creado correctamente.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
             });
+            idEstudiante.value = "";
+            busqueda.value = "";
+            codigoEstablecimiento.value = "";
+            codigoNivelAcademico.value = "";
+            codigoGrado.value = "";
+            codigoCarrera.value = "";
+            cicloEscolar.value = "";
+            imgEstudiante.value = "";
+            imgFicha.value = "";
+            imgCarta.value = "";
+            fechaRegistro.value = "";
+            cursosNotas.value = [];
+            codigoCurso.value = "";
+
+            deshabilitarComponentes.value = false;
+        } else {
+
+            Swal.fire({
+                title: 'Error',
+                text: `Hubo un error al intentar crear la ficha de calificaciones.`,
+                icon: 'error',
+                footer: 'Por favor, intente nuevamente más tarde.'
+            });
+
+            deshabilitarComponentes.value = false;
 
         }
     } catch (error) {
-        console.error('Error al crear el estudiante:', error);
+        deshabilitarComponentes.value = false;
         Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar crear la ficha de calificación.`,
             icon: 'error',
-            title: "Hubo un error al crear ficha del estudiante.",
-            showConfirmButton: false, // Ocultar el botón "Aceptar"
-            timer: 2000, // Tiempo en milisegundos antes de que se cierre automáticamente
+            footer: 'Por favor, intente nuevamente más tarde.'
         });
+
     }
 };
 
+
+//watch(codigoNivelAcademico, (newValue) => {
+//  if (!newValue) {
+//    //checkbox deshabilitado
+//    alert("Nivel Academico sin valor...")
+//  } else {
+//    //checkbox habilitado
+//    alert("Cambio de valor de nivel academico...")
+//  }
+//  mapeoDeDato(estudiantesSeleccionados.value);
+//});
+
+const bloquearComponenteCarrera = ref(true);
+const opcionSeleccionada = () => {
+    if (codigoNivelAcademico.value >= 3) {
+        bloquearComponenteCarrera.value = false;
+    } else {
+        bloquearComponenteCarrera.value = true;
+    }
+    console.log("se esta haciendo el filtro de los cursos");
+    cursosFiltrados.value = cursos.value.filter(curso => curso.codigoNivelAcademico == codigoNivelAcademico.value);
+    carrerasFiltradas.value = carreras.value.filter(carrera => carrera.codigoNivelAcademico == codigoNivelAcademico.value);
+    console.log(cursosFiltrados.value)
+}
 </script>
 <style scoped>
 .contenedor-primario {

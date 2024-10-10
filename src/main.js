@@ -29,8 +29,9 @@ const vuetify = createVuetify({
   },
  
 })
-//fin vuetify
-const baseBackend = import.meta.env.VITE_BAKENDAPI;
+//fin vuetify 
+//Configuraciones de axios
+const baseBackend = import.meta.env.VITE_BACKEND_API;
 window.axios = axios
 window.axios.defaults.baseURL = baseBackend
 window.axios.defaults.headers.common['Accept'] = 'application/json'

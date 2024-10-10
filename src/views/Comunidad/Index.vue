@@ -1,7 +1,7 @@
 <template>
     <div class="row justify-content-center">
         <div class="row col-12">
-            <h2>Lista de proveedores</h2>
+            <h2>Lista de comunidades</h2>
             <hr>
             <!--Menún de navegación-->
             <div class="container text-center mb-4">
@@ -12,7 +12,7 @@
                         </router-link>
                     </div>>
                     <div class="col">
-                        <a class="text-dark" href="#">Proveedores</a>
+                        <a class="text-dark" href="#">Comunidades</a>
                     </div>
                 </div>
             </div>
@@ -29,19 +29,17 @@
             <div class="row justify-content-between ">
                 <div class="col-6">
                     <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro"
-                        @input="buscarProveedor" type="text" :placeholder="tipoBusqueda">
+                        @input="buscarComunidad" type="text" :placeholder="tipoBusqueda">
                 </div>
                 <div class="col-2">
                     <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
                         <option disabled selected>Filtrar por:</option>
-                        <option value="nombreProveedor">Nombre del proveedor</option>
-                        <option value="nombreEncargado">Nombre del encargado</option>
-                        <option value="telefono">Número de telefono</option>
+                        <option value="nombreComunidad">Nombre de la comunidad</option>
                         <option value="estatus">Estado</option>
                     </select>
                 </div>
                 <div class="col-2">
-                    <input v-model="mostrarTodosLosProveedores" type="checkbox" class="form-check-input"
+                    <input v-model="mostrarTodasLasComunidades" type="checkbox" class="form-check-input"
                         id="checkRegistro">
                     <label class="form-check-label" for="flexCheckDefault">
                         Mostrar todo
@@ -62,10 +60,10 @@
                 <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
                     <template v-slot:item.actions="{ item }">
                         <v-icon class="me-2" size="small" data-bs-toggle="modal" data-bs-target="#modal"
-                            @click="$event => openModal(2, item.codigoProveedor, item.nombreProveedor, item.nombreEncargado, item.telefono, item.descripcion, item.estatus)">
+                            @click="$event => openModal(2, item.codigoComunidad, item.nombreComunidad, item.estatus)">
                             <i class="fa-solid fa-edit text-dark"></i>
                         </v-icon>
-                        <v-icon size="small" @click="$event => confirmDelete(item.nombreProveedor, item.codigoProveedor)">
+                        <v-icon size="small" @click="$event => confirmDelete(item.nombreComunidad, item.codigoComunidad)">
                             <i class="fa-solid fa-trash text-dark"></i>
                         </v-icon>
                     </template>
@@ -76,44 +74,22 @@
 
     <Modal :id="'modal'" :title="title">
         <div class="modal-body">
-            <div class="col-md-10"> 
+            <div class="row col-11">
             <form @submit.prevent="save">
+                
                 <div class="input-group mb-3">
                     <span class="input-group-text">
-                        <i class="fa-solid fa-n"></i>
+                        <i class="fa-solid fa-building"></i>
                     </span>
-                    <input autofocus type="text" v-model="form.nombreProveedor" placeholder="Nombre del proveedor" required
+                    <input autofocus type="text" v-model="form.nombreComunidad" placeholder="Comunidad" required
                         class="form-control" ref="nameInput">
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">
-                        <i class="fa-solid fa-n"></i>
-                    </span>
-                    <input autofocus type="text" v-model="form.nombreEncargado" placeholder="Nombre del encargado" required
-                        class="form-control" ref="nameInput">
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">
-                        <i class="fa-solid fa-phone"></i>
-                    </span>
-                    <input autofocus type="text" v-model="form.telefono" placeholder="Número de teléfono"
-                        class="form-control" ref="nameInput"
-                        maxLength="8">
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">
-                        <i class="fa-solid fa-d"></i>
-                    </span>
-                    <input autofocus type="text" v-model="form.descripcion" placeholder="Descripción"
-                        class="form-control" ref="nameInput"
-                        maxLength="70">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">
                         <i class="fa-solid fa-building"></i>
                     </span>
                     <div class="d-grid col-8">
-                        <select class="form-control form-select" id="codigoProveedor" v-model="form.estatus" required>
+                        <select class="form-control form-select" id="codigoComunidad" v-model="form.estatus">
                             <option value="" disabled selected>
                                 Selecciona el estado
                             </option>
@@ -129,11 +105,10 @@
                         <i class="fa-solid fa-save"></i> Registrar</button>
                 </div>
             </form>
-        </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
             </div>
-
+        </div>
         </div>
     </Modal>
 </template>
@@ -163,47 +138,44 @@ changeLocale('es');
 
 
 onMounted(() => {
-    getProveedores();
+    getComunidades();
 
 })
 
 //Header de tabla
 const headers = [
     { title: '#', key: 'indice' },
-    { title: 'Nombre del proveedor', key: 'nombreProveedor' },
-    { title: 'Nombre del encargado', key: 'nombreEncargado'},
-    { title: 'Telefono', key: 'telefono'},
-    { title: 'Descripción', key: 'descripcion'},
+    { title: 'Nombre', key: 'nombreComunidad' },
     { title: 'Estado', key: 'estatus' },
     { title: 'Acción', key: 'actions', sortable: false },
 ]
 
-//GET proveedores
-//#region GET proveedores
-const proveedores = ref([])
-const proveedoresActivos = ref([]);
-const proveedoresSeleccionados = ref([]);
-const getProveedores = async () => {
+//GET comunidades
+//#region GET comunidades
+const comunidades = ref([])
+const comunidadesActivas = ref([]);
+const comunidadesSeleccionadas = ref([]);
+const getComunidades = async () => {
     try {
-        const response = await axios.get(`/api/Proveedor/selectAll`)
-        proveedores.value = response.data;
-        // Filtra los proveedores cuyo estatus es igual a "A", ignorando mayúsculas/minúsculas
-        proveedoresActivos.value = proveedores.value.filter(proveedor =>
-            proveedor.estatus.trim().toUpperCase() === "A"
+        const response = await axios.get(`/api/Comunidad/selectAll`)
+        comunidades.value = response.data;
+        // Filtra los comunidades cuyo estatus es igual a "A", ignorando mayúsculas/minúsculas
+        comunidadesActivas.value = comunidades.value.filter(comunidad =>
+            comunidad.estatus.trim().toUpperCase() === "A"
         );
 
-        if(mostrarTodosLosProveedores.value){
-            proveedoresSeleccionados.value = proveedores.value;
+        if(mostrarTodasLasComunidades.value){
+            comunidadesSeleccionadas.value = comunidades.value;
         }else {
-            proveedoresSeleccionados.value = proveedoresActivos.value;
+            comunidadesSeleccionadas.value = comunidadesActivas.value;
         }
         
-        mapeoDeDato(proveedoresSeleccionados.value);
+        mapeoDeDato(comunidadesSeleccionadas.value);
         
     } catch (error) {
         Swal.fire({
       title: 'Error',
-      text: `Hubo un error al intentar obtener la lista de los proveedores.`,
+      text: `Hubo un error al intentar obtener la lista de comunidades.`,
       icon: 'error',
       footer: 'Por favor, intente nuevamente más tarde.'
     });
@@ -211,14 +183,11 @@ const getProveedores = async () => {
 }
 
 const mapeoDeDato = (datos) => {
-    resultadoFiltrado.value = datos.map((proveedor, index) => ({
+    resultadoFiltrado.value = datos.map((comunidad, index) => ({
             'indice': index + 1,
-            'codigoProveedor': proveedor.codigoProveedor,
-            'nombreProveedor': proveedor.nombreProveedor,
-            'nombreEncargado': proveedor.nombreEncargado,
-            'telefono': proveedor.telefono,
-            'descripcion': proveedor.descripcion,
-            'estatus': proveedor.estatus
+            'codigoComunidad': comunidad.codigoComunidad,
+            'nombreComunidad': comunidad.nombreComunidad,
+            'estatus': comunidad.estatus
         }));
 }
 
@@ -226,57 +195,58 @@ const mapeoDeDato = (datos) => {
 
 
 //#region Método del FILTRO de datos
-const tipoBusqueda = ref('Buscar proveedor')
+const tipoBusqueda = ref('Buscar usuario')
 const filtro = ref('');
 const resultadoFiltrado = ref([]);
-const tipoFiltro = ref('nombreProveedor');
-const mostrarTodosLosProveedores = ref(false);
+const tipoFiltro = ref('nombreComunidad');
+const mostrarTodasLasComunidades = ref(false);
 
 //Metodo del filtro de datos en la tabla
-const buscarProveedor = () => {
+const buscarComunidad = () => {
     const textoBusqueda = filtro.value.toLowerCase().trim();
-    let datosFiltrados;// Por defecto, usa todos los proveedores
+    let datosFiltrados;// Por defecto, usa todos los comunidades
 
     if (textoBusqueda !== '') {
-        datosFiltrados = proveedoresSeleccionados.value.filter(proveedor => {
-            const campoFiltro = proveedor[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
+        datosFiltrados = comunidadesSeleccionadas.value.filter(comunidad => {
+            const campoFiltro = comunidad[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
             return campoFiltro?.includes(textoBusqueda);
         });
 
         mapeoDeDato(datosFiltrados);
     }
     else {
-        mapeoDeDato(proveedoresSeleccionados.value);
+        mapeoDeDato(comunidadesSeleccionadas.value);
     }
 }
-watch(mostrarTodosLosProveedores, (newValue) => {
+watch(mostrarTodasLasComunidades, (newValue) => {
     if (!newValue) {
         //checkbox deshabilitado
-        proveedoresSeleccionados.value = proveedoresActivos.value;
+        comunidadesSeleccionadas.value = comunidadesActivas.value;
     } else {
         //checkbox habilitado
-        proveedoresSeleccionados.value = proveedores.value;
+        comunidadesSeleccionadas.value = comunidades.value;
     }
-    mapeoDeDato(proveedoresSeleccionados.value);
+    mapeoDeDato(comunidadesSeleccionadas.value);
 });
 //#endregion
 
-//const proveedores = ref([])
+//const comunidades = ref([])
 const form = ref({
-    nombreProveedor: '',
-    nombreEncargado: '',
-    telefono: '',
-    descripcion: '',
-    estatus: ''
+    nombreComunidad: '',
+    estatus: 'A'
 });
 
 const title = ref('');
 const nameInput = ref('');
 const operation = ref(1);
-const codigoProveedorActualizar = ref('');
+const codigoComunidadActualizar = ref('');
 const close = ref([]);
 
-
+//const  deleteCarrera = (nombreComunidad, codigoComunidad) => {
+//    confirmation(nombreComunidad, `/api/Comunidad/delete/${codigoComunidad}`, '', authStore.authToken);
+//    console.log("¿Se esta ejecutando otro codigo?")
+//    getComunidades();
+//};
 // Método que muestra la confirmación antes de eliminar
 const confirmDelete = (nombre, codigo) => {
   Swal.fire({
@@ -290,45 +260,42 @@ const confirmDelete = (nombre, codigo) => {
   }).then((result) => {
     if (result.isConfirmed) {
       // Aquí llamas al método que eliminará el registro
-      deleteProveedor(nombre, codigo);
+      deleteComunidad(nombre, codigo);
     }
   });
 };
 
 // Método de eliminación (este es el que ya tienes implementado)
-const deleteProveedor = async (nombreProveedor, codigoProveedor) => {
+const deleteComunidad = async (nombreComunidad, codigoComunidad) => {
   try {
-    const response = await axios.delete(`/api/proveedor/delete/${codigoProveedor}`)
+    const response = await axios.delete(`/api/Comunidad/delete/${codigoComunidad}`)
     Swal.fire({
       title: 'Eliminado!',
-      text: `El proveedor ${nombreProveedor} ha sido eliminado.`,
+      text: `La comunidad ${nombreComunidad} ha sido eliminada.`,
       icon: 'success',
     });
-    getProveedores();
+    getComunidades();
   } catch (error) {
     Swal.fire({
       title: 'Error',
-      text: `Hubo un error al intentar eliminar el proveedor ${nombreProveedor}.`,
+      text: `Hubo un error al intentar eliminar la comunidad ${nombreComunidad}.`,
       icon: 'error',
       footer: error.message || 'Por favor, intente nuevamente más tarde.'
     });
   }
 };
 
-const openModal = (op, codigoProveedor, nombreProveedor, nombreEncargado, telefono, descripcion, estatus) => {
+const openModal = (op, codigoComunidad, nombreComunidad, estatus) => {
     clear();
     setTimeout(() => nextTick(() => nameInput.value.focus()), 600);
     operation.value = op;
-    codigoProveedorActualizar.value = codigoProveedor;
+    codigoComunidadActualizar.value = codigoComunidad;
     if (op == 1) {
         title.value = 'Crear Registro'
 
     } else if (op == 2) {
         title.value = 'Actualizar Registro';
-        form.value.nombreProveedor = nombreProveedor;
-        form.value.nombreEncargado = nombreEncargado;
-        form.value.telefono = telefono;
-        form.value.descripcion = descripcion;
+        form.value.nombreComunidad = nombreComunidad;
         form.value.estatus = estatus;
     } else {
         title.value = 'Información';
@@ -337,30 +304,26 @@ const openModal = (op, codigoProveedor, nombreProveedor, nombreEncargado, telefo
 
 
 const clear = () => {
-    form.value.nombreProveedor = '';
-    form.value.nombreEncargado = '';
-    form.value.telefono = '';
-    form.value.descripcion = '';
-    form.value.estatus = '';
+    form.value.nombreComunidad = '';
+    form.value.estatus = 'A';
 }
 
 const save = async () => {
     let res;
-    //console.log(`que esta en form ${form.value.nombreProveedor}`)
+    //console.log(`que esta en form ${form.value.nombreNivelAcademico}`)
     if (operation.value == 1) {
-        console.log(form.value);
-        res = await sendRequest('POST', form.value, '/api/proveedor/create', '');
+        res = await sendRequest('POST', form.value, '/api/Comunidad/create', '');
         if (res == true) {
             clear();
             nextTick(() => close.value.click());
-            getProveedores();
+            getComunidades();
         }
     } else {
-        res = await sendRequest('PUT', form.value, `/api/proveedor/update/${codigoProveedorActualizar.value}`, '');
+        res = await sendRequest('PUT', form.value, `/api/Comunidad/update/${codigoComunidadActualizar.value}`, '');
 
         if (res == true) {
             nextTick(() => close.value.click());
-            getProveedores();
+            getComunidades();
         }
     }
 }
@@ -418,27 +381,21 @@ const descargarPDF = async (datos) => {
     doc.addImage(imgData, 'JPEG', 0, 0, 10, 10);
     // Título del documento
     doc.setTextColor(255, 0, 0);
-    doc.text("Reporte de Proveedores", 10, 30);
+    doc.text("Reporte de comunidades", 10, 30);
 
     //doc.setTextColor(144, 153, 9);
     //doc.text("Reporte de Estudiantes", 10, 35);
     // Encabezados de la tabla
     const headers2 = ['No.',
-        'Nombre del proveedor',
-        'Nombre del encargado',
-        'Número del telefono',
-        'Descripción',
+        'Nombre',
         'Estado',
     ];
 
     // Datos de la tabla
-    const data = datos.map((proveedor, index) => [
+    const data = datos.map((comunidad, index) => [
         index + 1,
-        proveedor.nombreProveedor,
-        proveedor.nombreEncargado,
-        proveedor.telefono,
-        proveedor.descripcion,
-        proveedor.estatus
+        comunidad.nombreComunidad,
+        comunidad.estatus
     ]);
 
     // Estilos para el encabezado de la tabla
@@ -456,7 +413,7 @@ const descargarPDF = async (datos) => {
     });
 
     // Guardar el documento como un archivo PDF
-    doc.save("reporteProveedores.pdf");
+    doc.save("Reportecomunidades.pdf");
 }
 //#endregion
 
@@ -475,17 +432,14 @@ const exportarExcel = () => {
     //   'Nivel Académico',
     //   'Grado',
     //   'Carrera',
-    //   'proveedor'
+    //   'Establecimiento'
     // ];
 
     // Mapeo de datos con nombres de columnas
-    const data = datos.map((proveedor, index) => ({
+    const data = datos.map((comunidad, index) => ({
         'Indice': index + 1,
-        'Nombre del proveedor': proveedor.nombreProveedor,
-        'Nombre del encargado': proveedor.nombreEncargado,
-        'Número del telefono': proveedor.telefono,
-        'Descripción': proveedor.descripcion,
-        'Estado': proveedor.estatus
+        'Nombre': comunidad.nombreComunidad,
+        'Estado': comunidad.estatus
     }));
     // Insertar encabezados al principio de los datos
     //data.unshift(encabezados);
@@ -497,7 +451,7 @@ const exportarExcel = () => {
     // Convertir los datos a una hoja de cálculo de Excel
     const worksheet = XLSX.utils.json_to_sheet(data);
     // Agregar la hoja de cálculo al libro
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lista de proveedores');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lista de comunidades');
     // Crear un archivo de datos binarios de Excel
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     // Convertir el archivo binario en un Blob
@@ -507,7 +461,7 @@ const exportarExcel = () => {
     // Crear un enlace invisible para descargar el archivo
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'reporteProveedores.xlsx';
+    link.download = 'reportecomunidades.xlsx';
     // Simular un clic en el enlace para iniciar la descarga
     link.click();
     // Liberar la URL del Blob
