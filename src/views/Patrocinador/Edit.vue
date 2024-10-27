@@ -1,7 +1,7 @@
 <template>
     <div class="row justify-content-center mt-1">
         <div class="row col-11">
-            <h3>Actualizar información del patrocinador</h3>
+            <h3>Registro de Patrocinador</h3>
             <hr>
             <div class="container text-center mb-4">
                 <div class="row row-cols-auto">
@@ -15,31 +15,36 @@
                             Patrocinadores
                         </router-link>
                     </div>>
-                    <div class="col text-primary">
-                        <a href="#">Actualizar registro</a>
+                    <div class="col">
+                        <a class="text-dark" href="#">Editar registro</a>
                     </div>
                 </div>
             </div>
             <div class="card border border-success">
+
                 <div class="card-body">
                     <form enctype="multipart/form-data">
                         <div class="row">
+                            <p class="placeholder-glow" v-if="deshabilitarComponentes">
+                                <span class="placeholder col-12 text-success"></span>
+                            </p>
                             <h4>Información del patrocinador</h4>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput" class="form-label">Estado</label>
+                                <label for="exampleFormControlInput" class="form-label">Estado<span
+                                        class="text-danger">*</span></label>
                                 <div class="d-flex flex-row">
-                                    <div class="form-check">
+                                    <div class="form-check mr-3">
                                         <input class="form-check-input" type="radio" name="estadoRadio"
                                             id="flexRadioDefault3" value="A" v-model="estado">
                                         <label class="form-check-label" for="flexRadioDefault3">
                                             Activo
                                         </label>
                                     </div>
-                                    <div class="form-check ps-5">
+                                    <div class="form-check">
                                         <input class="form-check-input" type="radio" name="estadoRadio"
-                                            id="flexRadioDefault4" value="F" v-model="estado">
+                                            id="flexRadioDefault4" value="I" v-model="estado">
                                         <label class="form-check-label" for="flexRadioDefault4">
-                                            Finalizado
+                                            Inactivo
                                         </label>
                                     </div>
                                 </div>
@@ -47,21 +52,25 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Nombre</label>
+                                <label for="exampleFormControlInput1" class="form-label">Nombre<span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-n"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="nombrePatrocinador" class="form-control">
+                                    <input autofocus type="text" v-model="nombrePatrocinador" class="form-control"
+                                        :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Apellido</label>
+                                <label for="exampleFormControlInput1" class="form-label">Apellido<span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-a"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="apellidoPatrocinador" class="form-control">
+                                    <input autofocus type="text" v-model="apellidoPatrocinador" class="form-control"
+                                        :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                         </div>
@@ -72,29 +81,35 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-calendar-days"></i>
                                     </span>
-                                    <input autofocus id="fechaRecibirComprobante" required type="date"
-                                        v-model="fechaNacimiento" class="form-control">
+                                    <input autofocus id="fechaRecibirComprobante" type="date" v-model="fechaNacimiento"
+                                        class="form-control" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <label for="exampleFormControlInput1" class="form-label">Profesión</label>
+                                <label for="exampleFormControlInput1" class="form-label">Profesión<span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="profesion" class="form-control">
+                                    <input autofocus type="text" v-model="profesion" class="form-control"
+                                        :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <h4>Información de residencia</h4>
                             <div class="col-md-8">
-                                <label for="exampleFormControlInput1" class="form-label">Pais</label>
+                                <label for="exampleFormControlInput1" class="form-label">Pais<span
+                                        class="text-danger">*</span> <i data-bs-toggle="modal"
+                                        data-bs-target="#modalPais" style="font-size: 14px;" class="fas fa-circle-plus"
+                                        @click="noMostrarAlertas()"></i></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
                                     </span>
-                                    <select class="form-control form-select" id="codigoGrado" v-model="codigoPais">
+                                    <select class="form-control form-select" id="codigoPais" v-model="codigoPais"
+                                        :disabled="deshabilitarComponentes">
                                         <option value="" disabled selected>
                                             Selecciona pais
                                         </option>
@@ -115,26 +130,32 @@
                                         <i class="fa-solid fa-image"></i>
                                     </span>
                                     <input class="form-control" type="file" id="imagen" @change="handleFileChange"
-                                        accept="image/*" required>
+                                        accept="image/*" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Fecha de registro</label>
+                                <label for="exampleFormControlInput1" class="form-label">Fecha de registro<span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-calendar-days"></i>
                                     </span>
                                     <input autofocus id="fechaRecibirComprobante" required type="date"
-                                        v-model="fechaCreacion" class="form-control">
+                                        v-model="fechaCreacion" class="form-control"
+                                        :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary " :disabled="botonDeshabilitado"
-                                @click.prevent="submitForm"><i class="fa-solid fa-save"></i> Guardar registro</button>
-                            <RouterLink :to="{ name: 'home' }">
-                                <button type="button" class="btn btn-outline-primary">Cancelar</button>
+                            <p v-if="deshabilitarComponentes">Cargando...</p>
+                            <div v-if="deshabilitarComponentes" class="spinner-border text-dark" role="status"></div>
+
+                            <RouterLink :to="{ name: 'registermenu' }" type="button" class="btn btn-outline-primary">
+                                Cancelar
                             </RouterLink>
+                            <button type="submit" @click.prevent="submitForm" class="btn btn-primary text-light"
+                                :disabled="deshabilitarComponentes"><i class="fa-solid fa-save"></i> Guardar
+                                registro</button>
                         </div>
 
 
@@ -143,17 +164,54 @@
             </div>
         </div>
     </div>
+
+    <!--Modal para pais-->
+    <Modal :id="'modalPais'" :title="title">
+        <div class="modal-body">
+            <div class="alert alert-success text-center" role="alert" v-show="mostrarAlertaSuccess">
+                ¡El pais fue creado correctamente!
+            </div>
+            <div class="alert alert-danger text-center" role="alert" v-show="mostrarAlertaDanger">
+                ¡Hubo un error al intentar guardar el pais!
+                <p> Por favor, intente nuevamente más tarde.</p>
+            </div>
+            <div class="text-center pb-3" v-show="mostrarLoading">
+                <div class="card-body">
+                    <img style="max-width: 25px; max-height: 25px;" src="/loading.gif" alt="img-fluid">
+                </div>
+            </div>
+            <div class="row col-11">
+                <form @submit.prevent="save(1)">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <input autofocus type="text" v-model="formPais.nombre" placeholder="Pais" required
+                            class="form-control" ref="nameInput">
+                    </div>
+                    <div class="d-grid col-6 mx-auto">
+                        <button class="btn btn-dark">
+                            <i class="fa-solid fa-save"></i> Registrar</button>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </Modal>
 </template>
-  
+
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-const baseBackend = import.meta.env.VITE_BAKENDAPI;
-
+import Modal from '../../components/Modal.vue'
+const baseApiBackend = import.meta.env.VITE_BACKEND_API;
 const route = useRoute();
+const parametro = route.params.codigoPatrocinador;
 const authStore = useAuthStore();
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`;
 
@@ -163,7 +221,7 @@ const nombrePatrocinador = ref("");
 const apellidoPatrocinador = ref("")
 const profesion = ref("");
 const estado = ref("A");
-const fechaNacimiento = ref("Estudiante");
+const fechaNacimiento = ref("");
 const fechaCreacion = ref("");
 const imgPatrocinador = ref(null);
 
@@ -175,14 +233,18 @@ const handleFileChange = (event) => {
 
 
 const paises = ref([]);
-const parametro = route.params.codigoPatrocinador;
 
 const getPaises = async () => {
     try {
-        const response = await axios.get('/api/pais/getall');
-        paises.value = response.data;
+        const response = await axios.get('/api/pais/selectAll');
+        paises.value = response.data.filter(a => a.estatus.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de los paises.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
 const getPatrocinador = async () => {
@@ -193,15 +255,19 @@ const getPatrocinador = async () => {
         apellidoPatrocinador.value = response.data.apellidoPatrocinador;
         profesion.value = response.data.profesion;
         estado.value = response.data.estado;
-        fechaNacimiento.value = formatFecha(response.data.fechaNacimiento)
+        fechaNacimiento.value = formatFecha(response.data.fechaNacimiento);
         fechaCreacion.value = formatFecha(response.data.fechaCreacion);
+        imgPatrocinador.value = null;
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener los datos del patrocinador.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
 
-
-//FORMATEAR FECHA
 const formatFecha = (fecha) => {
     const date = new Date(fecha)
     const year = date.getFullYear()
@@ -210,22 +276,67 @@ const formatFecha = (fecha) => {
     return `${year}-${month}-${day}`
 }
 
-
-const botonDeshabilitado = ref(false);
-
-
-
 onMounted(async () => {
     getPaises();
     getPatrocinador();
 });
 
 
-const submitForm = async () => {
-    if (!nombrePatrocinador.value || !apellidoPatrocinador.value) {
-        return alert('Completa todos los campos antes de enviar.');
+//#region Alertas
+const title = ref("Nuevo Registro");
+const mostrarAlertaSuccess = ref(false);
+const mostrarAlertaDanger = ref(false);
+const mostrarLoading = ref(false);
+
+const noMostrarAlertas = () => {
+    mostrarAlertaSuccess.value = false
+    mostrarAlertaDanger.value = false
+    mostrarLoading.value = false
+    formPais.value.nombre = "";
+}
+//#endregion
+
+//#region modal de pais
+const formPais = ref({
+    nombre: "",
+    estatus: "A"
+})
+//#endregion
+
+//#region  metodo save de modales
+const save = async (opcion) => {
+    if (opcion == 1) {
+        try {
+            mostrarLoading.value = true;
+            const response = await axios.post('/api/pais/create', formPais.value);
+            mostrarLoading.value = false;
+            if (response.data.status = true) {
+                mostrarAlertaSuccess.value = true;
+                getPaises();
+            } else {
+                mostrarAlertaDanger.value = true;
+            }
+        } catch {
+            noMostrarAlertas();
+        }
     }
-    botonDeshabilitado.value = true;
+
+}
+
+//#endregion
+
+const deshabilitarComponentes = ref(false);
+const submitForm = async () => {
+    if (!nombrePatrocinador.value || !apellidoPatrocinador.value ||
+        !codigoPais.value || !fechaCreacion.value || !profesion.value || !estado.value) {
+        return Swal.fire({
+            title: 'Campos vacíos',
+            text: `Por favor, complete los campos obligatorios.`,
+            icon: 'warning',
+        });
+    }
+    deshabilitarComponentes.value = true;
+
 
     const formData = new FormData();
     formData.append('CodigoPais', codigoPais.value);
@@ -246,7 +357,7 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch(`${baseBackend}/api/patrocinador/updateimage/${parametro}`, {
+        const response = await fetch(`${baseApiBackend}/api/patrocinador/update/${parametro}`, {
             method: 'PUT',
             body: formData,
             headers,
@@ -254,35 +365,39 @@ const submitForm = async () => {
 
         if (response.ok) {
             Swal.fire({
-                icon: 'success', // Ícono de éxito
-                title: 'Patrocinador registrado exitosamente.',
-                showConfirmButton: false, // Ocultar el botón "Aceptar"
-                timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+                title: '¡Actualizado!',
+                text: `El patrocinador se ha actualizado correctamente.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
             });
 
-            botonDeshabilitado.value = false;
+            deshabilitarComponentes.value = false;
 
 
         } else {
             Swal.fire({
-                icon: 'error', // Ícono de éxito
-                title: 'Hubo un error al actualizar datos del patrocinador.',
-                showConfirmButton: false, // Ocultar el botón "Aceptar"
-                timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+                title: 'Error',
+                text: `Hubo un error al intentar actualizar los datos del patrocinador.`,
+                icon: 'error',
+                footer: 'Por favor, intente nuevamente más tarde.'
             });
-            botonDeshabilitado.value = false;
+
+            deshabilitarComponentes.value = false;
         }
     } catch (error) {
         Swal.fire({
-                icon: 'error', // Ícono de éxito
-                title: 'Hubo un error.',
-                showConfirmButton: false, // Ocultar el botón "Aceptar"
-                timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
-            });
+            title: 'Error',
+            text: `Hubo un error al intentar actualizar los datos del patrocinador.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
+        deshabilitarComponentes.value = false;
     }
 };
+
 </script>
-  
+
 <style scoped>
 .contenedor-primario {
     margin-top: 60px;

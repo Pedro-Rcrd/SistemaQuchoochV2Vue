@@ -9,7 +9,7 @@ const authStore = useAuthStore()
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
 
 onMounted(() => {
-    getCompras(1)
+  getCompras(1)
 })
 
 const compras = ref([])
@@ -24,105 +24,96 @@ const rows = ref(0);
 
 const load = ref(false)
 const getCompras = async (page) => {
-    try {
-        const response = await axios.get(`/api/Compra/getall?pagina=${page}`)
-        compras.value = response.data.compras.map(expense => ({
-            ...expense,
-            fechaCreacion: formatFecha(expense.fechaCreacion) // Formatea la fecha
-        }))
-        rows.value = response.data.totalPaginas;
-        load.value = true
-    } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-        // Puedes manejar el error de la solicitud aquí
-    }
+  try {
+    const response = await axios.get(`/api/Compra/getall?pagina=${page}`)
+    compras.value = response.data.compras.map(expense => ({
+      ...expense,
+      fechaCreacion: formatFecha(expense.fechaCreacion) // Formatea la fecha
+    }))
+    rows.value = response.data.totalPaginas;
+    load.value = true
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error)
+    // Puedes manejar el error de la solicitud aquí
+  }
 }
 
 const deleteCompra = (id, name) => {
-    confirmation(name, `/api/Compra/delete/${id}`, '/purchases', authStore.authToken);
+  confirmation(name, `/api/Compra/delete/${id}`, '/purchases', authStore.authToken);
 };
 
 
 // Función para formatear la fecha
 const formatFecha = (fecha) => {
-    const date = new Date(fecha)
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    return `${year}-${month}-${day}`
+  const date = new Date(fecha)
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 </script>
 
 <style scoped>
 .contenedor-primario {
-    margin-top: 60px;
-    margin-left: 85px;
+  margin-top: 60px;
+  margin-left: 85px;
 }
 
 .contenedor-card {
-    background-color: rgba(128, 128, 9, 0.067);
+  background-color: rgba(128, 128, 9, 0.067);
 }
 
 .bg-boton {
-        background-color: #768009;
-        color: #fff;
-        transition: background-color 0.3s; 
-    }
-    .bg-boton:hover {
-    background-color: #5c6e00; /* Color más oscuro al pasar el mouse por encima */
+  background-color: #768009;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+.bg-boton:hover {
+  background-color: #5c6e00;
+  /* Color más oscuro al pasar el mouse por encima */
 }
 
 .text-color-card {
-    color: #157347;
+  color: #157347;
 }
 </style>
 
 <template>
-    <div class="row justify-content-center">
-        
-            <div class="row col-10">
-            <h2>Menú de Asignación</h2> <hr>
+  <div class="row justify-content-center">
 
-                <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
-                    <div class=" row align-items-center " style="margin-top: -4px;">
-                        <div class="divimg  mt-1 contenedor-card" style="width: 18rem;">
-                        <img class="card-img-top" style="height: 10rem;" src="../../../public/asignarPatrocinador.png"
-                            alt="Card image cap">
-                    </div>
+    <div class="row col-10">
+      <h2>Menú de Asignación</h2>
+      <hr>
 
-                    </div>
-             
-                    <h5 class="card-title text-color-card">Estudiante - Patrocinador</h5>
-                    <RouterLink :to="{ name: 'studentssponsors'}" class="no-underline btn bg-boton">Nueva asignación</RouterLink>
-                </div>
-            </div>
-    </div>
+      <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
+        <div class=" row align-items-center " style="margin-top: -4px;">
+          <div class="divimg  mt-1 contenedor-card" style="width: 18rem;">
+            <img class="card-img-top" style="height: 10rem;" src="../../../public/asignarPatrocinador.png"
+              alt="Card image cap">
+          </div>
 
-    <!-- Small modal -->
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-  Launch demo modal
-</button>
+        </div>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <h5 class="card-title text-color-card">Estudiantes</h5>
+        <RouterLink :to="{ name: 'studentssponsors' }" class="no-underline btn bg-boton" v-if="authStore.crearModAsignacion">Nueva asignación</RouterLink>
       </div>
-      <div class="modal-body">
-        ...
+      <div class="card me-4 mb-3 " style="width: 20rem; height: 15.3rem;">
+        <div class=" row align-items-center " style="margin-top: -4px;">
+          <div class="divimg  mt-1 contenedor-card" style="width: 20rem;">
+            <img class="card-img-top" style="height: 10rem;" src="../../../public/asignarPatrocinador.png"
+              alt="Card image cap">
+          </div>
+
+        </div>
+
+        <h5 class="card-title text-color-card">Estudiantes con Patrocinadores</h5>
+        <RouterLink :to="{ name: 'studentswithsponsors' }" class="no-underline btn bg-boton">Ver</RouterLink>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
+
     </div>
   </div>
-</div>
+
+  
 </template>

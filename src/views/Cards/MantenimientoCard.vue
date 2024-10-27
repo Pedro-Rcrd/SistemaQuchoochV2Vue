@@ -150,6 +150,8 @@ const formatFecha = (fecha) => {
                 <RouterLink :to="{ name: 'academicLevels' }" class="no-underline btn bg-boton">Ver
                 </RouterLink>
             </div>
+
+
             <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;" >
                 <div class=" row align-items-center " style="margin-top: -4px;">
                     <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
@@ -162,6 +164,8 @@ const formatFecha = (fecha) => {
                 <RouterLink :to="{ name: 'countries' }" class="no-underline btn bg-boton">Ver
                 </RouterLink>
             </div>
+
+
             <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
                 <div class=" row align-items-center " style="margin-top: -4px;">
                     <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
@@ -174,6 +178,34 @@ const formatFecha = (fecha) => {
                 <RouterLink :to="{ name: 'suppliers' }" class="no-underline btn bg-boton">Ver
                 </RouterLink>
             </div>
+
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/escuela.png"
+                            alt="Card image cap">
+
+                    </div>
+                </div>
+                <h5 class="card-title text-color-card">Grados</h5>
+                <RouterLink :to="{ name: 'grado' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
+            </div>
+
+            <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
+                <div class=" row align-items-center " style="margin-top: -4px;">
+                    <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">
+                        <img class="card-img-top" style="height: 10rem;" src="../../../public/escuela.png"
+                            alt="Card image cap">
+
+                    </div>
+                </div>
+                <h5 class="card-title text-color-card">Rangos de promedios</h5>
+                <RouterLink :to="{ name: 'promedio' }" class="no-underline btn bg-boton">Ver
+                </RouterLink>
+            </div>
+
+
             <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;" v-if="authStore.authUserRol == 1">
                 <div class=" row align-items-center " style="margin-top: -4px;">
                     <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">

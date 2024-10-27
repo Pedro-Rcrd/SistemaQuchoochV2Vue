@@ -30,7 +30,6 @@
                                 <span class="placeholder col-12 text-success"></span>
                             </p>
                             <h4>Información de la Ficha</h4>
-
                         </div>
                         <div class="row">
                             <div class="col-md-8">
@@ -48,6 +47,7 @@
                                     <li v-for="estudiante in visibilidad" :key="estudiante.codigoEstudiante"
                                         @click="seleccionarEstudiante(estudiante)">
                                         {{ estudiante.nombreEstudiante }}
+                                        {{ estudiante.apellidoEstudiante }}
                                     </li>
                                 </ul>
                             </div>
@@ -64,10 +64,9 @@
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <label for="exampleFormControlInput1" class="form-label">Establecimiento</label>
-                                <span><i data-bs-toggle="modal" data-bs-target="#modalEstablecimiento"
+                                <label for="exampleFormControlInput1" class="form-label">Establecimiento <i data-bs-toggle="modal" data-bs-target="#modalEstablecimiento"
                                         style="font-size: 14px;" class="fas fa-circle-plus"
-                                        @click="noMostrarAlertas()"></i></span>
+                                        @click="noMostrarAlertas()"></i></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
@@ -228,7 +227,7 @@
                                 </div>
                             </div>
                             <div class="alert alert-danger" role="alert" v-show="cursoYaExiste">
-                                El curso seleccionado ya está en la lista.
+                                El curso seleccionado ya existe en la lista.
                             </div>
                         </div>
 
@@ -260,6 +259,7 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <div class="row">
                             <div class="col-md-4">
                                 <label for="exampleFormControlInput1" class="form-label">Fotografía del
@@ -591,8 +591,7 @@ const estatusFicha = ref("A");
 
 const cursosNotas = ref([]);
 
-const busqueda = ref('');
-const mostrarLista = ref(true);
+
 
 
 const nivelesAcademicos = ref([]);
@@ -604,11 +603,12 @@ const cursos = ref([]);
 //ESTUDIANTE
 const estudiantes = ref([]);
 const visibilidad = ref([]);
+const busqueda = ref('');
+const mostrarLista = ref(true);
 
 
 const notaInput = ref(0);
 const agregarCurso = () => {
-    console.log(codigoCurso.value)
     if (notaInput.value !== 0 && notaInput.value !== "" && codigoCurso.value !== 0) {
         const codigoCursoExistente = cursosNotas.value.find(curso => curso.codigoCurso === codigoCurso.value);
         if (!codigoCursoExistente) {
@@ -639,26 +639,24 @@ const eliminarCurso = (index) => {
     cursosNotas.value.splice(index, 1);
 };
 
-//Para buscar texto
 const buscarEstudiantes = () => {
     const textoBusqueda = busqueda.value.toLowerCase().trim();
     if (textoBusqueda !== '') {
         //return []; // Si la búsqueda está vacía, devuelve una lista vacía
         mostrarLista.value = true;
         visibilidad.value = estudiantes.value.filter(estudiante =>
-            estudiante.nombreEstudiante.toLowerCase().includes(textoBusqueda));
+            (estudiante.nombreEstudiante.toLowerCase() + " " + estudiante.apellidoEstudiante.toLowerCase())
+                .includes(textoBusqueda.toLowerCase())
+        );
     }
 };
-
 
 //nueva
 const idEstudiante = ref(0);
 const seleccionarEstudiante = (estudiante) => {
     idEstudiante.value = estudiante.codigoEstudiante;
-    busqueda.value = estudiante.nombreEstudiante;
+    busqueda.value = estudiante.nombreEstudiante + " " + estudiante.apellidoEstudiante;
     mostrarLista.value = false; // Ocultar la lista después de seleccionar
-    // Aquí puedes realizar cualquier otra lógica que necesites con el estudiante seleccionado
-    console.log(`El id del estudiantes es: ${idEstudiante.value}`);
 };
 
 
@@ -803,11 +801,10 @@ const submitForm = async () => {
         !codigoGrado.value ||
         !codigoModalidadEstudio.value) {
 
-        return Swal.fire({
+            return Swal.fire({
+            title: 'Campos vacíos',
+            text: `Por favor, complete los campos obligatorios.`,
             icon: 'warning',
-            title: "Completa todos los campos antes de enviar",
-            showConfirmButton: true, // Ocultar el botón "Aceptar"
-            timer: 1500, // Tiempo en milisegundos antes de que se cierre automáticamente
         });
     }
     deshabilitarComponentes.value = true;
@@ -849,8 +846,6 @@ const submitForm = async () => {
 
 
         if (response.ok) {
-            console.log(response.data);
-            console.log(response);
             Swal.fire({
                 title: '¡Creado!',
                 text: `La ficha de calificaciones se ha creado correctamente.`,
@@ -938,18 +933,18 @@ const opcionSeleccionada = () => {
     max-height: 150px;
     overflow-y: auto;
     background-color: #fff;
-    border: var(--bs-border-width) solid var(--bs-border-color);
+    border: 1px solid #454545;
     border-radius: var(--bs-border-radius);
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .listaFiltro li {
-    padding: 10px;
+    padding: 7px;
     cursor: pointer;
 }
 
 .listaFiltro li:hover {
-    background-color: #5434b5;
+    background-color: #808080;
     color: #fff
 }
 </style>

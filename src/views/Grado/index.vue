@@ -1,10 +1,123 @@
+<template>
+    <div class="row justify-content-center">
+        <div class="row col-12">
+            <h2>Lista de grados</h2>
+            <hr>
+            <!--Menún de navegación-->
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/settingcard' }">
+                            Menú de mantenimiento
+                        </router-link>
+                    </div>>
+                    <div class="col">
+                        <a class="text-dark" href="#">Grados</a>
+                    </div>
+                </div>
+            </div>
+            <!--Fin de menu de navegación-->
+            <!--Exportación-->
+            <div class="text-light mb-3">
+                <button type="button" class="btn btn-success btn-sm " @click="exportarExcel"><i
+                        class="fa-solid fa-file-excel"></i> Excel</button>
+                <button type="button" class="btn btn-danger btn-sm" @click="exportarPDF"><i
+                        class="fa-solid fa-file-pdf"></i>
+                    PDF</button>
+            </div>
+            <!--Buscador-->
+            <div class="row justify-content-between ">
+                <div class="col-6">
+                    <input class="form-control" autofocus id="codigoGrado" v-model="filtro"
+                        @input="buscarComunidad" type="text" :placeholder="tipoBusqueda">
+                </div>
+                <div class="col-2">
+                    <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
+                        <option disabled selected>Filtrar por:</option>
+                        <option value="nombreGrado">Nombre</option>
+                        <option value="estatus">Estado</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <input v-model="mostrarTodosLosGrados" type="checkbox" class="form-check-input" id="checkRegistro">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        Mostrar todo
+                    </label>
+                </div>
+                <div class="col-2">
+                    <div class="text-end">
+                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modal"
+                            @click="$event => openModal(1)">
+                            <i class="fa-solid fa-circle-plus"></i> Nuevo
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+            <!--Tabla-->
+            <v-card>
+                <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon class="me-2" size="small" data-bs-toggle="modal" data-bs-target="#modal"
+                            @click="$event => openModal(2, item.codigoGrado, item.nombreGrado, item.estatus)">
+                            <i class="fa-solid fa-edit text-dark"></i>
+                        </v-icon>
+                        <v-icon size="small" @click="$event => confirmDelete(item.nombreGrado, item.codigoGrado)">
+                            <i class="fa-solid fa-trash text-dark"></i>
+                        </v-icon>
+                    </template>
+                </v-data-table>
+            </v-card>
+        </div>
+    </div>
+
+    <Modal :id="'modal'" :title="title">
+        <div class="modal-body">
+            <div class="row col-11">
+                <form @submit.prevent="save">
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <input autofocus type="text" v-model="form.nombreGrado" placeholder="Grado" required
+                            class="form-control" ref="nameInput">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <div class="d-grid col-8">
+                            <select class="form-control form-select" id="codigoGrado" v-model="form.estatus">
+                                <option value="" disabled selected>
+                                    Selecciona el estado
+                                </option>
+                                <option value="A">Activo</option>
+                                <option value="I">Inactivo</option>
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-grid col-6 mx-auto">
+                        <button class="btn btn-dark">
+                            <i class="fa-solid fa-save"></i> Registrar</button>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </Modal>
+</template>
+
 <script setup>
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { confirmation, sendRequest } from '../../functions'
 import { useAuthStore } from '../../stores/auth'
 import axios from 'axios'
 import Modal from '../../components/Modal.vue'
-import Paginate from 'vuejs-paginate-next'
 import Swal from 'sweetalert2';
 
 const authStore = useAuthStore()
@@ -24,232 +137,222 @@ changeLocale('es');
 
 
 onMounted(() => {
-    getUsuarios()
-    getRol();
+    getGrados();
+
 })
 
 //Header de tabla
 const headers = [
     { title: '#', key: 'indice' },
-    { title: 'Nombre', key: 'nombreUsuario' },
-    { title: 'Email', key: 'email' },
-    { title: 'Rol', key: 'nombreRol' },
-    { title: 'Fecha de creación', key: 'fechaCreacion' },
+    { title: 'Nombre', key: 'nombreGrado' },
     { title: 'Estado', key: 'estatus' },
     { title: 'Acción', key: 'actions', sortable: false },
 ]
 
-
-
-//GET usuarios
-//#region GET usuarios
-const usuarios = ref([])
-const usuariosActivos = ref([]);
-const usuariosSeleccionados = ref([]);
-const getUsuarios = async () => {
+//GET grados
+//#region GET grados
+const grados = ref([])
+const gradosActivos = ref([]);
+const gradosSeleccionados = ref([]);
+const getGrados = async () => {
     try {
-        const response = await axios.get(`/api/Usuario/selectAll`)
-        usuarios.value = response.data.map(expense => ({
-            ...expense,
-            fechaCreacion: formatFecha(expense.fechaCreacion) // Formatea la fecha
-        }));
-        // Filtra los usuarios cuyo estatus es igual a "A", ignorando mayúsculas/minúsculas
-        usuariosActivos.value = usuarios.value.filter(usuario =>
-            usuario.estatus.trim().toUpperCase() === "A"
+        const response = await axios.get(`/api/Grado/selectAll`)
+        grados.value = response.data;
+        // Filtra los grados cuyo estatus es igual a "A", ignorando mayúsculas/minúsculas
+        gradosActivos.value = grados.value.filter(grado =>
+            grado.estatus.trim().toUpperCase() === "A"
         );
 
-        usuariosSeleccionados.value = usuariosActivos.value;
+        if (mostrarTodosLosGrados.value) {
+            gradosSeleccionados.value = grados.value;
+        } else {
+            gradosSeleccionados.value = gradosActivos.value;
+        }
 
+        mapeoDeDato(gradosSeleccionados.value);
 
-
-        resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
-            'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
-            'estatus': usuario.estatus
-        }));
-    } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-        // Puedes manejar el error de la solicitud aquí
-    }
-}
-//#endregion
-
-//#region Método del FILTRO de datos
-const tipoBusqueda = ref('Buscar usuario')
-const filtro = ref('');
-const resultadoFiltrado = ref([]);
-const tipoFiltro = ref('nombreUsuario');
-const mostrarTodosLosUsuarios = ref(false);
-
-//Metodo del filtro de datos en la tabla
-const buscarEstudiantes = () => {
-    const textoBusqueda = filtro.value.toLowerCase().trim();
-    let datosFiltrados;// Por defecto, usa todos los usuarios
-
-    if (textoBusqueda !== '') {
-        datosFiltrados = usuariosSeleccionados.value.filter(usuario => {
-            const campoFiltro = usuario[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
-            return campoFiltro?.includes(textoBusqueda);
-        });
-
-        resultadoFiltrado.value = datosFiltrados.map((usuario, index) => ({
-            'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
-            'estatus': usuario.estatus
-        }));
-
-    }
-    else {
-        resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
-            'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
-            'estatus': usuario.estatus
-        }));
-
-    }
-}
-watch(mostrarTodosLosUsuarios, (newValue) => {
-    if (!newValue) {
-        console.log("Opcion de mostrar todo DESHABILITADO")
-        usuariosSeleccionados.value = usuariosActivos.value;
-    } else {
-        console.log("Opciona de mostrar todo HABILITADO")
-        usuariosSeleccionados.value = usuarios.value;
-    }
-    resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
-        'indice': index + 1,
-        'codigoUsuario': usuario.codigoUsuario,
-        'nombreRol': usuario.nombreRol,
-        'codigoRol': usuario.codigoRol,
-        'nombreUsuario': usuario.nombreUsuario,
-        'email': usuario.email,
-        'fechaCreacion': usuario.fechaCreacion,
-        'estatus': usuario.estatus
-    }));
-});
-//#endregion
-
-//const usuarios = ref([])
-const form = ref({
-    codigoRol: 0,
-    nombreUsuario: '',
-    email: '',
-    fechaCreacion: '',
-    contrasenia: '',
-    contraseniaNueva: '',
-    estatus: 'A'
-});
-
-const title = ref('');
-const nameInput = ref('');
-const operation = ref(1);
-const id = ref('');
-const close = ref([]);
-
-const deleteUsuario = (id, name) => {
-    confirmation(name, `/api/Usuario/delete/${id}`, '/users', authStore.authToken);
-};
-
-//Formatear FECHA
-const formatFecha = (fecha) => {
-    const date = new Date(fecha)
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    return `${year}-${month}-${day}`
-}
-
-const FichaUsuario = ref([])
-const openModal = (op, codigoUsuario, codigoRol, nombreUsuario, email, fechaCreacion, estatus) => {
-    clear();
-    setTimeout(() => nextTick(() => nameInput.value.focus()), 600);
-    operation.value = op;
-    id.value = codigoUsuario;
-    if (op == 1) {
-        title.value = 'Crear Registro'
-
-    } else if (op == 2) {
-        title.value = 'Actualizar Registro';
-        form.value.codigoRol = codigoRol;
-        form.value.nombreUsuario = nombreUsuario;
-        form.value.email = email;
-        form.value.fechaCreacion = fechaCreacion;
-        form.value.contrasenia = '';
-        form.value.estatus = estatus;
-    } else {
-        getFichaUsuario(codigoUsuario);
-
-        title.value = 'Información';
-        form.value.codigoRol = codigoRol;
-        form.value.nombreUsuario = nombreUsuario;
-        form.value.email = email;
-        form.value.fechaCreacion = fechaCreacion;
-        form.value.contrasenia = '';
-    }
-}
-
-const getFichaUsuario = async (codigoUsuario) => {
-    try {
-        const response = await axios.get(`/api/Usuario/userInformation/${codigoUsuario}`)
-        FichaUsuario.value = response.data;
     } catch (error) {
         Swal.fire({
             title: 'Error',
-            text: `Hubo un error al intentar obtener la ficha del usuario.`,
+            text: `Hubo un error al intentar obtener la lista de grados.`,
             icon: 'error',
             footer: 'Por favor, intente nuevamente más tarde.'
         });
     }
 }
 
-const clear = () => {
-    form.value.codigoRol = '';
-    form.value.nombreUsuario = '';
-    form.value.fechaCreacion = '';
-    form.value.contrasenia = '';
-    form.value.contraseniaNueva = '';
+const mapeoDeDato = (datos) => {
+    resultadoFiltrado.value = datos.map((grado, index) => ({
+        'indice': index + 1,
+        'codigoGrado': grado.codigoGrado,
+        'nombreGrado': grado.nombreGrado,
+        'estatus': grado.estatus
+    }));
+}
 
+//#endregion
+
+
+//#region Método del FILTRO de datos
+const tipoBusqueda = ref('Buscar grado')
+const filtro = ref('');
+const resultadoFiltrado = ref([]);
+const tipoFiltro = ref('nombreGrado');
+const mostrarTodosLosGrados = ref(false);
+
+//Metodo del filtro de datos en la tabla
+const buscarComunidad = () => {
+    const textoBusqueda = filtro.value.toLowerCase().trim();
+    let datosFiltrados;// Por defecto, usa todos los grados
+
+    if (textoBusqueda !== '') {
+        datosFiltrados = gradosSeleccionados.value.filter(grado => {
+            const campoFiltro = grado[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
+            return campoFiltro?.includes(textoBusqueda);
+        });
+
+        mapeoDeDato(datosFiltrados);
+    }
+    else {
+        mapeoDeDato(gradosSeleccionados.value);
+    }
+}
+watch(mostrarTodosLosGrados, (newValue) => {
+    if (!newValue) {
+        //checkbox deshabilitado
+        gradosSeleccionados.value = gradosActivos.value;
+    } else {
+        //checkbox habilitado
+        gradosSeleccionados.value = grados.value;
+    }
+    mapeoDeDato(gradosSeleccionados.value);
+});
+//#endregion
+
+//const grados = ref([])
+const form = ref({
+    nombreGrado: '',
+    estatus: 'A'
+});
+
+const title = ref('');
+const nameInput = ref('');
+const operation = ref(1);
+const codigoGradoActualizar = ref('');
+const close = ref([]);
+
+//const  deleteCarrera = (nombreGrado, codigoGrado) => {
+//    confirmation(nombreGrado, `/api/Comunidad/delete/${codigoGrado}`, '', authStore.authToken);
+//    console.log("¿Se esta ejecutando otro codigo?")
+//    getGrados();
+//};
+// Método que muestra la confirmación antes de eliminar
+const confirmDelete = (nombre, codigo) => {
+    Swal.fire({
+        title: `¿Estás seguro de eliminar ${nombre}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Aquí llamas al método que eliminará el registro
+            deleteGrado(nombre, codigo);
+        }
+    });
+};
+
+// Método de eliminación (este es el que ya tienes implementado)
+const deleteGrado = async (nombreGrado, codigoGrado) => {
+    try {
+        const response = await axios.delete(`/api/Grado/delete/${codigoGrado}`)
+        Swal.fire({
+            title: 'Eliminado!',
+            text: `El grado ${nombreGrado} ha sido eliminado.`,
+            icon: 'success',
+        });
+        getGrados();
+    } catch (error) {
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar eliminar el grado ${nombreGrado}.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
+    }
+};
+
+const openModal = (op, codigoGrado, nombreGrado, estatus) => {
+    clear();
+    operation.value = op;
+    codigoGradoActualizar.value = codigoGrado;
+    if (op == 1) {
+        title.value = 'Crear Registro'
+
+    } else if (op == 2) {
+        title.value = 'Actualizar Registro';
+        form.value.nombreGrado = nombreGrado;
+        form.value.estatus = estatus;
+    } else {
+        title.value = 'Información';
+    }
+}
+
+
+const clear = () => {
+    form.value.nombreGrado = '';
+    form.value.estatus = 'A';
 }
 
 const save = async () => {
-    let res;
     //console.log(`que esta en form ${form.value.nombreNivelAcademico}`)
     if (operation.value == 1) {
-        res = await sendRequest('POST', form.value, '/api/Usuario/create', '');
-
-        if (res == true) {
-            clear();
-            nextTick(() => nameInput.value.focus());
-            getUsuarios();
+        const res = await axios.post('/api/Grado/create', form.value);
+        if (res.data.status == true) {
+            Swal.fire({
+                title: '¡Creado!',
+                text: `El grado fue creado correctamente.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                title: '¡Error!',
+                text: `Ocurrió un error al intentar crear el grado.`,
+                icon: 'error',
+                timer: 2000,
+            });
         }
-    } else {
-        /*         for (let i = 0; i < form.value.length; i++) {
-                    console.log(form.value[i]);
-                }
-                console.log("llegó aquí") */
+        
+        clear();
+       
+    }else{
+        const res = await axios.put(`/api/Grado/update/${codigoGradoActualizar.value}`, form.value);
+        if(res.data.status == true){
 
-        res = await sendRequest('PUT', form.value, `/api/Usuario/update/${id.value}`, '');
+            Swal.fire({
+                title: '¡Actualizado!',
+                text: `El grado fue actualizado correctamente.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            })
 
-        if (res == true) {
-            nextTick(() => close.value.click());
-            getUsuarios();
+        }else{
+            Swal.fire({
+                title: '¡Error!',
+                text: `Ocurrió un error al intentar actualizar el grado.`,
+                icon: 'error',
+                timer: 2000,
+            });
+
         }
+        nextTick(() => close.value.click());
     }
+    getGrados();
 }
 
 //Habilitar/desabilitar campo nueva contraseña
@@ -305,27 +408,21 @@ const descargarPDF = async (datos) => {
     doc.addImage(imgData, 'JPEG', 0, 0, 10, 10);
     // Título del documento
     doc.setTextColor(255, 0, 0);
-    doc.text("Reporte de Usuarios", 10, 30);
+    doc.text("Reporte de grados", 10, 30);
 
     //doc.setTextColor(144, 153, 9);
     //doc.text("Reporte de Estudiantes", 10, 35);
     // Encabezados de la tabla
     const headers2 = ['No.',
         'Nombre',
-        'Email',
-        'Rol',
-        'Fecha de creación',
-        'Estado'
+        'Estado',
     ];
 
     // Datos de la tabla
-    const data = datos.map((usuario, index) => [
+    const data = datos.map((grado, index) => [
         index + 1,
-        usuario.nombreUsuario,
-        usuario.email,
-        usuario.nombreRol,
-        usuario.fechaCreacion,
-        usuario.estatus
+        grado.nombreGrado,
+        grado.estatus
     ]);
 
     // Estilos para el encabezado de la tabla
@@ -343,7 +440,7 @@ const descargarPDF = async (datos) => {
     });
 
     // Guardar el documento como un archivo PDF
-    doc.save("ReporteUsuarios.pdf");
+    doc.save("ReporteGrados.pdf");
 }
 //#endregion
 
@@ -353,26 +450,11 @@ import * as XLSX from 'xlsx';
 const exportarExcel = () => {
     const datos = resultadoFiltrado.value;
 
-    // Encabezados de las columnas
-    // const encabezados = [
-    //   'Índice',
-    //   'Código Becario',
-    //   'Nombre Estudiante',
-    //   'Apellido Estudiante',
-    //   'Nivel Académico',
-    //   'Grado',
-    //   'Carrera',
-    //   'Establecimiento'
-    // ];
-
     // Mapeo de datos con nombres de columnas
-    const data = datos.map((usuario, index) => ({
-        'indice': index + 1,
-        'nombreUsuario': usuario.nombreUsuario,
-        'email': usuario.email,
-        'nombreRol': usuario.nombreRol,
-        'fechaCreacion': usuario.fechaCreacion,
-        'Estado': usuario.estatus
+    const data = datos.map((grado, index) => ({
+        'Indice': index + 1,
+        'Nombre': grado.nombreGrado,
+        'Estado': grado.estatus
     }));
     // Insertar encabezados al principio de los datos
     //data.unshift(encabezados);
@@ -384,7 +466,7 @@ const exportarExcel = () => {
     // Convertir los datos a una hoja de cálculo de Excel
     const worksheet = XLSX.utils.json_to_sheet(data);
     // Agregar la hoja de cálculo al libro
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lista de usuarios');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lista de grados');
     // Crear un archivo de datos binarios de Excel
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     // Convertir el archivo binario en un Blob
@@ -394,7 +476,7 @@ const exportarExcel = () => {
     // Crear un enlace invisible para descargar el archivo
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'reporteUsuarios.xlsx';
+    link.download = 'reporteGrados.xlsx';
     // Simular un clic en el enlace para iniciar la descarga
     link.click();
     // Liberar la URL del Blob
@@ -402,21 +484,6 @@ const exportarExcel = () => {
 };
 //#endregion
 
-
-//#region GET estudiantes
-const roles = ref([])
-const getRol = async () => {
-    try {
-        const response = await axios.get(`/api/Rol/selectall`)
-        roles.value = response.data.filter(rol =>
-            rol.estatus.trim().toUpperCase() === "A"
-        );
-
-    } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-        // Puedes manejar el error de la solicitud aquí
-    }
-}
 //#endregion
 
 </script>
@@ -427,214 +494,3 @@ const getRol = async () => {
     margin-left: 85px;
 }
 </style>
-
-<template>
-    <div class="row justify-content-center">
-        <div class="row col-12">
-            <h2>Lista de Usuarios</h2>
-            <hr>
-            <!--Menún de navegación-->
-            <div class="container text-center mb-4">
-                <div class="row row-cols-auto">
-                    <div class="col">
-                        <router-link :to="{ path: '/settingcard' }">
-                            Menú de mantenimiento
-                        </router-link>
-                    </div>>
-                    <div class="col">
-                        <a class="text-dark" href="#">Usuarios</a>
-                    </div>
-                </div>
-            </div>
-            <!--Fin de menu de navegación-->
-            <!--Exportación-->
-            <div class="text-light mb-3">
-                <button type="button" class="btn btn-success btn-sm " @click="exportarExcel"><i
-                        class="fa-solid fa-file-excel"></i> Excel</button>
-                <button type="button" class="btn btn-danger btn-sm" @click="exportarPDF"><i
-                        class="fa-solid fa-file-pdf"></i>
-                    PDF</button>
-            </div>
-            <!--Buscador-->
-            <div class="row justify-content-between ">
-                <div class="col-6">
-                    <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro"
-                        @input="buscarEstudiantes" type="text" :placeholder="tipoBusqueda">
-                </div>
-                <div class="col-2">
-                    <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
-                        <option selected>Filtrar por:</option>
-                        <option value="nombreUsuario">Nombre del usuario</option>
-                        <option value="email">Email</option>
-                        <option value="nombreRol">Rol</option>
-                        <option value="estatus">Estado</option>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <input v-model="mostrarTodosLosUsuarios" type="checkbox" class="form-check-input"
-                        id="checkRegistro">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        Mostrar todo
-                    </label>
-                </div>
-                <div class="col-2">
-                    <div class="text-end">
-                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modal"
-                            @click="$event => openModal(1)">
-                            <i class="fa-solid fa-circle-plus"></i> Nuevo
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-            <!--Tabla-->
-            <v-card>
-                <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
-                    <template v-slot:item.actions="{ item }">
-                        <v-icon class="me-2" size="small" data-bs-toggle="modal"
-                            data-bs-target="#MostrarInformacionUsuario"
-                            @click="$event => openModal(3, item.codigoUsuario, item.codigoRol, item.nombreUsuario, item.email, item.fechaCreacion, item.estatus)">
-                            <i class="fa-solid fa-eye text-dark"></i>
-                        </v-icon>
-                        <v-icon class="me-2" size="small" data-bs-toggle="modal" data-bs-target="#modal"
-                            @click="$event => openModal(2, item.codigoUsuario, item.codigoRol, item.nombreUsuario, item.email, item.fechaCreacion, item.estatus)">
-                            <i class="fa-solid fa-edit text-dark"></i>
-
-                        </v-icon>
-                        <v-icon size="small" @click="$event => deleteUsuario(item.codigoUsuario, item.nombreUsuario)">
-
-                            <i class="fa-solid fa-trash text-dark"></i>
-
-                        </v-icon>
-
-
-                    </template>
-                </v-data-table>
-            </v-card>
-
-        </div>
-        <Modal :id="'MostrarInformacionUsuario'" :title="title">
-            <div class="modal-body">
-                <div class="text-center">
-                    <h5><strong>{{ form.nombreUsuario }}</strong></h5>
-                    <h5>{{ FichaUsuario.rol }}</h5>
-                </div>
-                <hr>
-
-
-                <div>
-
-                    <!--Tabla-->
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr class="text-center">
-                                <th scope="col">#</th>
-                                <th scope="col">Módulo</th>
-                                <th scope="col">Permisos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(modulo, index) in FichaUsuario.modulos" :key="modulo.id">
-                                <td>{{ index + 1 }}</td>
-                                <td>{{ modulo.nombreModulo }}</td>
-                                <td>
-                                    <span v-for="(permiso, idx) in modulo.permisos" :key="idx" class="permiso">
-                                        {{ permiso }}<span v-if="idx < modulo.permisos.length - 1">, </span>
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-        </Modal>
-
-        <Modal :id="'modal'" :title="title">
-            <div class="modal-body">
-                <form @submit.prevent="save">
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <input autofocus type="text" v-model="form.nombreUsuario" placeholder="Usuario" required
-                            class="form-control" ref="nameInput">
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <div class="d-grid col-5">
-                            <select class="form-control form-select" id="codigoComunidad" v-model="form.codigoRol">
-                                <option value="" disabled selected>
-                                    Selecciona el rol
-                                </option>
-                                <template v-for="tipo in roles" :key="tipo.codigoRol">
-                                    <option :value="tipo.codigoRol">
-                                        {{ tipo.nombreRol }}
-                                    </option>
-                                </template>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-at"></i>
-                        </span>
-                        <div class="d-grid col-5 ">
-                            <input autofocus type="email" v-model="form.email" placeholder="Correo electrónico" required
-                                class="form-control" ref="nameInput">
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input autofocus type="text" v-model="form.contrasenia" placeholder="Contraseña" required
-                            class="form-control" ref="nameInput">
-                    </div>
-                    <div class="input-group mb-3" v-show="operation == 2">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input autofocus type="text" :disabled="isDisabled" v-model="form.contraseniaNueva"
-                            placeholder="Nueva contraseña" class="form-control" ref="nameInput">
-                        <div class="">
-                            <input type="checkbox" v-model="isDisabled">
-                        </div>
-
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <div class="d-grid col-5 ">
-                            <input autofocus type="date" v-model="form.fechaCreacion" placeholder="Fecha de creación"
-                                required class="form-control" ref="nameInput">
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <select v-model="form.estatus" class="form-select" aria-label="Default select example"
-                            :disabled="desactivarCheckbox">
-                            <option selected disabled>Estado</option>
-                            <option value="A">Activo</option>
-                            <option value="I">Inactivo</option>
-                        </select>
-                    </div>
-
-                    <div class="d-grid col-6 mx-auto">
-                        <button class="btn btn-dark">
-                            <i class="fa-solid fa-save"></i> Registrar</button>
-                    </div>
-                </form>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-
-
-            </div>
-
-        </Modal>
-    </div>
-</template>

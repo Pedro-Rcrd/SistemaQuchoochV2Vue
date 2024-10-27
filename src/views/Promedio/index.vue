@@ -1,10 +1,112 @@
+<template>
+    <div class="row justify-content-center">
+        <div class="row col-12">
+            <h2>Rangos de promedios</h2>
+            <hr>
+            <!--Menún de navegación-->
+            <div class="container text-center mb-4">
+                <div class="row row-cols-auto">
+                    <div class="col">
+                        <router-link :to="{ path: '/settingcard' }">
+                            Menú de mantenimiento
+                        </router-link>
+                    </div>>
+                    <div class="col">
+                        <a class="text-dark" href="#">Promedios</a>
+                    </div>
+                </div>
+            </div>
+            <!--Fin de menu de navegación-->
+            <!--Exportación-->
+            <div class="text-light mb-3">
+                <button type="button" class="btn btn-success btn-sm " @click="exportarExcel"><i
+                        class="fa-solid fa-file-excel"></i> Excel</button>
+                <button type="button" class="btn btn-danger btn-sm" @click="exportarPDF"><i
+                        class="fa-solid fa-file-pdf"></i>
+                    PDF</button>
+            </div>
+            <!--Buscador-->
+           
+            <!--Tabla-->
+            <v-card>
+                <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon class="me-2" size="small" data-bs-toggle="modal" data-bs-target="#modal"
+                            @click="openModal(1, item.codigoPromedio, item.descripcion, item.valorMinimo, item.valorMaximo)">
+                            <i class="fa-solid fa-edit text-dark"></i>
+                        </v-icon>
+
+                    </template>
+                </v-data-table>
+            </v-card>
+        </div>
+    </div>
+
+    <Modal :id="'modal'" :title="title">
+        <div class="modal-body">
+            <div class="row col-11">
+                <form @submit.prevent="save">
+
+                    <div class="">
+                        <label for="exampleFormControlInput1" class="form-label">Descripción</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-n"></i>
+                            </span>
+                            <input autofocus id="numeroBloque" type="text" class="form-control"
+                                v-model="form.descripcion" disabled required />
+                        </div>
+                    </div>
+                
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="">
+                                <label for="exampleFormControlInput1" class="form-label">Valor mínimo</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-n"></i>
+                                    </span>
+                                    <input autofocus id="numeroBloque" type="number"
+                                        class="form-control text-center fs-5 fw-bold border-1 border-primary"
+                                        v-model="form.valorMinimo" :disabled="deshabilitarComponentes" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="">
+                                <label for="exampleFormControlInput1" class="form-label">Valor máximo</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-n"></i>
+                                    </span>
+                                    <input autofocus id="numeroBloque" type="number"
+                                        class="form-control text-center fs-5 fw-bold border-1 border-primary"
+                                        v-model="form.valorMaximo" :disabled="deshabilitarComponentes" required />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="d-grid col-6 mx-auto">
+                        <button class="btn btn-dark">
+                            <i class="fa-solid fa-save"></i> Registrar</button>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </Modal>
+</template>
+
 <script setup>
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { confirmation, sendRequest } from '../../functions'
 import { useAuthStore } from '../../stores/auth'
 import axios from 'axios'
 import Modal from '../../components/Modal.vue'
-import Paginate from 'vuejs-paginate-next'
 import Swal from 'sweetalert2';
 
 const authStore = useAuthStore()
@@ -24,231 +126,109 @@ changeLocale('es');
 
 
 onMounted(() => {
-    getUsuarios()
-    getRol();
+    getPromedios();
+
 })
 
 //Header de tabla
 const headers = [
     { title: '#', key: 'indice' },
-    { title: 'Nombre', key: 'nombreUsuario' },
-    { title: 'Email', key: 'email' },
-    { title: 'Rol', key: 'nombreRol' },
-    { title: 'Fecha de creación', key: 'fechaCreacion' },
-    { title: 'Estado', key: 'estatus' },
+    { title: 'Descripción', key: 'descripcion' },
+    { title: 'Valor mínimo', key: 'valorMinimo' },
+    { title: 'Valor máximo', key: 'valorMaximo' },
     { title: 'Acción', key: 'actions', sortable: false },
 ]
 
-
-
-//GET usuarios
-//#region GET usuarios
-const usuarios = ref([])
-const usuariosActivos = ref([]);
-const usuariosSeleccionados = ref([]);
-const getUsuarios = async () => {
-    try {
-        const response = await axios.get(`/api/Usuario/selectAll`)
-        usuarios.value = response.data.map(expense => ({
-            ...expense,
-            fechaCreacion: formatFecha(expense.fechaCreacion) // Formatea la fecha
-        }));
-        // Filtra los usuarios cuyo estatus es igual a "A", ignorando mayúsculas/minúsculas
-        usuariosActivos.value = usuarios.value.filter(usuario =>
-            usuario.estatus.trim().toUpperCase() === "A"
-        );
-
-        usuariosSeleccionados.value = usuariosActivos.value;
-
-
-
-        resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
-            'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
-            'estatus': usuario.estatus
-        }));
-    } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-        // Puedes manejar el error de la solicitud aquí
-    }
-}
-//#endregion
-
-//#region Método del FILTRO de datos
-const tipoBusqueda = ref('Buscar usuario')
-const filtro = ref('');
+//GET promedios
+//#region GET promedios
+const promedios = ref([])
 const resultadoFiltrado = ref([]);
-const tipoFiltro = ref('nombreUsuario');
-const mostrarTodosLosUsuarios = ref(false);
 
-//Metodo del filtro de datos en la tabla
-const buscarEstudiantes = () => {
-    const textoBusqueda = filtro.value.toLowerCase().trim();
-    let datosFiltrados;// Por defecto, usa todos los usuarios
 
-    if (textoBusqueda !== '') {
-        datosFiltrados = usuariosSeleccionados.value.filter(usuario => {
-            const campoFiltro = usuario[tipoFiltro.value]?.toLowerCase(); // Utiliza la propiedad basada en tipoFiltro
-            return campoFiltro?.includes(textoBusqueda);
-        });
-
-        resultadoFiltrado.value = datosFiltrados.map((usuario, index) => ({
-            'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
-            'estatus': usuario.estatus
-        }));
-
-    }
-    else {
-        resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
-            'indice': index + 1,
-            'codigoUsuario': usuario.codigoUsuario,
-            'nombreRol': usuario.nombreRol,
-            'codigoRol': usuario.codigoRol,
-            'nombreUsuario': usuario.nombreUsuario,
-            'email': usuario.email,
-            'fechaCreacion': usuario.fechaCreacion,
-            'estatus': usuario.estatus
-        }));
-
-    }
-}
-watch(mostrarTodosLosUsuarios, (newValue) => {
-    if (!newValue) {
-        console.log("Opcion de mostrar todo DESHABILITADO")
-        usuariosSeleccionados.value = usuariosActivos.value;
-    } else {
-        console.log("Opciona de mostrar todo HABILITADO")
-        usuariosSeleccionados.value = usuarios.value;
-    }
-    resultadoFiltrado.value = usuariosSeleccionados.value.map((usuario, index) => ({
-        'indice': index + 1,
-        'codigoUsuario': usuario.codigoUsuario,
-        'nombreRol': usuario.nombreRol,
-        'codigoRol': usuario.codigoRol,
-        'nombreUsuario': usuario.nombreUsuario,
-        'email': usuario.email,
-        'fechaCreacion': usuario.fechaCreacion,
-        'estatus': usuario.estatus
-    }));
-});
-//#endregion
-
-//const usuarios = ref([])
-const form = ref({
-    codigoRol: 0,
-    nombreUsuario: '',
-    email: '',
-    fechaCreacion: '',
-    contrasenia: '',
-    contraseniaNueva: '',
-    estatus: 'A'
-});
-
-const title = ref('');
-const nameInput = ref('');
-const operation = ref(1);
-const id = ref('');
-const close = ref([]);
-
-const deleteUsuario = (id, name) => {
-    confirmation(name, `/api/Usuario/delete/${id}`, '/users', authStore.authToken);
-};
-
-//Formatear FECHA
-const formatFecha = (fecha) => {
-    const date = new Date(fecha)
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    return `${year}-${month}-${day}`
-}
-
-const FichaUsuario = ref([])
-const openModal = (op, codigoUsuario, codigoRol, nombreUsuario, email, fechaCreacion, estatus) => {
-    clear();
-    setTimeout(() => nextTick(() => nameInput.value.focus()), 600);
-    operation.value = op;
-    id.value = codigoUsuario;
-    if (op == 1) {
-        title.value = 'Crear Registro'
-
-    } else if (op == 2) {
-        title.value = 'Actualizar Registro';
-        form.value.codigoRol = codigoRol;
-        form.value.nombreUsuario = nombreUsuario;
-        form.value.email = email;
-        form.value.fechaCreacion = fechaCreacion;
-        form.value.contrasenia = '';
-        form.value.estatus = estatus;
-    } else {
-        getFichaUsuario(codigoUsuario);
-
-        title.value = 'Información';
-        form.value.codigoRol = codigoRol;
-        form.value.nombreUsuario = nombreUsuario;
-        form.value.email = email;
-        form.value.fechaCreacion = fechaCreacion;
-        form.value.contrasenia = '';
-    }
-}
-
-const getFichaUsuario = async (codigoUsuario) => {
+const getPromedios = async () => {
     try {
-        const response = await axios.get(`/api/Usuario/userInformation/${codigoUsuario}`)
-        FichaUsuario.value = response.data;
+        const response = await axios.get(`/api/promedio/selectAll`)
+        promedios.value = response.data;
+        // Filtra los promedios cuyo estatus es igual a "A", ignorando mayúsculas/minúsculas
+        mapeoDeDato(promedios.value);
+
     } catch (error) {
         Swal.fire({
             title: 'Error',
-            text: `Hubo un error al intentar obtener la ficha del usuario.`,
+            text: `Hubo un error al intentar obtener la lista de los promedios.`,
             icon: 'error',
             footer: 'Por favor, intente nuevamente más tarde.'
         });
     }
 }
 
-const clear = () => {
-    form.value.codigoRol = '';
-    form.value.nombreUsuario = '';
-    form.value.fechaCreacion = '';
-    form.value.contrasenia = '';
-    form.value.contraseniaNueva = '';
+const mapeoDeDato = (datos) => {
+    resultadoFiltrado.value = datos.map((promedio, index) => ({
+        'indice': index + 1,
+        'codigoPromedio': promedio.codigoPromedio,
+        'descripcion': promedio.descripcion,
+        'valorMinimo': promedio.valorMinimo,
+        'valorMaximo': promedio.valorMaximo,
 
+    }));
 }
 
+//#endregion
+
+
+//const promedios = ref([])
+const form = ref({
+    descripcion: '',
+    valorMaximo: '',
+    valorMinimo: ''
+});
+
+const title = ref('');
+const nameInput = ref('');
+const operation = ref(1);
+const codigoPromedioActualizar = ref('');
+const close = ref([]);
+
+
+const openModal = (op, codigoPromedio, descripcion, valorMinimo, valorMaximo) => {
+    operation.value = op;
+    codigoPromedioActualizar.value = codigoPromedio;
+    if (op == 1) {
+        title.value = 'Actualizar Registro';
+        form.value.descripcion = descripcion;
+        form.value.valorMinimo = valorMinimo;
+        form.value.valorMaximo = valorMaximo;
+    } else {
+        title.value = 'Información';
+    }
+}
+
+
+
+
 const save = async () => {
-    let res;
     //console.log(`que esta en form ${form.value.nombreNivelAcademico}`)
     if (operation.value == 1) {
-        res = await sendRequest('POST', form.value, '/api/Usuario/create', '');
+        const response = await axios.put(`/api/promedio/update/${codigoPromedioActualizar.value}`, form.value);
 
-        if (res == true) {
-            clear();
-            nextTick(() => nameInput.value.focus());
-            getUsuarios();
+        if (response.data.status == true) {
+            Swal.fire({
+                title: '¡Actualizado!',
+                text: `El rango del promedio fue actualizado correctamente.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            nextTick(() => close.value.click());
+            getPromedios();
         }
     } else {
-        /*         for (let i = 0; i < form.value.length; i++) {
-                    console.log(form.value[i]);
-                }
-                console.log("llegó aquí") */
-
-        res = await sendRequest('PUT', form.value, `/api/Usuario/update/${id.value}`, '');
-
-        if (res == true) {
-            nextTick(() => close.value.click());
-            getUsuarios();
-        }
+        Swal.fire({
+                title: '¡Error!',
+                text: `Ocurrió un error al intentar actualizaro el rango del promedio.`,
+                icon: 'error',
+                timer: 2000,
+            });
     }
 }
 
@@ -305,27 +285,21 @@ const descargarPDF = async (datos) => {
     doc.addImage(imgData, 'JPEG', 0, 0, 10, 10);
     // Título del documento
     doc.setTextColor(255, 0, 0);
-    doc.text("Reporte de Usuarios", 10, 30);
+    doc.text("Reporte de promedios", 10, 30);
 
     //doc.setTextColor(144, 153, 9);
     //doc.text("Reporte de Estudiantes", 10, 35);
     // Encabezados de la tabla
     const headers2 = ['No.',
         'Nombre',
-        'Email',
-        'Rol',
-        'Fecha de creación',
-        'Estado'
+        'Estado',
     ];
 
     // Datos de la tabla
-    const data = datos.map((usuario, index) => [
+    const data = datos.map((comunidad, index) => [
         index + 1,
-        usuario.nombreUsuario,
-        usuario.email,
-        usuario.nombreRol,
-        usuario.fechaCreacion,
-        usuario.estatus
+        comunidad.nombreComunidad,
+        comunidad.estatus
     ]);
 
     // Estilos para el encabezado de la tabla
@@ -343,7 +317,7 @@ const descargarPDF = async (datos) => {
     });
 
     // Guardar el documento como un archivo PDF
-    doc.save("ReporteUsuarios.pdf");
+    doc.save("Reportepromedios.pdf");
 }
 //#endregion
 
@@ -366,13 +340,10 @@ const exportarExcel = () => {
     // ];
 
     // Mapeo de datos con nombres de columnas
-    const data = datos.map((usuario, index) => ({
-        'indice': index + 1,
-        'nombreUsuario': usuario.nombreUsuario,
-        'email': usuario.email,
-        'nombreRol': usuario.nombreRol,
-        'fechaCreacion': usuario.fechaCreacion,
-        'Estado': usuario.estatus
+    const data = datos.map((comunidad, index) => ({
+        'Indice': index + 1,
+        'Nombre': comunidad.nombreComunidad,
+        'Estado': comunidad.estatus
     }));
     // Insertar encabezados al principio de los datos
     //data.unshift(encabezados);
@@ -384,7 +355,7 @@ const exportarExcel = () => {
     // Convertir los datos a una hoja de cálculo de Excel
     const worksheet = XLSX.utils.json_to_sheet(data);
     // Agregar la hoja de cálculo al libro
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lista de usuarios');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lista de promedios');
     // Crear un archivo de datos binarios de Excel
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     // Convertir el archivo binario en un Blob
@@ -394,7 +365,7 @@ const exportarExcel = () => {
     // Crear un enlace invisible para descargar el archivo
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'reporteUsuarios.xlsx';
+    link.download = 'reportepromedios.xlsx';
     // Simular un clic en el enlace para iniciar la descarga
     link.click();
     // Liberar la URL del Blob
@@ -402,21 +373,6 @@ const exportarExcel = () => {
 };
 //#endregion
 
-
-//#region GET estudiantes
-const roles = ref([])
-const getRol = async () => {
-    try {
-        const response = await axios.get(`/api/Rol/selectall`)
-        roles.value = response.data.filter(rol =>
-            rol.estatus.trim().toUpperCase() === "A"
-        );
-
-    } catch (error) {
-        console.error('Error al obtener usuarios:', error)
-        // Puedes manejar el error de la solicitud aquí
-    }
-}
 //#endregion
 
 </script>
@@ -427,214 +383,3 @@ const getRol = async () => {
     margin-left: 85px;
 }
 </style>
-
-<template>
-    <div class="row justify-content-center">
-        <div class="row col-12">
-            <h2>Lista de Usuarios</h2>
-            <hr>
-            <!--Menún de navegación-->
-            <div class="container text-center mb-4">
-                <div class="row row-cols-auto">
-                    <div class="col">
-                        <router-link :to="{ path: '/settingcard' }">
-                            Menú de mantenimiento
-                        </router-link>
-                    </div>>
-                    <div class="col">
-                        <a class="text-dark" href="#">Usuarios</a>
-                    </div>
-                </div>
-            </div>
-            <!--Fin de menu de navegación-->
-            <!--Exportación-->
-            <div class="text-light mb-3">
-                <button type="button" class="btn btn-success btn-sm " @click="exportarExcel"><i
-                        class="fa-solid fa-file-excel"></i> Excel</button>
-                <button type="button" class="btn btn-danger btn-sm" @click="exportarPDF"><i
-                        class="fa-solid fa-file-pdf"></i>
-                    PDF</button>
-            </div>
-            <!--Buscador-->
-            <div class="row justify-content-between ">
-                <div class="col-6">
-                    <input class="form-control" autofocus id="codigoEstudiante" v-model="filtro"
-                        @input="buscarEstudiantes" type="text" :placeholder="tipoBusqueda">
-                </div>
-                <div class="col-2">
-                    <select v-model="tipoFiltro" class="form-select" aria-label="Default select example">
-                        <option selected>Filtrar por:</option>
-                        <option value="nombreUsuario">Nombre del usuario</option>
-                        <option value="email">Email</option>
-                        <option value="nombreRol">Rol</option>
-                        <option value="estatus">Estado</option>
-                    </select>
-                </div>
-                <div class="col-2">
-                    <input v-model="mostrarTodosLosUsuarios" type="checkbox" class="form-check-input"
-                        id="checkRegistro">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        Mostrar todo
-                    </label>
-                </div>
-                <div class="col-2">
-                    <div class="text-end">
-                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modal"
-                            @click="$event => openModal(1)">
-                            <i class="fa-solid fa-circle-plus"></i> Nuevo
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-            <!--Tabla-->
-            <v-card>
-                <v-data-table density="compact" :items="resultadoFiltrado" :headers="headers">
-                    <template v-slot:item.actions="{ item }">
-                        <v-icon class="me-2" size="small" data-bs-toggle="modal"
-                            data-bs-target="#MostrarInformacionUsuario"
-                            @click="$event => openModal(3, item.codigoUsuario, item.codigoRol, item.nombreUsuario, item.email, item.fechaCreacion, item.estatus)">
-                            <i class="fa-solid fa-eye text-dark"></i>
-                        </v-icon>
-                        <v-icon class="me-2" size="small" data-bs-toggle="modal" data-bs-target="#modal"
-                            @click="$event => openModal(2, item.codigoUsuario, item.codigoRol, item.nombreUsuario, item.email, item.fechaCreacion, item.estatus)">
-                            <i class="fa-solid fa-edit text-dark"></i>
-
-                        </v-icon>
-                        <v-icon size="small" @click="$event => deleteUsuario(item.codigoUsuario, item.nombreUsuario)">
-
-                            <i class="fa-solid fa-trash text-dark"></i>
-
-                        </v-icon>
-
-
-                    </template>
-                </v-data-table>
-            </v-card>
-
-        </div>
-        <Modal :id="'MostrarInformacionUsuario'" :title="title">
-            <div class="modal-body">
-                <div class="text-center">
-                    <h5><strong>{{ form.nombreUsuario }}</strong></h5>
-                    <h5>{{ FichaUsuario.rol }}</h5>
-                </div>
-                <hr>
-
-
-                <div>
-
-                    <!--Tabla-->
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr class="text-center">
-                                <th scope="col">#</th>
-                                <th scope="col">Módulo</th>
-                                <th scope="col">Permisos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(modulo, index) in FichaUsuario.modulos" :key="modulo.id">
-                                <td>{{ index + 1 }}</td>
-                                <td>{{ modulo.nombreModulo }}</td>
-                                <td>
-                                    <span v-for="(permiso, idx) in modulo.permisos" :key="idx" class="permiso">
-                                        {{ permiso }}<span v-if="idx < modulo.permisos.length - 1">, </span>
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-        </Modal>
-
-        <Modal :id="'modal'" :title="title">
-            <div class="modal-body">
-                <form @submit.prevent="save">
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <input autofocus type="text" v-model="form.nombreUsuario" placeholder="Usuario" required
-                            class="form-control" ref="nameInput">
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <div class="d-grid col-5">
-                            <select class="form-control form-select" id="codigoComunidad" v-model="form.codigoRol">
-                                <option value="" disabled selected>
-                                    Selecciona el rol
-                                </option>
-                                <template v-for="tipo in roles" :key="tipo.codigoRol">
-                                    <option :value="tipo.codigoRol">
-                                        {{ tipo.nombreRol }}
-                                    </option>
-                                </template>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-at"></i>
-                        </span>
-                        <div class="d-grid col-5 ">
-                            <input autofocus type="email" v-model="form.email" placeholder="Correo electrónico" required
-                                class="form-control" ref="nameInput">
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input autofocus type="text" v-model="form.contrasenia" placeholder="Contraseña" required
-                            class="form-control" ref="nameInput">
-                    </div>
-                    <div class="input-group mb-3" v-show="operation == 2">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-lock"></i>
-                        </span>
-                        <input autofocus type="text" :disabled="isDisabled" v-model="form.contraseniaNueva"
-                            placeholder="Nueva contraseña" class="form-control" ref="nameInput">
-                        <div class="">
-                            <input type="checkbox" v-model="isDisabled">
-                        </div>
-
-                    </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
-                        <div class="d-grid col-5 ">
-                            <input autofocus type="date" v-model="form.fechaCreacion" placeholder="Fecha de creación"
-                                required class="form-control" ref="nameInput">
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <select v-model="form.estatus" class="form-select" aria-label="Default select example"
-                            :disabled="desactivarCheckbox">
-                            <option selected disabled>Estado</option>
-                            <option value="A">Activo</option>
-                            <option value="I">Inactivo</option>
-                        </select>
-                    </div>
-
-                    <div class="d-grid col-6 mx-auto">
-                        <button class="btn btn-dark">
-                            <i class="fa-solid fa-save"></i> Registrar</button>
-                    </div>
-                </form>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" ref="close" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-
-
-            </div>
-
-        </Modal>
-    </div>
-</template>

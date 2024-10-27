@@ -94,7 +94,7 @@ const formatFecha = (fecha) => {
                     </div>
              
                     <h5 class="card-title text-color-card">Compras</h5>
-                    <RouterLink :to="{ name: 'createpurchase'}" class="no-underline btn bg-boton">Nuevo registro</RouterLink>
+                    <RouterLink :to="{ name: 'createpurchase'}" class="no-underline btn bg-boton" v-if="authStore.crearModCompra">Nuevo registro</RouterLink>
                 </div>
                 <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
                     <div class=" row align-items-center " style="margin-top: -4px;">

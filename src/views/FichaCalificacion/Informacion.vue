@@ -34,12 +34,10 @@
                     <h5>Detalles de la ficha escolar</h5>
                   </div>
                   <div class="col-1 text-end">
-                    <i
-                      @click="exportarPDF"
-                      style="font-size: 24px"
-                      class="fas fa-circle-down"
-                      v-show="ocultarElementos"
-                    ></i>
+                    <i @click="exportarExcel" style="font-size: 24px" class="fas fa-file-excel mr-1 text-success"
+                    v-show="ocultarElementos"></i>
+                    <i @click="exportarPDF" style="font-size: 24px" class="fas fa-circle-down"
+                      v-show="ocultarElementos"></i>
                   </div>
                 </div>
                 <div class="row">
@@ -48,7 +46,10 @@
                       Establecimiento: <strong>{{ establecimiento }}</strong>
                     </p>
                     <p class="m-0">
-                      Nivel académico: <strong>{{ grado }} {{ nivelAcademico }}</strong>
+                      Grado / año: <strong>{{ grado }}</strong>
+                    </p>
+                    <p class="m-0">
+                      Nivel académico: <strong>{{ nivelAcademico }}</strong>
                     </p>
                     <p class="m-0">
                       Carrera: <strong>{{ carrera }}</strong>
@@ -70,19 +71,13 @@
                   </div>
                 </div>
               </div>
+              <!--encabezado-->
             </div>
           </div>
 
           <div class="bg-light row mt-3 p-2">
-            <div
-              class="card p-0 m-2"
-              style="width: 19rem"
-              v-for="item in informacionFichaCalificacion.bloques"
-            >
-              <div
-                class="card-header"
-                :style="{ backgroundColor: obtenerColor(item.codigoPromedio) }"
-              >
+            <div class="card p-0 m-2" style="width: 19rem" v-for="item in informacionFichaCalificacion.bloques">
+              <div class="card-header" :style="{ backgroundColor: obtenerColor(item.codigoPromedio) }">
                 <div class="row justify-content-between">
                   <div class="col">Bloque: {{ item.bloque }}</div>
                   <div class="col text-end"></div>
@@ -126,49 +121,60 @@
                     <span class="placeholder col-12 text-success"></span>
                   </p>
                 </div>
+
                 <div class="row justify-content-between">
                   <div class="col-11">
-                    <h5>Sección de fotografías <i v-show="ocultarElementos" @click="getImagenesFicha" class="fas fa-eye"></i></h5> 
+                    <h5>Sección de fotografías <i v-show="ocultarElementos" @click="getImagenesFicha"
+                        class="fas fa-eye"></i></h5>
                   </div>
                   <div class="col-1 text-end">
-                    <i @click="exportarImagenesPDF" style="font-size: 24px;" v-show="ocultarElementos" class="fas fa-circle-down"></i>
+                    <i @click="exportarImagenesPDF" style="font-size: 24px;" v-show="ocultarElementos"
+                      class="fas fa-circle-down"></i>
                   </div>
                 </div>
 
                 <!--Bloque de fotografías-->
-                <div class="row "  v-for="item in imagenesFichaEscolar" v-if="imagenesFichaEscolar">
-                  <div class="card m-3 p-2" style="width: 18rem">
-                    <img :src="item.imgEstudiante" class="card-img-top" alt="Imagen del estudiante" />
+                <div class="row " v-for="item in imagenesFichaEscolar" v-if="imagenesFichaEscolar">
+                  <div class="card m-2 p-2" style="width: 10rem">
+                    <img style="max-width: 150px; max-height: 150px;" :src="item.imgEstudiante" class="card-img-top"
+                      alt="Imagen del estudiante" />
                     <div class="card-body ">
                       <div class="row text-end">
                         <div class="col-12 text-end">
-                          <i v-show="ocultarElementos" @click="abrirImagenEnNuevaVentana(item.imgEstudiante)" class="fas fa-circle-plus text-primary"></i>
+                          <i v-show="ocultarElementos" @click="abrirImagenEnNuevaVentana(item.imgEstudiante)"
+                            class="fas fa-circle-plus text-primary"></i>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="card m-3 p-2" style="width: 18rem" v-if="item.imgFichaCalificacion && item.imgFichaCalificacion.length > 60">
-                    <img :src="item.imgFichaCalificacion"  class="card-img-top" alt="Imagen de la ficha escolar" />
+                  <div class="card m-2 p-2" style="width: 10rem"
+                    v-if="item.imgFichaCalificacion && item.imgFichaCalificacion.length > 60">
+                    <img style="max-width: 150px; max-height: 150px;" :src="item.imgFichaCalificacion"
+                      class="card-img-top" alt="Imagen de la ficha escolar" />
                     <div class="card-body">
                       <div class="row text-end">
                         <div class="col-12 text-end">
-                          <i v-show="ocultarElementos" @click="abrirImagenEnNuevaVentana(item.imgFichaCalificacion)" class="fas fa-circle-plus text-primary"></i>
+                          <i v-show="ocultarElementos" @click="abrirImagenEnNuevaVentana(item.imgFichaCalificacion)"
+                            class="fas fa-circle-plus text-primary"></i>
                         </div>
                       </div>
                     </div>
                   </div>
                   <!--otra tarjeta-->
-                  <div class="card m-3 p-2" style="width: 18rem" v-if="item.imgCarta && item.imgCarta.length > 60">
-                    <img :src="item.imgCarta"  class="card-img-top" alt="Imagen de la carta" />
+                  <div class="card m-2 p-2" style="width: 10rem" v-if="item.imgCarta && item.imgCarta.length > 60">
+                    <img style="max-width: 150px; max-height: 150px;" :src="item.imgCarta" class="card-img-top"
+                      alt="Imagen de la carta" />
                     <div class="card-body">
                       <div class="row text-end">
                         <div class="col-12 text-end">
-                          <i v-show="ocultarElementos" @click="abrirImagenEnNuevaVentana(item.imgCarta)" class="fas fa-circle-plus text-primary"></i>
+                          <i v-show="ocultarElementos" @click="abrirImagenEnNuevaVentana(item.imgCarta)"
+                            class="fas fa-circle-plus text-primary"></i>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+
 
               </div>
             </div>
@@ -200,6 +206,7 @@ const parametro = route.params.codigoFichaCalificacion;
 onMounted(() => {
   //getCursosBloques()
   getInformacionFichaCalificacion();
+  getListaDeTodosLosCursos();
 });
 
 const bgColorPromedioRojo = ref("#FF0000");
@@ -298,6 +305,25 @@ const getImagenesFicha = async () => {
   }
 };
 
+const listaDeTodosLosCursos = ref();
+const getListaDeTodosLosCursos = async () => {
+  try {
+    mostrarBarraLoading.value = true;
+    const response = await axios.get(
+      `/api/fichaCalificacion/cursos/${parametro}`
+    );
+    listaDeTodosLosCursos.value = response.data;
+  } catch (error) {
+    Swal.fire({
+      title: "Error",
+      text: `Hubo un error al intentar obtener la lista de todos los cursos.`,
+      icon: "error",
+      footer: "Por favor, intente nuevamente más tarde.",
+    });
+
+  }
+};
+
 
 
 //#region Exportar en PDF
@@ -329,7 +355,7 @@ const exportarImagenesPDF = async () => {
     filename: "imagenes.pdf",
     image: { type: "jpeg", quality: 0.98 },
     html2canvas: { scale: 2 },
-    jsPDF: { unit: "in", format: "a2", orientation: "portrait" },
+    jsPDF: { unit: "in", format: "legal", orientation: "portrait" },
   };
 
   // New Promise-based usage:
@@ -342,11 +368,11 @@ const exportarImagenesPDF = async () => {
 
 //#region Abrir imagen en nueva pestaña
 const abrirImagenEnNuevaVentana = (urlImagen) => {
-      // Usa window.open para abrir una nueva ventana con el enlace base64
-      const nuevaVentana = window.open();
-      
-      // Escribe el contenido HTML en la nueva ventana, incluyendo la imagen base64
-      nuevaVentana.document.write(`
+  // Usa window.open para abrir una nueva ventana con el enlace base64
+  const nuevaVentana = window.open();
+
+  // Escribe el contenido HTML en la nueva ventana, incluyendo la imagen base64
+  nuevaVentana.document.write(`
         <html>
           <head><title>Imagen</title></head>
           <body>
@@ -354,7 +380,45 @@ const abrirImagenEnNuevaVentana = (urlImagen) => {
           </body>
         </html>
       `);
-    }
+}
+//#endregion
+
+//#region Metodo de EXCEL
+import * as XLSX from 'xlsx';
+
+const exportarExcel = () => {
+    const datos = listaDeTodosLosCursos.value;
+
+    // Mapeo de datos con nombres de columnas
+    const data = datos.map((a, index) => ({
+            'indice': index + 1,
+            'Nombre': a.curso,
+            'Nota': a.nota,
+            'Bloque': a.bloque,
+            'Promedio': a.promedio
+        }));
+
+    // Crear una nueva hoja de cálculo de Excel
+    const workbook = XLSX.utils.book_new();
+    // Convertir los datos a una hoja de cálculo de Excel
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    // Agregar la hoja de cálculo al libro
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Cursos');
+    // Crear un archivo de datos binarios de Excel
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    // Convertir el archivo binario en un Blob
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    // Crear una URL para el Blob
+    const url = window.URL.createObjectURL(blob);
+    // Crear un enlace invisible para descargar el archivo
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'Cursos.xlsx';
+    // Simular un clic en el enlace para iniciar la descarga
+    link.click();
+    // Liberar la URL del Blob
+    window.URL.revokeObjectURL(url);
+};
 //#endregion
 </script>
 

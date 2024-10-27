@@ -188,6 +188,21 @@ const router = createRouter({
       component: () => import('../views/FichaCalificacion/Graphic.vue')
     },     
     {
+      path: '/historial',
+      name: 'historial',
+      component: () => import('../views/FichaCalificacion/Historial.vue')
+    },     
+    {
+      path: '/detalleHistorial/:codigoFichaCalificacion',
+      name: 'detalleHistorial',
+      component: () => import('../views/FichaCalificacion/DetalleHistorial.vue')
+    },     
+    {
+      path: '/promediosGenerales',
+      name: 'promediosGenerales',
+      component: () => import('../views/FichaCalificacion/PromediosGenerales.vue')
+    },     
+    {
       path: '/registermenu',
       name: 'registermenu',
       component: () => import('../views/Cards/RegistroCard.vue')
@@ -236,6 +251,11 @@ const router = createRouter({
       path: '/studentssponsors',
       name: 'studentssponsors',
       component: () => import('../views/EstudiantePatrocinador/Index.vue')
+    },    
+    {
+      path: '/studentswithsponsors',
+      name: 'studentswithsponsors',
+      component: () => import('../views/EstudiantePatrocinador/IndexEstudianteConPatrocinador.vue')
     },    
     {
       path: '/assignsponsor/:codigoEstudiante',
@@ -291,6 +311,16 @@ const router = createRouter({
       path: '/roles',
       name: 'roles',
       component: () => import('../views/Rol/Index.vue')
+    },
+    {
+      path: '/promedio',
+      name: 'promedio',
+      component: () => import('../views/Promedio/Index.vue')
+    },
+    {
+      path: '/grado',
+      name: 'grado',
+      component: () => import('../views/Grado/Index.vue')
     },
     
   ]

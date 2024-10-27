@@ -15,8 +15,8 @@
                             Compras
                         </router-link>
                     </div>>
-                    <div class="col text-primary">
-                        <a href="#">Nuevo registro</a>
+                    <div class="col">
+                        <a class="text-dark" href="#">Nuevo registro</a>
                     </div>
                 </div>
             </div>
@@ -27,35 +27,35 @@
                         <div class="row">
                             <h4>Información de la orden</h4>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Fecha de entrega</label>
+                                <label for="exampleFormControlInput1" class="form-label">Fecha de entrega<span class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-calendar-days"></i>
                                     </span>
                                     <input autofocus id="fechaNacimiento" required type="date" v-model="fechaCreacion"
-                                        class="form-control">
+                                        class="form-control" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Titulo</label>
+                                <label for="exampleFormControlInput1" class="form-label">Titulo<span class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-t"></i>
                                     </span>
-                                    <input autofocus id="titulo" required type="text" v-model="titulo" class="form-control">
+                                    <input autofocus id="titulo" required type="text" v-model="titulo" class="form-control" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput" class="form-label">Estado</label>
+                                <label for="exampleFormControlInput" class="form-label">Estado<span class="text-danger">*</span></label>
                                 <div class="d-flex flex-row">
-                                    <div class="form-check">
+                                    <div class="form-check mr-3">
                                         <input class="form-check-input" type="radio" name="estadoRadio"
                                             id="flexRadioDefault3" value="A" v-model="estado">
                                         <label class="form-check-label" for="flexRadioDefault3">
                                             Activo
                                         </label>
                                     </div>
-                                    <div class="form-check ps-5">
+                                    <div class="form-check ">
                                         <input class="form-check-input" type="radio" name="estadoRadio"
                                             id="flexRadioDefault4" value="F" v-model="estado">
                                         <label class="form-check-label" for="flexRadioDefault4">
@@ -67,13 +67,13 @@
                         </div>
                         <div class="row">
                             <div class="col-md-8">
-                                <label for="exampleFormControlInput1" class="form-label">Proveedor</label>
+                                <label for="exampleFormControlInput1" class="form-label">Proveedor<span class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-building"></i>
                                     </span>
                                     <select class="form-control form-select" id="codigoProveedor"
-                                        v-model="codigoProveedor">
+                                        v-model="codigoProveedor" :disabled="deshabilitarComponentes" required>
                                         <option value="" disabled selected>
                                             Selecciona proveedor
                                         </option>
@@ -88,19 +88,20 @@
                         </div>
                         <div class="row">
                             <div class="col-md-8">
-                                <label for="exampleFormControlInput1" class="form-label">Estudiante</label>
+                                <label for="exampleFormControlInput1" class="form-label">Estudiante<span class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-n"></i>
                                     </span>
                                     <input class="form-control" autofocus id="codigoEstudiante" required v-model="busqueda"
-                                        @input="buscarEstudiantes" type="text" placeholder="Buscar estudiantes">
+                                        @input="buscarEstudiantes" type="text" placeholder="Buscar estudiantes" :disabled="deshabilitarComponentes">
 
                                 </div>
                                 <ul class="list-group listaFiltro" v-if="mostrarLista">
                                     <li v-for="estudiante in visibilidad" :key="estudiante.codigoEstudiante"
                                         @click="seleccionarEstudiante(estudiante)">
                                         {{ estudiante.nombreEstudiante }}
+                                        {{ estudiante.apellidoEstudiante }}
                                     </li>
                                 </ul>
                             </div>
@@ -110,7 +111,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-n"></i>
                                     </span>
-                                    <input autofocus type="text" v-model="personaCreacion" class="form-control">
+                                    <input autofocus type="text" v-model="personaRecibe" class="form-control" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                         </div>
@@ -118,71 +119,72 @@
                         <div class="row">
                             <h4>Información de los productos</h4>
                             <div class="col-md-4">
-                                <label for="exampleFormControlInput1" class="form-label">Producto</label>
+                               
+                                <label for="exampleFormControlInput1" class="form-label">Producto<span class="text-danger">*</span></label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
-                                        <i class="fa-solid fa-building"></i>
+                                        <i class="fa-solid fa-t"></i>
                                     </span>
-                                    <input autofocus type="text"  class="form-control" placeholder="Producto"
-                                    v-model="nombreProducto">
+                                    <input autofocus id="titulo" required type="text" v-model="nombreProducto" class="form-control" :disabled="deshabilitarComponentes">
                                 </div>
+                            
                             </div>
-                            <div class="col-md-2">
-                                <label for="Cantidad" class="form-label">Cantidad</label>
+                            <div class="col-md-3">
+                                <label for="exampleFormControlInput1" class="form-label">Cantidad</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-n"></i>
                                     </span>
-                                    <input autofocus id="cantidad" type="number" class="form-control"
-                                    v-model="cantidadProducto">
+                                    <input autofocus id="cantidad" type="number" class="form-control text-center fw-bold"
+                                        v-model="cantidadProducto" :disabled="deshabilitarComponentes">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleFormControlInput1" class="form-label">Precio total</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-n"></i>
+                                    </span>
+                                    <input autofocus id="precio" type="number" class="form-control text-center  fw-bold"
+                                        v-model="precioProducto" :disabled="deshabilitarComponentes"
+                                       >
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <label for="Precio" class="form-label">Precio Total</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">
-                                        <i class="fa-solid fa-p"></i>
+                                <label for="exampleFormControlInput1" class="form-label">Agregar</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" @click.prevent="agregarProducto">
+                                        <i style="font-size: 24px;" class="fa-solid fa-circle-plus"></i>
                                     </span>
-                                    <input autofocus id="cantidad" type="number" class="form-control"
-                                    v-model="precioProducto">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="Precio" class="form-label">Agrega nuevo producto</label>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </span>
-                                    <button class="btn btn-primary" @click.prevent="agregarProducto" >Agregar</button>
+
                                 </div>
                             </div>
                             <div class="alert alert-danger" role="alert" v-show="productoYaExiste">
-                                El producto seleccionado ya está en la lista.
+                                El producto seleccionado ya existe en la lista.
                             </div>
                         </div>
-                        <!--Mostar lista de productos de la compra-->
                         <div class="row">
                             <div class="col-md-8 mb-1  justify-content-center">
-                                <div class="table-container table-responsive">
-                                    <table class="table table-scroll table-striped table-sm">
+                                <div class="table-container">
+                                    <table class="table table-scroll table-sm table-striped">
                                         <thead>
                                             <tr>
                                                 <th scope="col" class="text-center">#</th>
                                                 <th scope="col" class="text-center">Producto</th>
                                                 <th scope="col" class="text-center">Cantidad</th>
-                                                <th scope="col" class="text-center">Precio Total</th>
-                                                <th scope="col" class="text-center">Accion</th>
+                                                <th scope="col" class="text-center">Precio</th>
+                                                <th scope="col" class="text-center">Acción</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="(producto, index) in productos" :key="index">
                                                 <th scope="row" class="text-center">{{ index + 1 }}</th>
-                                                <td class="text-center">{{ producto.nombreProducto }}</td>
-                                                <td class="text-center">{{ producto.cantidadProducto }}</td>
-                                                <td class="text-center">{{ producto.precioProducto }}</td>
+                                                <td class="text-start">{{ producto.NombreProducto }}</td>
+                                                <td class="text-center">{{ producto.Cantidad }}</td>
+                                                <td class="text-center">{{ producto.Precio }}</td>
                                                 <td class="text-center">
                                                     <i @click.prevent="eliminarProducto(index)"
-                                                        class="fa-solid fa-trash text-danger"></i>
+                                                        class="fa-solid fa-trash text-red"></i>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -199,8 +201,8 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-calendar-days"></i>
                                     </span>
-                                    <input autofocus id="fechaRecibirComprobante" required type="date"
-                                        v-model="fechaEntrega" class="form-control">
+                                    <input autofocus id="fechaRecibirComprobante" type="date"
+                                        v-model="fechaEntrega" class="form-control" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -209,7 +211,7 @@
                                     <span class="input-group-text">
                                         <i class="fa-solid fa-hashtag"></i>
                                     </span>
-                                    <input autofocus type="number" v-model="total" class="form-control">
+                                    <input autofocus type="number" v-model="total" class="form-control" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                         </div>
@@ -221,18 +223,21 @@
                                         <i class="fa-solid fa-image"></i>
                                     </span>
                                     <input class="form-control" type="file" id="imagen" @change="handleFileChange"
-                                        accept="image/*" required>
+                                        accept="image/*" :disabled="deshabilitarComponentes">
                                 </div>
                             </div>
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary " :disabled="botonDeshabilitado"
-                                @click.prevent="submitForm"><i class="fa-solid fa-save"></i> Guardar registro</button>
-                            <RouterLink :to="{ name: 'purchasesmenu' }">
-                                <button type="button" class="btn btn-outline-primary">Cancelar</button>
-                            </RouterLink>
-                        </div>
+                            <p v-if="deshabilitarComponentes">Cargando...</p>
+                            <div v-if="deshabilitarComponentes" class="spinner-border text-dark" role="status"></div>
 
+                            <RouterLink :to="{ name: 'purchasesmenu' }" type="button" class="btn btn-outline-primary">
+                                Cancelar
+                            </RouterLink>
+                            <button type="submit" @click.prevent="submitForm" class="btn btn-primary text-light"
+                                :disabled="deshabilitarComponentes"><i class="fa-solid fa-save"></i> Guardar
+                                registro</button>
+                        </div>
 
                     </form>
                 </div>
@@ -247,68 +252,70 @@ import { useAuthStore } from '../../stores/auth';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-const baseBackend = import.meta.env.VITE_BAKENDAPI;
 
-const route = useRoute();
+const baseApiBackend = import.meta.env.VITE_BACKEND_API;
 const authStore = useAuthStore();
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`;
 
-//#region Método de creación de productos
-const productos = ref([]);
+
+//#region Loading
+const deshabilitarComponentes = ref(false);
+//#endregion
+
+//#region Asignar nuevo producto
 const nombreProducto = ref("");
 const cantidadProducto = ref(0);
 const precioProducto = ref(0);
+const productos = ref([]);
 const productoYaExiste = ref(false);
-
-const cursoYaExiste = ref(false); //Alerta
-
 const agregarProducto = () => {
-    if (nombreProducto.value !== "" && cantidadProducto.value > 0 && precioProducto.value > 0) {
-        const existeProducto = productos.value.find(a => a.nombreProducto.toUpperCase() === nombreProducto.value.toUpperCase());
-        if (!existeProducto) {
+    if (nombreProducto.value !== "" && cantidadProducto.value !== 0 
+    && cantidadProducto.value !== "" && precioProducto.value !== "") {
+
+        const productoExistente = productos.value.find(a => a.NombreProducto === nombreProducto.value);
+        if (!productoExistente) {
             productos.value.push({
-                nombreProducto: nombreProducto.value,
-                cantidadProducto: cantidadProducto.value,
-                precioProducto: precioProducto.value
+                NombreProducto: nombreProducto.value,
+                Cantidad: cantidadProducto.value,
+                Precio: precioProducto.value
             });
-            nombreProducto.value = ""; // Limpiar el input después de agregar
-            cantidadProducto.value = "";
-            precioProducto.value = "";
+            
             productoYaExiste.value = false;
 
         } else {
             productoYaExiste.value = true;
         }
-    }else{
-        alert("Complete todos los campos para guardar un producto")
+        //limpiar campos
+        nombreProducto.value = "";
+        cantidadProducto.value = 0;
+        precioProducto.value = 0;
     }
 };
 
-//Eliminar producto en el array
+
 const eliminarProducto = (index) => {
     productos.value.splice(index, 1);
 };
+
 //#endregion
 
 
-const codigoEstudiante = ref(0);
-const codigoProveedor = ref(0);
+const codigoProveedor = ref("");
 const fechaCreacion = ref("")
 const titulo = ref("");
 const estado = ref("A");
-const personaCreacion = ref("Estudiante");
+const personaRecibe = ref("Estudiante");
 const descripcion = ref("");
 const fechaEntrega = ref("");
 const total = ref(0.00);
 const imgEstudiante = ref(null);
-
 
 //PARA CARGAR IMAGENES
 const handleFileChange = (event) => {
     imgEstudiante.value = event.target.files[0];
 };
 
- //Inicio método para buscar estudiante
+//#region meotodo para buscar estudiante
  const estudiantes = ref([]);
 const idEstudiante = ref(0);
 const busqueda = ref('');
@@ -321,29 +328,34 @@ const buscarEstudiantes = () => {
         //return []; // Si la búsqueda está vacía, devuelve una lista vacía
         mostrarLista.value = true;
         visibilidad.value = estudiantes.value.filter(estudiante =>
-            estudiante.nombreEstudiante.toLowerCase().includes(textoBusqueda));
+            (estudiante.nombreEstudiante.toLowerCase() + " " + estudiante.apellidoEstudiante.toLowerCase())
+                .includes(textoBusqueda.toLowerCase())
+        );
     }
 };
 
-
 const seleccionarEstudiante = (estudiante) => {
     idEstudiante.value = estudiante.codigoEstudiante;
-    busqueda.value = estudiante.nombreEstudiante;
+    busqueda.value = estudiante.nombreEstudiante + " " + estudiante.apellidoEstudiante;
     mostrarLista.value = false; // Ocultar la lista después de seleccionar
-    // Aquí puedes realizar cualquier otr   a lógica que necesites con el estudiante seleccionado
-    console.log(`El id del estudiantes es: ${idEstudiante.value}`);
 };
+
+//#endregion
 
 const getEstudiantes = async () => {
     try {
         const response = await axios.get('/api/estudiante/selectAll');
-        estudiantes.value = response.data;
+        estudiantes.value = response.data.filter(a => a.estado.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener usuarios:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de los estudiantes.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
 
-//Fin metodo para buscar estudiante
 
 //VARIALBLE APRA OBTENER PROVEEDORES
 const proveedores = ref([]);
@@ -352,11 +364,15 @@ const botonDeshabilitado = ref(false);
 
 const getProveedores = async () => {
     try {
-        const response = await axios.get('api/proveedor/getall');
-        proveedores.value = response.data.proveedores;
-        console.log(proveedores.value);
+        const response = await axios.get('api/proveedor/selectall');
+        proveedores.value = response.data.filter(a => a.estatus.trim().toUpperCase() === "A");
     } catch (error) {
-        console.error('Error al obtener proveedor:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Hubo un error al intentar obtener la lista de los proveedores.`,
+            icon: 'error',
+            footer: 'Por favor, intente nuevamente más tarde.'
+        });
     }
 };
 
@@ -367,31 +383,34 @@ onMounted(async () => {
 });
 
 
+//#region  POST
 const submitForm = async () => {
-    if (!titulo.value || !codigoProveedor.value ||
-        !idEstudiante.value || !descripcion.value) {
+    if (!titulo.value ||
+        !idEstudiante.value || !estado.value || !productos.value || productos.value == "" || !codigoProveedor.value) {
         return Swal.fire({
-                    icon: 'warning',
-                    title: "Completa todos los campos antes de enviar",
-                    showConfirmButton: false, // Ocultar el botón "Aceptar"
-                    timer: 1500, // Tiempo en milisegundos antes de que se cierre automáticamente
-                });
+            title: 'Campos vacíos',
+            text: `Por favor, complete los campos obligatorios.`,
+            icon: 'warning',
+        });
     }
-    botonDeshabilitado.value = true;
-
+    deshabilitarComponentes.value = true;
     const formData = new FormData();
     formData.append('CodigoEstudiante', idEstudiante.value);
     formData.append('CodigoProveedor', codigoProveedor.value);
     formData.append('FechaCreacion', fechaCreacion.value);
     formData.append('Titulo', titulo.value);
     formData.append('Estado', estado.value);
-    formData.append('PersonaCreacion', personaCreacion.value);
+    formData.append('PersonaCreacion', personaRecibe.value);
     formData.append('Descripcion', descripcion.value);
     formData.append('FechaEntrega', fechaEntrega.value);
     formData.append('Total', total.value);
     formData.append('ImgEstudiante', imgEstudiante.value);
 
-
+    productos.value.forEach((producto, index) => {
+        formData.append(`Productos[${index}].NombreProducto`, producto.NombreProducto);
+        formData.append(`Productos[${index}].Cantidad`, producto.Cantidad);
+        formData.append(`Productos[${index}].Precio`, producto.Precio);
+    });
 
     try {
         if (!authStore.token) {
@@ -402,40 +421,56 @@ const submitForm = async () => {
             Authorization: `Bearer ${authStore.token}`,
         };
 
-        const response = await fetch(`${baseBackend}/api/compra/create`, {
+        const response = await fetch(`${baseApiBackend}/api/Compra/create`, {
             method: 'POST',
             body: formData,
             headers,
         });
 
-        for (const [key, value] of formData.entries()) {
-            console.log(`Clave: ${key}, Valor: ${value.toString()}`);
-        }
-
         if (response.ok) {
             Swal.fire({
-                icon: 'success', // Ícono de éxito
-                title: 'Compra registrado exitosamente.',
-                showConfirmButton: false, // Ocultar el botón "Aceptar"
-                timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+                title: '¡Creado!',
+                text: `La compra se ha creado correctamente.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
             });
 
-            botonDeshabilitado.value = false;
-        
+            idEstudiante.value = "";
+            busqueda.value = "";
+            fechaEntrega.value = "";
+            titulo.value = "";
+            estado.value = "A";
+            codigoProveedor.value = "C";
+            productos.value = [],
+            personaRecibe.value = "";
+            total.value = "";
+            descripcion.value = "";
+            imgEstudiante.value = null;
 
         } else {
             Swal.fire({
-                icon: 'error', // Ícono de éxito
-                title: 'No se pudo registrar la compra.',
-                showConfirmButton: false, // Ocultar el botón "Aceptar"
-                timer: 1500 // Tiempo en milisegundos antes de que se cierre automáticamente
+                title: '¡Error!',
+                text: `Hubo un error al intentar crear la compra.`,
+                icon: 'error',
+                timer: 2000,
+                showConfirmButton: false
             });
         }
+        deshabilitarComponentes.value = false;
     } catch (error) {
-        console.error('Error al crear el estudiante:', error);
-        alert('Hubo un error al crear el estudiante.');
+        Swal.fire({
+                title: '¡Error!',
+                text: `Hubo un error al intentar crear la compra.`,
+                icon: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            deshabilitarComponentes.value = false;
     }
+    deshabilitarComponentes.value = false;
 };
+
 </script>
   
 <style scoped>
@@ -454,18 +489,18 @@ const submitForm = async () => {
     max-height: 150px;
     overflow-y: auto;
     background-color: #fff;
-    border: var(--bs-border-width) solid var(--bs-border-color);
+    border: 1px solid #454545;
     border-radius: var(--bs-border-radius);
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .listaFiltro li {
-    padding: 10px;
+    padding: 7px;
     cursor: pointer;
 }
 
 .listaFiltro li:hover {
-    background-color: #5434b5;
+    background-color: #808080;
     color: #fff
 }
 </style>

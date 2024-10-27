@@ -96,7 +96,7 @@ const formatFecha = (fecha) => {
                     <RouterLink :to="{ name: 'students' }" class="no-underline mb-1">
                         <h5 class="card-title text-color-card">Estudiantes</h5>
                     </RouterLink>
-                    <RouterLink :to="{ name: 'createstudent' }" class="no-underline btn bg-boton"
+                    <RouterLink :to="{ name: 'createstudent' }" class="no-underline btn bg-boton"  v-if="authStore.crearModRegistro"
                     >Nuevo registro
                     </RouterLink>
 
@@ -113,7 +113,7 @@ const formatFecha = (fecha) => {
                     <RouterLink :to="{ name: 'cards' }" class="no-underline mb-1">
                         <h5 class="card-title text-color-card">Fichas de calificaciones</h5>
                     </RouterLink>
-                    <RouterLink :to="{ name: 'createcard' }" class="no-underline btn bg-boton">Nuevo registro
+                    <RouterLink :to="{ name: 'createcard' }" class="no-underline btn bg-boton" v-if="authStore.crearModRegistro">Nuevo registro
                     </RouterLink>
                 </div>
 
@@ -126,7 +126,7 @@ const formatFecha = (fecha) => {
                         </div>
                     </div>
                     <h5 class="card-title text-color-card">Bloques de ficha</h5>
-                    <RouterLink :to="{ name: 'cards' }" class="no-underline btn bg-boton">Nuevo registro</RouterLink>
+                    <RouterLink :to="{ name: 'cards' }" class="no-underline btn bg-boton" v-if="authStore.crearModRegistro">Nuevo registro</RouterLink>
                 </div>
 
 
@@ -141,7 +141,7 @@ const formatFecha = (fecha) => {
                     <RouterLink :to="{ name: 'sponsors' }" class="no-underline mb-1">
                         <h5 class="card-title text-color-card">Patrocinadores</h5>
                     </RouterLink>
-                    <RouterLink :to="{ name: 'createsponsor' }" class="no-underline btn bg-boton">Nuevo registro
+                    <RouterLink :to="{ name: 'createsponsor' }" class="no-underline btn bg-boton" v-if="authStore.crearModRegistro">Nuevo registro
                     </RouterLink>
                 </div>
                 <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
@@ -155,7 +155,7 @@ const formatFecha = (fecha) => {
                     <RouterLink :to="{ name: 'expenses' }" class="no-underline mb-1">
                         <h5 class="card-title text-color-card">Gastos</h5>
                     </RouterLink>
-                    <RouterLink :to="{ name: 'createexpense' }" class="no-underline btn bg-boton">Nuevo registro
+                    <RouterLink :to="{ name: 'createexpense' }" class="no-underline btn bg-boton" v-if="authStore.crearModRegistro">Nuevo registro
                     </RouterLink>
                 </div>
             </div>

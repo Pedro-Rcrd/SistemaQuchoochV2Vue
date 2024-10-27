@@ -75,8 +75,11 @@
                                 <div class="formacion-academica p-2">
                                     <h5>Formación académica</h5>
 
+                                    <span>Grado / año</span>
+                                    <p><strong>{{ grado }}</strong></p>
+                                    
                                     <span>Nivel académico</span>
-                                    <p><strong>{{ grado }} {{ nivelAcademico }}</strong></p>
+                                    <p><strong>{{ nivelAcademico }}</strong></p>
 
 
                                     <span>Carrera</span>
@@ -188,7 +191,7 @@ const getEstudiante = async () => {
         codigoBecario.value = response.data.codigoBecario;
         comunidad.value = response.data.comunidad;
         nivelAcademico.value = response.data.nivelAcademico;
-        grado.value = formatearNivelAcademico(response.data.grado, response.data.nivelAcademico);
+        grado.value = response.data.grado;
         carrera.value = response.data.carrera !== null || response.data.carrera.trim().toUpperCase() !== "Null" ? response.data.carrera : "No aplica";
         establecimiento.value = response.data.establecimiento;
         nombreEstudiante.value = response.data.nombreEstudiante;
