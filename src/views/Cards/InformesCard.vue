@@ -56,6 +56,7 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
                 <h5 class="card-title text-color-card">Estudiantes</h5>
                 <RouterLink :to="{ name: 'exportreportstudents' }" class="no-underline btn bg-boton">Ver</RouterLink>
             </div>
+
             <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem;">
                 <div class=" row align-items-center " style="margin-top: -4px;">
                     <div class="divimg  mt-1 contenedor-card " style="width: 18rem;">

@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-      <div class="card border p-3" id="exportarElemento">
+      <div class="card border p-0" id="exportarElemento">
         <div class="card-body">
           <div class="row">
             <div class="col-12 p-0">
@@ -35,7 +35,7 @@
                   </div>
                   <div class="col-1 text-end">
                     <i @click="exportarExcel" style="font-size: 24px" class="fas fa-file-excel mr-1 text-success"
-                    v-show="ocultarElementos"></i>
+                      v-show="ocultarElementos"></i>
                     <i @click="exportarPDF" style="font-size: 24px" class="fas fa-circle-down"
                       v-show="ocultarElementos"></i>
                   </div>
@@ -105,6 +105,14 @@
                 </table>
                 <!--TABLA-->
               </div>
+            </div>
+          </div>
+          <div class="row bg-light mt-3 p-2">
+            <div class="row justify-content-center">
+            <div class="col-10 ">
+              <Bar v-if="loaded" :data="chartData" :options="chartOptions"></Bar>
+            </div>
+             
             </div>
           </div>
           <!--card body-->
@@ -197,6 +205,17 @@ import Paginate from "vuejs-paginate-next";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import Swal from "sweetalert2";
+//grafica
+import { Bar, Pie } from 'vue-chartjs'
+import {
+  Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
+  LinearScale, ArcElement
+} from 'chart.js';
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
+  ArcElement);
+
+//fin grafica
+
 const route = useRoute();
 const baseApiBackend = import.meta.env.VITE_BACKEND_API;
 
@@ -205,6 +224,7 @@ axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.authToken}`
 const parametro = route.params.codigoFichaCalificacion;
 onMounted(() => {
   //getCursosBloques()
+  getPromedioCursos();
   getInformacionFichaCalificacion();
   getListaDeTodosLosCursos();
 });
@@ -324,6 +344,35 @@ const getListaDeTodosLosCursos = async () => {
   }
 };
 
+//#region Gráfica de promedios
+const tipos = ref([]);
+const cantidades = ref([]);
+const chartData = ref([]);
+const chartOptions = ref([]);
+const colors = ref([]);
+const loaded = ref(false);
+const random = () => {
+  return Math.floor(Math.random() * 256);
+}
+
+const getPromedioCursos = async () => {
+  const info = await axios.get(`/api/fichacalificacion/promedioPorCurso/${parametro}`);
+  info.data.map((row) => (
+    tipos.value.push(row.curso),
+    cantidades.value.push(row.promedioGeneral),
+    colors.value.push("rgb(" + random() + ", " + random() + "," + random() + ")")
+  ));
+  chartOptions.value = { response: true }
+  chartData.value = {
+    labels: tipos.value,
+    datasets: [
+      { label: 'Promedio de los cursos', data: cantidades.value, backgroundColor: colors }
+    ]
+  };
+  loaded.value = true;
+}
+//#endregion
+
 
 
 //#region Exportar en PDF
@@ -334,7 +383,7 @@ const exportarPDF = async () => {
   ocultarElementos.value = false;
   var element = document.getElementById("exportarElemento");
   var opt = {
-    margin: 0.5,
+    margin: 0.1,
     filename: "fichaEscolar.pdf",
     image: { type: "jpeg", quality: 0.98 },
     html2canvas: { scale: 2 },
@@ -351,7 +400,7 @@ const exportarImagenesPDF = async () => {
   ocultarElementos.value = false;
   var element = document.getElementById("cajaImagenes");
   var opt = {
-    margin: 0.5,
+    margin: 0.0,
     filename: "imagenes.pdf",
     image: { type: "jpeg", quality: 0.98 },
     html2canvas: { scale: 2 },
@@ -387,37 +436,37 @@ const abrirImagenEnNuevaVentana = (urlImagen) => {
 import * as XLSX from 'xlsx';
 
 const exportarExcel = () => {
-    const datos = listaDeTodosLosCursos.value;
+  const datos = listaDeTodosLosCursos.value;
 
-    // Mapeo de datos con nombres de columnas
-    const data = datos.map((a, index) => ({
-            'indice': index + 1,
-            'Nombre': a.curso,
-            'Nota': a.nota,
-            'Bloque': a.bloque,
-            'Promedio': a.promedio
-        }));
+  // Mapeo de datos con nombres de columnas
+  const data = datos.map((a, index) => ({
+    'indice': index + 1,
+    'Nombre': a.curso,
+    'Nota': a.nota,
+    'Bloque': a.bloque,
+    'Promedio': a.promedio
+  }));
 
-    // Crear una nueva hoja de cálculo de Excel
-    const workbook = XLSX.utils.book_new();
-    // Convertir los datos a una hoja de cálculo de Excel
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    // Agregar la hoja de cálculo al libro
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Cursos');
-    // Crear un archivo de datos binarios de Excel
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    // Convertir el archivo binario en un Blob
-    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    // Crear una URL para el Blob
-    const url = window.URL.createObjectURL(blob);
-    // Crear un enlace invisible para descargar el archivo
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'Cursos.xlsx';
-    // Simular un clic en el enlace para iniciar la descarga
-    link.click();
-    // Liberar la URL del Blob
-    window.URL.revokeObjectURL(url);
+  // Crear una nueva hoja de cálculo de Excel
+  const workbook = XLSX.utils.book_new();
+  // Convertir los datos a una hoja de cálculo de Excel
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  // Agregar la hoja de cálculo al libro
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Cursos');
+  // Crear un archivo de datos binarios de Excel
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  // Convertir el archivo binario en un Blob
+  const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  // Crear una URL para el Blob
+  const url = window.URL.createObjectURL(blob);
+  // Crear un enlace invisible para descargar el archivo
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'Cursos.xlsx';
+  // Simular un clic en el enlace para iniciar la descarga
+  link.click();
+  // Liberar la URL del Blob
+  window.URL.revokeObjectURL(url);
 };
 //#endregion
 </script>

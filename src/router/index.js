@@ -98,6 +98,11 @@ const router = createRouter({
       component: () => import('../views/Estudiante/Informe.vue')
     },    
     {
+      path: '/cantidadEstudiantes/',
+      name: 'cantidadEstudiantes',
+      component: () => import('../views/Estudiante/CantidadEstudiantesPorAnio.vue')
+    },    
+    {
       path: '/createFicha',
       name: 'createFicha',
       component: () => import('../views/FichaCalificacion/Create.vue')
@@ -201,6 +206,11 @@ const router = createRouter({
       path: '/promediosGenerales',
       name: 'promediosGenerales',
       component: () => import('../views/FichaCalificacion/PromediosGenerales.vue')
+    },     
+    {
+      path: '/graficaPromedioCursos',
+      name: 'graficaPromedioCursos',
+      component: () => import('../views/FichaCalificacion/GraficaPromedioCursos.vue')
     },     
     {
       path: '/registermenu',
