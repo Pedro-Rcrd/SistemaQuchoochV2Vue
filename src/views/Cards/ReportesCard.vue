@@ -36,7 +36,7 @@ axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.authToken}`
 </style>
 
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="authStore.moduloReporte">
     <div class="row col-10">
       <h2>Menú de Reportes</h2>
       <hr />

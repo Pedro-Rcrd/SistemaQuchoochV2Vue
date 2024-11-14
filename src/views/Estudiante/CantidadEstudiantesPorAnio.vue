@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="authStore.moduloReporte">
     <div class="row col-11">
       <h3>Becarios por años</h3>
       <hr />
@@ -29,6 +29,7 @@
                       style="font-size: 24px"
                       v-show="ocultarElementos"
                       class="fas fa-circle-down"
+                      v-if="authStore.exportarModReporte"
                     ></i>
                   </div>
                 </div>

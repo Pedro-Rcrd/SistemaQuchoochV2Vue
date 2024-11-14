@@ -1,57 +1,55 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { confirmation, sendRequest } from '../../functions'
-import { useAuthStore } from '../../stores/auth'
-import axios from 'axios'
-import Paginate from 'vuejs-paginate-next'
+import { ref, onMounted, nextTick } from "vue";
+import { confirmation, sendRequest } from "../../functions";
+import { useAuthStore } from "../../stores/auth";
+import axios from "axios";
+import Paginate from "vuejs-paginate-next";
 
-const authStore = useAuthStore()
-axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.authToken}`
+const authStore = useAuthStore();
+axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.authToken}`;
 
 onMounted(() => {
-  getCompras(1)
-})
+  getCompras(1);
+});
 
-const compras = ref([])
+const compras = ref([]);
 
-const title = ref('');
-const nameInput = ref('');
+const title = ref("");
+const nameInput = ref("");
 const operation = ref(1);
-const id = ref('');
+const id = ref("");
 const close = ref([]);
 const idGasto = ref(0);
 const rows = ref(0);
 
-const load = ref(false)
+const load = ref(false);
 const getCompras = async (page) => {
   try {
-    const response = await axios.get(`/api/Compra/getall?pagina=${page}`)
-    compras.value = response.data.compras.map(expense => ({
+    const response = await axios.get(`/api/Compra/getall?pagina=${page}`);
+    compras.value = response.data.compras.map((expense) => ({
       ...expense,
-      fechaCreacion: formatFecha(expense.fechaCreacion) // Formatea la fecha
-    }))
+      fechaCreacion: formatFecha(expense.fechaCreacion), // Formatea la fecha
+    }));
     rows.value = response.data.totalPaginas;
-    load.value = true
+    load.value = true;
   } catch (error) {
-    console.error('Error al obtener usuarios:', error)
+    console.error("Error al obtener usuarios:", error);
     // Puedes manejar el error de la solicitud aquí
   }
-}
-
-const deleteCompra = (id, name) => {
-  confirmation(name, `/api/Compra/delete/${id}`, '/purchases', authStore.authToken);
 };
 
+const deleteCompra = (id, name) => {
+  confirmation(name, `/api/Compra/delete/${id}`, "/purchases", authStore.authToken);
+};
 
 // Función para formatear la fecha
 const formatFecha = (fecha) => {
-  const date = new Date(fecha)
-  const year = date.getFullYear()
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const day = date.getDate().toString().padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
+  const date = new Date(fecha);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 </script>
 
 <style scoped>
@@ -81,39 +79,50 @@ const formatFecha = (fecha) => {
 </style>
 
 <template>
-  <div class="row justify-content-center">
-
+  <div class="row justify-content-center" v-if="authStore.moduloAsignacion">
     <div class="row col-10">
       <h2>Menú de Asignación</h2>
-      <hr>
+      <hr />
 
-      <div class="card me-4 mb-3 " style="width: 18rem; height: 15.3rem;">
-        <div class=" row align-items-center " style="margin-top: -4px;">
-          <div class="divimg  mt-1 contenedor-card" style="width: 18rem;">
-            <img class="card-img-top" style="height: 10rem;" src="../../../public/asignarPatrocinador.png"
-              alt="Card image cap">
+      <div class="card me-4 mb-3" style="width: 18rem; height: 15.3rem">
+        <div class="row align-items-center" style="margin-top: -4px">
+          <div class="divimg mt-1 contenedor-card" style="width: 18rem">
+            <img
+              class="card-img-top"
+              style="height: 10rem"
+              src="../../../public/asignarPatrocinador.png"
+              alt="Card image cap"
+            />
           </div>
-
         </div>
 
         <h5 class="card-title text-color-card">Estudiantes</h5>
-        <RouterLink :to="{ name: 'studentssponsors' }" class="no-underline btn bg-boton" v-if="authStore.crearModAsignacion">Nueva asignación</RouterLink>
+        <RouterLink
+          :to="{ name: 'studentssponsors' }"
+          class="no-underline btn bg-boton"
+          v-if="authStore.crearModAsignacion"
+          >Nueva asignación</RouterLink
+        >
       </div>
-      <div class="card me-4 mb-3 " style="width: 20rem; height: 15.3rem;">
-        <div class=" row align-items-center " style="margin-top: -4px;">
-          <div class="divimg  mt-1 contenedor-card" style="width: 20rem;">
-            <img class="card-img-top" style="height: 10rem;" src="../../../public/asignarPatrocinador.png"
-              alt="Card image cap">
+      <div class="card me-4 mb-3" style="width: 20rem; height: 15.3rem">
+        <div class="row align-items-center" style="margin-top: -4px">
+          <div class="divimg mt-1 contenedor-card" style="width: 20rem">
+            <img
+              class="card-img-top"
+              style="height: 10rem"
+              src="../../../public/asignarPatrocinador.png"
+              alt="Card image cap"
+            />
           </div>
-
         </div>
 
         <h5 class="card-title text-color-card">Estudiantes con Patrocinadores</h5>
-        <RouterLink :to="{ name: 'studentswithsponsors' }" class="no-underline btn bg-boton">Ver</RouterLink>
+        <RouterLink
+          :to="{ name: 'studentswithsponsors' }"
+          class="no-underline btn bg-boton"
+          >Ver</RouterLink
+        >
       </div>
-
     </div>
   </div>
-
-  
 </template>

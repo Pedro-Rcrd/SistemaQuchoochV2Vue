@@ -93,14 +93,19 @@ const router = createRouter({
       component: () => import('../views/Estudiante/Informacion.vue')
     },
     {
-      path: '/exportreportstudents/',
+      path: '/exportreportstudents',
       name: 'exportreportstudents',
       component: () => import('../views/Estudiante/Informe.vue')
     },    
     {
-      path: '/cantidadEstudiantes/',
+      path: '/cantidadEstudiantes',
       name: 'cantidadEstudiantes',
       component: () => import('../views/Estudiante/CantidadEstudiantesPorAnio.vue')
+    },    
+    {
+      path: '/fichaInformativa/:codigoEstudiante',
+      name: 'fichaInformativa',
+      component: () => import('../views/Estudiante/FichaInformativa.vue')
     },    
     {
       path: '/createFicha',
@@ -111,6 +116,11 @@ const router = createRouter({
       path: '/informationcard/:codigoFichaCalificacion',
       name: 'informationcard',
       component: () => import('../views/FichaCalificacion/Informacion.vue')
+    },
+    {
+      path: '/exportarFichaEscolar/:codigoFichaCalificacion',
+      name: 'exportarFichaEscolar',
+      component: () => import('../views/FichaCalificacion/ExportarFichaEstudiante.vue')
     },
     {
       path: '/expenses',
@@ -331,6 +341,11 @@ const router = createRouter({
       path: '/grado',
       name: 'grado',
       component: () => import('../views/Grado/Index.vue')
+    },
+    {
+      path: '/nuevoCiclo',
+      name: 'nuevoCiclo',
+      component: () => import('../views/NuevoCiclo/IniciarNuevoCiclo.vue')
     },
     
   ]

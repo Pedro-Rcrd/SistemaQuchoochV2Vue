@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center mt-1">
+  <div class="row justify-content-center mt-1" v-if="authStore.moduloRegistro">
     <div class="col-md-11">
       <h3>Registro de Ficha de calificaciones</h3>
       <hr />
@@ -57,6 +57,25 @@
                     {{ estudiante.nombreEstudiante }} {{ estudiante.apellidoEstudiante }}
                   </li>
                 </ul>
+              </div>
+
+              <div class="col-md-4">
+                <label for="exampleFormControlInput1" class="form-label"
+                  >Estado<span class="text-danger">*</span></label
+                >
+                <div class="input-group mb-3">
+                  <span class="input-group-text">
+                    <i class="fa-solid fa-toggle-on"></i>
+                  </span>
+                  <select
+                    v-model="estatusFicha"
+                    class="form-control form-select"
+                    :disabled="deshabilitarComponentes"
+                  >
+                    <option value="A">Activo</option>
+                    <option value="I">Inactivo</option>
+                  </select>
+                </div>
               </div>
             </div>
             <div class="row">
@@ -896,7 +915,6 @@ const openModal = (opcion, codigoCursoFichaCalifiacion, notaCalifiacion) => {
     title.value = "Actualizar Nota";
     codigoCursoFichaCalificacion.value = codigoCursoFichaCalifiacion;
     nuevaNotaCalificacion.value = notaCalifiacion;
-    console.log(codigoCursoFichaCalificacion.value);
   } else {
     title.value = "Nuevo Registro";
   }
@@ -910,7 +928,7 @@ const save = async (opcion) => {
         formEstablecimiento.value
       );
       mostrarLoading.value = false;
-      if ((response.data.estatus = true)) {
+      if ((response.data.status = true)) {
         mostrarAlertaSuccess.value = true;
         await getEstablecimientos();
         opcionSeleccionada();
@@ -926,7 +944,7 @@ const save = async (opcion) => {
       mostrarLoading.value = true;
       const response = await axios.post("/api/carrera/create", formCarrera.value);
       mostrarLoading.value = false;
-      if ((response.data.estatus = true)) {
+      if ((response.data.status = true)) {
         mostrarAlertaSuccess.value = true;
         await getCarreras();
         opcionSeleccionada();
@@ -942,7 +960,7 @@ const save = async (opcion) => {
       mostrarLoading.value = true;
       const response = await axios.post("/api/curso/create", formCurso.value);
       mostrarLoading.value = false;
-      if ((response.data.estatus = true)) {
+      if ((response.data.status = true)) {
         mostrarAlertaSuccess.value = true;
         await getCursos();
         opcionSeleccionada();
@@ -1350,7 +1368,7 @@ const submitForm = async () => {
   formActualizarFicha.value.cicloEscolar = cicloEscolar.value;
   formActualizarFicha.value.fechaRegistro = fechaRegistro.value;
   formActualizarFicha.value.estatus = estatusFicha.value;
-  console.log(formActualizarFicha.value);
+
   try {
     const response = await axios.put(
       `/api/fichaCalificacion/actualizarFicha/${parametro}`,

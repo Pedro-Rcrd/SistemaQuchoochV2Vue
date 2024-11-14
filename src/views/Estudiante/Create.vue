@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="authStore.moduloRegistro">
     <div class="row col-11">
       <h3>Registro de estudiante</h3>
       <hr />
@@ -22,6 +22,10 @@
         <div class="card-body">
           <form enctype="multipart/form-data" @submit.prevent="submitForm">
             <div class="row">
+              <p class="placeholder-glow" v-if="deshabilitarComponentes">
+                <span class="placeholder col-12 text-success"></span>
+              </p>
+
               <h4>Información del estudiante</h4>
               <div class="col-md-4">
                 <label for="exampleFormControlInput1" class="form-label"
@@ -38,6 +42,7 @@
                     type="text"
                     class="form-control"
                     v-model="codigoBecario"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -56,6 +61,7 @@
                     type="text"
                     v-model="nombreEstudiante"
                     class="form-control"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -74,6 +80,7 @@
                     type="text"
                     v-model="apellidoEstudiante"
                     class="form-control"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -94,6 +101,7 @@
                     type="date"
                     v-model="fechaNacimiento"
                     class="form-control"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -164,6 +172,7 @@
                     type="text"
                     v-model="telefonoEstudiante"
                     class="form-control"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -175,7 +184,13 @@
                   <span class="input-group-text">
                     <i class="fa-solid fa-at"></i>
                   </span>
-                  <input autofocus type="text" v-model="email" class="form-control" />
+                  <input
+                    autofocus
+                    type="text"
+                    v-model="email"
+                    class="form-control"
+                    :disabled="deshabilitarComponentes"
+                  />
                 </div>
               </div>
             </div>
@@ -194,6 +209,7 @@
                     id="codigoComunidad"
                     v-model="codigoComunidad"
                     required
+                    :disabled="deshabilitarComponentes"
                   >
                     <option value="" disabled selected>Selecciona comunidad</option>
                     <template v-for="tipo in comunidades" :key="tipo.codigoComunidad">
@@ -210,7 +226,13 @@
                   <span class="input-group-text">
                     <i class="fa-solid fa-hashtag"></i>
                   </span>
-                  <input autofocus type="number" v-model="sector" class="form-control" />
+                  <input
+                    autofocus
+                    type="number"
+                    v-model="sector"
+                    class="form-control"
+                    :disabled="deshabilitarComponentes"
+                  />
                 </div>
               </div>
               <div class="col-md-4">
@@ -226,6 +248,7 @@
                     type="text"
                     v-model="numeroCasa"
                     class="form-control"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -241,6 +264,7 @@
                     type="text"
                     v-model="descripcion"
                     class="form-control"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -261,6 +285,7 @@
                     v-model="codigoNivelAcademico"
                     @change="opcionSeleccionada"
                     required
+                    :disabled="deshabilitarComponentes"
                   >
                     <option value="" disabled selected>Selecciona nivel academico</option>
                     <template
@@ -287,6 +312,7 @@
                     id="codigoGrado"
                     v-model="codigoGrado"
                     required
+                    :disabled="deshabilitarComponentes"
                   >
                     <option value="" disabled selected>Selecciona grado</option>
                     <template v-for="tipo in grados" :key="tipo.codigoGrado">
@@ -351,6 +377,7 @@
                     id="codigoGrado"
                     v-model="codigoEstablecimiento"
                     required
+                    :disabled="deshabilitarComponentes"
                   >
                     <option value="" disabled selected>Selecciona establecimiento</option>
                     <template
@@ -377,6 +404,7 @@
                     id="codigoModalidad"
                     v-model="codigoModalidadEstudio"
                     required
+                    :disabled="deshabilitarComponentes"
                   >
                     <option value="" disabled selected>Selecciona modalidad</option>
                     <template
@@ -407,6 +435,7 @@
                     v-model="nombrePadre"
                     class="form-control"
                     required
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -424,6 +453,7 @@
                     v-model="telefonoPadre"
                     class="form-control"
                     maxLength="8"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -441,6 +471,7 @@
                     v-model="oficioPadre"
                     class="form-control"
                     required
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -460,6 +491,7 @@
                     v-model="nombreMadre"
                     class="form-control"
                     required
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -477,6 +509,7 @@
                     v-model="telefonoMadre"
                     class="form-control"
                     maxLength="8"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -494,6 +527,7 @@
                     v-model="oficioMadre"
                     class="form-control"
                     required
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
@@ -514,12 +548,13 @@
                     @change="handleFileChange"
                     accept="image/*"
                     required
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
               <div class="col-md-4">
                 <label for="exampleFormControlInput1" class="form-label"
-                  >Fecha de registro</label
+                  >Fecha de registro<span class="text-danger">*</span></label
                 >
                 <div class="input-group mb-3">
                   <span class="input-group-text">
@@ -532,11 +567,19 @@
                     type="date"
                     v-model="fechaRegistro"
                     class="form-control"
+                    :disabled="deshabilitarComponentes"
                   />
                 </div>
               </div>
             </div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <p v-if="deshabilitarComponentes">Cargando...</p>
+              <div
+                v-if="deshabilitarComponentes"
+                class="spinner-border text-dark"
+                role="status"
+              ></div>
+
               <RouterLink
                 :to="{ name: 'registermenu' }"
                 type="button"
@@ -547,7 +590,7 @@
               <button
                 type="submit"
                 class="btn btn-primary text-light"
-                :disabled="botonDeshabilitado"
+                :disabled="deshabilitarComponentes"
               >
                 <i class="fa-solid fa-save"></i> Guardar registro
               </button>
@@ -792,7 +835,6 @@ const mostrarAlertaSuccess = ref(false);
 const mostrarAlertaDanger = ref(false);
 const mostrarLoading = ref(false);
 
-const deshabilitarComponentes = ref(false);
 const cursoYaExiste = ref(false);
 
 const noMostrarAlertas = () => {
@@ -915,7 +957,7 @@ const oficioMadre = ref("");
 const imagen = ref(null);
 const fechaRegistro = ref("");
 
-const botonDeshabilitado = ref(false);
+const deshabilitarComponentes = ref(false);
 
 const nivelesAcademicos = ref([]);
 const grados = ref([]);
@@ -1060,7 +1102,7 @@ const submitForm = async () => {
       timer: 1500, // Tiempo en milisegundos antes de que se cierre automáticamente
     });
   }
-  botonDeshabilitado.value = true;
+  deshabilitarComponentes.value = true;
 
   const formData = new FormData();
   formData.append("CodigoBecario", codigoBecario.value);
@@ -1137,7 +1179,6 @@ const submitForm = async () => {
       oficioMadre.value = "";
       imagen.value = null;
       fechaRegistro.value = "";
-      botonDeshabilitado.value = false;
     } else {
       Swal.fire({
         icon: "error",
@@ -1147,6 +1188,8 @@ const submitForm = async () => {
         timer: 1500, // Tiempo en milisegundos antes de que se cierre automáticamente
       });
     }
+
+    deshabilitarComponentes.value = false;
   } catch (error) {
     Swal.fire({
       icon: "error",
@@ -1155,6 +1198,7 @@ const submitForm = async () => {
       showConfirmButton: false, // Ocultar el botón "Aceptar"
       timer: 1500, // Tiempo en milisegundos antes de que se cierre automáticamente
     });
+    deshabilitarComponentes.value = false;
   }
 };
 </script>

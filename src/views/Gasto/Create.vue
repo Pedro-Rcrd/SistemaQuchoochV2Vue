@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center mt-1">
+  <div class="row justify-content-center mt-1" v-if="authStore.moduloRegistro">
     <div class="row col-11">
       <h3>Registro de Gasto</h3>
       <hr />
@@ -117,6 +117,7 @@
                   </select>
                 </div>
               </div>
+
               <div class="col-md-4">
                 <label for="exampleFormControlInput1" class="form-label"
                   >Número del cheque<span class="text-danger">*</span></label

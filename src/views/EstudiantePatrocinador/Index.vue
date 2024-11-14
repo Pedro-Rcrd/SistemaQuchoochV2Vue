@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="authStore.moduloAsignacion">
     <div class="row col-12">
       <h2>Estudiantes</h2>
       <hr />
@@ -303,6 +303,7 @@ watch(mostrarTodosLosEstudiantes, (newValue) => {
 });
 //#endregion
 
+//#region Patrocinadores
 const patrocinadores = ref("");
 const getPatrocinadores = async (codigoEstudiante) => {
   try {

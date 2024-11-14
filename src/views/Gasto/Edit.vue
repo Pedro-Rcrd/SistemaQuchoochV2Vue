@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center mt-1">
+  <div class="row justify-content-center mt-1" v-if="authStore.moduloRegistro">
     <div class="row col-11">
       <h3>Actualizar de Gasto</h3>
       <hr />

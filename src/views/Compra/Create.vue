@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center mt-1">
+  <div class="row justify-content-center mt-1" v-if="authStore.moduloCompra">
     <div class="row col-11">
       <h3>Registro de Compra</h3>
       <hr />

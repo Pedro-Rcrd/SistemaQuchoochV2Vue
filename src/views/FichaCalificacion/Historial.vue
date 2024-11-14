@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="authStore.moduloInforme">
     <div class="row col-11">
       <h3>Historial de la ficha escolar</h3>
       <hr />
@@ -26,29 +26,33 @@
                   <span class="input-group-text">
                     <i class="fa-solid fa-user"></i>
                   </span>
-                  <input placeholder="Código Becario" v-model="codigoBecarioIngresado" autofocus id="codigoBecario" required type="text" class="form-control">
+                  <input
+                    placeholder="Código Becario"
+                    v-model="codigoBecarioIngresado"
+                    autofocus
+                    id="codigoBecario"
+                    required
+                    type="text"
+                    class="form-control"
+                  />
                 </div>
               </div>
               <div class="col-md-4">
-                <button @click=" getFichasCalificaciones" class="btn btn-primary">Buscar</button>
+                <button @click="getFichasCalificaciones" class="btn btn-primary">
+                  <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                </button>
               </div>
-             
-              
-
-
             </div>
             <div class="col-12 p-0">
               <div class="bg-light p-2 mt-3" v-for="item in fichasCalificaciones">
-                <div class="row">
-
-                </div>
+                <div class="row"></div>
                 <div class="row">
                   <div class="col-12 text-end">
-
-                    <router-link :to="{ path: '/detalleHistorial/' + item.codigoFichaCalificacion }">
+                    <router-link
+                      :to="{ path: '/detalleHistorial/' + item.codigoFichaCalificacion }"
+                    >
                       <i class="fa-solid fa-eye text-dark"></i>
                     </router-link>
-
                   </div>
                 </div>
 
@@ -81,7 +85,8 @@
                       Ciclo escolar: <strong>{{ item.cicloEscolar }}</strong>
                     </p>
                     <p>
-                      Estado: <strong>{{ item.estatus === 'A' ? 'Activo' : 'Inactivo' }}</strong>
+                      Estado:
+                      <strong>{{ item.estatus === "A" ? "Activo" : "Inactivo" }}</strong>
                     </p>
                   </div>
                 </div>
@@ -89,7 +94,6 @@
               <!--encabezado-->
             </div>
           </div>
-
 
           <!--card body-->
         </div>
@@ -118,7 +122,6 @@ axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.authToken}`
 const parametro = route.params.codigoFichaCalificacion;
 onMounted(() => {
   //getCursosBloques()
-
 });
 
 const bgColorPromedioRojo = ref("#FF0000");
@@ -162,26 +165,33 @@ const codigoBecarioIngresado = ref("");
 const fichasCalificaciones = ref([]);
 const getFichasCalificaciones = async () => {
   try {
+    if (!codigoBecarioIngresado.value || codigoBecarioIngresado.value == "") {
+      return Swal.fire({
+        title: "Código Inválido",
+        text: `Por favor, ingrese el codigo del becario.`,
+        icon: "warning",
+      });
+    }
     mostrarBarraLoading.value = true;
-    const response = await axios.get(`/api/FichaCalificacion/historial/${codigoBecarioIngresado.value}`)
-    fichasCalificaciones.value = response.data.map(expense => ({
+    const response = await axios.get(
+      `/api/FichaCalificacion/historial/${codigoBecarioIngresado.value}`
+    );
+    fichasCalificaciones.value = response.data.map((expense) => ({
       ...expense,
-      cicloEscolar: formatFecha(expense.cicloEscolar) // Formatea la fecha
-    }))
+      cicloEscolar: formatFecha(expense.cicloEscolar), // Formatea la fecha
+    }));
     mostrarBarraLoading.value = false;
   } catch (error) {
     Swal.fire({
-      title: 'Error',
+      title: "Error",
       text: `Hubo un error al intentar obtener la lista de fichas de calificaciones.`,
-      icon: 'error',
-      footer: 'Por favor, intente nuevamente más tarde.'
+      icon: "error",
+      footer: "Por favor, intente nuevamente más tarde.",
     });
 
     mostrarBarraLoading.value = false;
   }
-}
-
-
+};
 
 //#region Exportar en PDF
 import html2pdf from "html2pdf.js";
@@ -221,8 +231,6 @@ const exportarImagenesPDF = async () => {
 };
 //#endregion
 
-
-
 //#region Abrir imagen en nueva pestaña
 const abrirImagenEnNuevaVentana = (urlImagen) => {
   // Usa window.open para abrir una nueva ventana con el enlace base64
@@ -237,22 +245,22 @@ const abrirImagenEnNuevaVentana = (urlImagen) => {
             </body>
           </html>
         `);
-}
+};
 //#endregion
 
 //#region Metodo de EXCEL
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 
 const exportarExcel = () => {
   const datos = listaDeTodosLosCursos.value;
 
   // Mapeo de datos con nombres de columnas
   const data = datos.map((a, index) => ({
-    'indice': index + 1,
-    'Nombre': a.curso,
-    'Nota': a.nota,
-    'Bloque': a.bloque,
-    'Promedio': a.promedio
+    indice: index + 1,
+    Nombre: a.curso,
+    Nota: a.nota,
+    Bloque: a.bloque,
+    Promedio: a.promedio,
   }));
 
   // Crear una nueva hoja de cálculo de Excel
@@ -260,17 +268,19 @@ const exportarExcel = () => {
   // Convertir los datos a una hoja de cálculo de Excel
   const worksheet = XLSX.utils.json_to_sheet(data);
   // Agregar la hoja de cálculo al libro
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Cursos');
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Cursos");
   // Crear un archivo de datos binarios de Excel
-  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
   // Convertir el archivo binario en un Blob
-  const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const blob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
   // Crear una URL para el Blob
   const url = window.URL.createObjectURL(blob);
   // Crear un enlace invisible para descargar el archivo
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
-  link.download = 'Cursos.xlsx';
+  link.download = "Cursos.xlsx";
   // Simular un clic en el enlace para iniciar la descarga
   link.click();
   // Liberar la URL del Blob

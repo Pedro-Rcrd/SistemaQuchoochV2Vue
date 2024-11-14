@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="authStore.moduloRegistro">
     <div class="row col-11">
       <h3>Registro de bloque</h3>
       <hr />
@@ -34,8 +34,12 @@
                       <h5>Detalles de la ficha escolar</h5>
                     </div>
                     <div class="col-1 text-end">
-                      <i @click="exportarPDF" style="font-size: 24px" class="fas fa-circle-down"
-                        v-show="ocultarElementos"></i>
+                      <i
+                        @click="exportarPDF"
+                        style="font-size: 24px"
+                        class="fas fa-circle-down"
+                        v-show="ocultarElementos"
+                      ></i>
                     </div>
                   </div>
                   <div class="row">
@@ -74,8 +78,15 @@
           </div>
 
           <div class="bg-light row mt-3 p-2">
-            <div class="card p-0 m-2" style="width: 19rem" v-for="item in informacionFichaCalificacion.bloques">
-              <div class="card-header" :style="{ backgroundColor: obtenerColor(item.codigoPromedio) }">
+            <div
+              class="card p-0 m-2"
+              style="width: 19rem"
+              v-for="item in informacionFichaCalificacion.bloques"
+            >
+              <div
+                class="card-header"
+                :style="{ backgroundColor: obtenerColor(item.codigoPromedio) }"
+              >
                 <div class="row justify-content-between">
                   <div class="col">Bloque: {{ item.bloque }}</div>
                   <div class="col text-end"></div>
@@ -122,14 +133,22 @@
                         <h4>Detalles del nuevo bloque</h4>
                         <div class="row">
                           <div class="col-md-4">
-                            <label for="exampleFormControlInput1" class="form-label">Bloque</label>
+                            <label for="exampleFormControlInput1" class="form-label"
+                              >Bloque</label
+                            >
                             <div class="input-group mb-3">
                               <span class="input-group-text">
                                 <i class="fa-solid fa-n"></i>
                               </span>
-                              <input autofocus id="numeroBloque" type="number"
+                              <input
+                                autofocus
+                                id="numeroBloque"
+                                type="number"
                                 class="form-control text-center fs-5 fw-bold border-1 border-primary"
-                                v-model="numeroDeBloque" :disabled="deshabilitarComponentes" required />
+                                v-model="numeroDeBloque"
+                                :disabled="deshabilitarComponentes"
+                                required
+                              />
                             </div>
                           </div>
                         </div>
@@ -144,17 +163,26 @@
                                 </tr>
                               </thead>
                               <tbody class="table-group-divider">
-                                <tr v-for="(curso, i) in cursosDeFichaEscolar" :key="curso.codigoCurso">
+                                <tr
+                                  v-for="(curso, i) in cursosDeFichaEscolar"
+                                  :key="curso.codigoCurso"
+                                >
                                   <td>{{ i + 1 }}</td>
                                   <td>{{ curso.nombreCurso }}</td>
                                   <td class="text-end">
-                                    <input style="max-width: 100px" type="number" v-model="curso.nota"
-                                      class="form-control d-inline-block text-center" @change="
+                                    <input
+                                      style="max-width: 100px"
+                                      type="number"
+                                      v-model="curso.nota"
+                                      class="form-control d-inline-block text-center"
+                                      @change="
                                         agregarNotasDeCursos(
                                           curso.codigoCurso,
                                           curso.nota
                                         )
-                                        " :disabled="deshabilitarComponentes" />
+                                      "
+                                      :disabled="deshabilitarComponentes"
+                                    />
                                   </td>
                                 </tr>
                               </tbody>
@@ -164,16 +192,29 @@
 
                         <div class="row">
                           <div class="col-md-4">
-                            <label for="exampleFormControlInput1" class="form-label">Curso</label>
-                            <span><i data-bs-toggle="modal" data-bs-target="#modalCurso" style="font-size: 14px"
-                                class="fas fa-circle-plus" @click="noMostrarAlertas()"
-                                :disabled="deshabilitarComponentes"></i></span>
+                            <label for="exampleFormControlInput1" class="form-label"
+                              >Curso</label
+                            >
+                            <span
+                              ><i
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalCurso"
+                                style="font-size: 14px"
+                                class="fas fa-circle-plus"
+                                @click="noMostrarAlertas()"
+                                :disabled="deshabilitarComponentes"
+                              ></i
+                            ></span>
                             <div class="input-group mb-3">
                               <span class="input-group-text">
                                 <i class="fa-solid fa-building"></i>
                               </span>
-                              <select class="form-control form-select" id="codigoCurso" v-model="codigoCurso"
-                                :disabled="deshabilitarComponentes">
+                              <select
+                                class="form-control form-select"
+                                id="codigoCurso"
+                                v-model="codigoCurso"
+                                :disabled="deshabilitarComponentes"
+                              >
                                 <option value="" disabled selected>
                                   Selecciona curso
                                 </option>
@@ -186,24 +227,44 @@
                             </div>
                           </div>
                           <div class="col-md-4">
-                            <label for="exampleFormControlInput1" class="form-label">Nota</label>
+                            <label for="exampleFormControlInput1" class="form-label"
+                              >Nota</label
+                            >
                             <div class="input-group mb-3">
                               <span class="input-group-text">
                                 <i class="fa-solid fa-n"></i>
                               </span>
-                              <input autofocus id="notaCurso" type="number" class="form-control" v-model="notaInput"
-                                :disabled="deshabilitarComponentes" />
+                              <input
+                                autofocus
+                                id="notaCurso"
+                                type="number"
+                                class="form-control"
+                                v-model="notaInput"
+                                :disabled="deshabilitarComponentes"
+                              />
                             </div>
                           </div>
                           <div class="col-md-4">
-                            <label for="exampleFormControlInput1" class="form-label">Agregar</label>
+                            <label for="exampleFormControlInput1" class="form-label"
+                              >Agregar</label
+                            >
                             <div class="input-group">
-                              <span class="input-group-text" @click.prevent="agregarCurso">
-                                <i style="font-size: 24px" class="fa-solid fa-circle-plus"></i>
+                              <span
+                                class="input-group-text"
+                                @click.prevent="agregarCurso"
+                              >
+                                <i
+                                  style="font-size: 24px"
+                                  class="fa-solid fa-circle-plus"
+                                ></i>
                               </span>
                             </div>
                           </div>
-                          <div class="alert alert-danger" role="alert" v-show="cursoYaExiste">
+                          <div
+                            class="alert alert-danger"
+                            role="alert"
+                            v-show="cursoYaExiste"
+                          >
                             El curso seleccionado ya existe en la lista.
                           </div>
                         </div>
@@ -222,13 +283,19 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr v-for="(cursoNota, index) in cursosNotas" :key="index">
+                                <tr
+                                  v-for="(cursoNota, index) in cursosNotas"
+                                  :key="index"
+                                >
                                   <th scope="row" class="text-center">{{ index + 1 }}</th>
                                   <td class="text-center">{{ cursoNota.curso }}</td>
                                   <td class="text-center">{{ cursoNota.nota }}</td>
                                   <td class="text-center">
-                                    <i @click.prevent="eliminarCurso(index)" class="fa-solid fa-trash text-red"
-                                      :disabled="deshabilitarComponentes"></i>
+                                    <i
+                                      @click.prevent="eliminarCurso(index)"
+                                      class="fa-solid fa-trash text-red"
+                                      :disabled="deshabilitarComponentes"
+                                    ></i>
                                   </td>
                                 </tr>
                               </tbody>
@@ -239,44 +306,81 @@
                     </div>
                     <div class="row">
                       <div class="col-md-4">
-                        <label for="exampleFormControlInput1" class="form-label">Fotografía del estudiante</label>
+                        <label for="exampleFormControlInput1" class="form-label"
+                          >Fotografía del estudiante</label
+                        >
                         <div class="input-group mb-3">
                           <span class="input-group-text">
                             <i class="fa-solid fa-image"></i>
                           </span>
-                          <input class="form-control" type="file" id="imagen" @change="handleFileChange"
-                            accept="image/*" required :disabled="deshabilitarComponentes" />
+                          <input
+                            class="form-control"
+                            type="file"
+                            id="imagen"
+                            @change="handleFileChange"
+                            accept="image/*"
+                            required
+                            :disabled="deshabilitarComponentes"
+                          />
                         </div>
                       </div>
                       <div class="col-md-4">
-                        <label for="exampleFormControlInput1" class="form-label">Imagen de ficha</label>
+                        <label for="exampleFormControlInput1" class="form-label"
+                          >Imagen de ficha</label
+                        >
                         <div class="input-group mb-3">
                           <span class="input-group-text">
                             <i class="fa-solid fa-image"></i>
                           </span>
-                          <input class="form-control" type="file" id="imagenFicha" @change="handleFileChangeFicha"
-                            accept="image/*" :disabled="deshabilitarComponentes" />
+                          <input
+                            class="form-control"
+                            type="file"
+                            id="imagenFicha"
+                            @change="handleFileChangeFicha"
+                            accept="image/*"
+                            :disabled="deshabilitarComponentes"
+                          />
                         </div>
                       </div>
                       <div class="col-md-4">
-                        <label for="exampleFormControlInput1" class="form-label">Imagen de carta</label>
+                        <label for="exampleFormControlInput1" class="form-label"
+                          >Imagen de carta</label
+                        >
                         <div class="input-group mb-3">
                           <span class="input-group-text">
                             <i class="fa-solid fa-image"></i>
                           </span>
-                          <input class="form-control" type="file" id="imagenCarta" @change="handleFileChangeCarta"
-                            accept="image/*" :disabled="deshabilitarComponentes" />
+                          <input
+                            class="form-control"
+                            type="file"
+                            id="imagenCarta"
+                            @change="handleFileChangeCarta"
+                            accept="image/*"
+                            :disabled="deshabilitarComponentes"
+                          />
                         </div>
                       </div>
                     </div>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                       <p v-if="deshabilitarComponentes">Cargando...</p>
-                      <div v-if="deshabilitarComponentes" class="spinner-border text-dark" role="status"></div>
+                      <div
+                        v-if="deshabilitarComponentes"
+                        class="spinner-border text-dark"
+                        role="status"
+                      ></div>
 
-                      <RouterLink :to="{ name: 'cards' }" type="button" class="btn btn-outline-primary">
+                      <RouterLink
+                        :to="{ name: 'cards' }"
+                        type="button"
+                        class="btn btn-outline-primary"
+                      >
                         Cancelar
                       </RouterLink>
-                      <button type="submit" class="btn btn-primary text-light" :disabled="botonDeshabilitado">
+                      <button
+                        type="submit"
+                        class="btn btn-primary text-light"
+                        :disabled="botonDeshabilitado"
+                      >
                         <i class="fa-solid fa-save"></i> Guardar registro
                       </button>
                     </div>
@@ -294,16 +398,28 @@
   </div>
   <Modal :id="'modalCurso'" :title="title">
     <div class="modal-body">
-      <div class="alert alert-success text-center" role="alert" v-show="mostrarAlertaSuccess">
+      <div
+        class="alert alert-success text-center"
+        role="alert"
+        v-show="mostrarAlertaSuccess"
+      >
         ¡El curso fue creado correctamente!
       </div>
-      <div class="alert alert-danger text-center" role="alert" v-show="mostrarAlertaDanger">
+      <div
+        class="alert alert-danger text-center"
+        role="alert"
+        v-show="mostrarAlertaDanger"
+      >
         ¡Hubo un error al intentar guardar el curso!
         <p>Por favor, intente nuevamente más tarde.</p>
       </div>
       <div class="text-center pb-3" v-show="mostrarLoading">
         <div class="card-body">
-          <img style="max-width: 25px; max-height: 25px" src="/loading.gif" alt="img-fluid" />
+          <img
+            style="max-width: 25px; max-height: 25px"
+            src="/loading.gif"
+            alt="img-fluid"
+          />
         </div>
       </div>
       <div class="row col-11">
@@ -312,17 +428,31 @@
             <span class="input-group-text">
               <i class="fa-solid fa-building"></i>
             </span>
-            <input autofocus type="text" v-model="formCurso.nombreCurso" placeholder="Curso" required
-              class="form-control" ref="nameInput" />
+            <input
+              autofocus
+              type="text"
+              v-model="formCurso.nombreCurso"
+              placeholder="Curso"
+              required
+              class="form-control"
+              ref="nameInput"
+            />
           </div>
           <div class="input-group mb-3">
             <span class="input-group-text">
               <i class="fa-solid fa-building"></i>
             </span>
             <div class="d-grid col-8">
-              <select class="form-control form-select" id="codigoComunidad" v-model="formCurso.codigoNivelAcademico">
+              <select
+                class="form-control form-select"
+                id="codigoComunidad"
+                v-model="formCurso.codigoNivelAcademico"
+              >
                 <option value="" disabled selected>Selecciona el nivel académico</option>
-                <template v-for="tipo in nivelesAcademicos" :key="tipo.codigoNivelAcademico">
+                <template
+                  v-for="tipo in nivelesAcademicos"
+                  :key="tipo.codigoNivelAcademico"
+                >
                   <option :value="tipo.codigoNivelAcademico">
                     {{ tipo.nombreNivelAcademico }}
                   </option>

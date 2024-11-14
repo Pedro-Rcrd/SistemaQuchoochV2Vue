@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="authStore.moduloInforme">
     <div class="row col-12">
       <h2>Compras</h2>
       <hr />
@@ -78,14 +78,14 @@
               >
               <div class="input-group">
                 <button @click="getComprasPorRangoFecha" class="btn btn-primary">
-                  Buscar
+                  <i class="fa-solid fa-magnifying-glass"></i> Buscar
                 </button>
               </div>
             </div>
           </div>
         </div>
         <div class="col-2 text-end">
-          <div class="text-light mb-3" v-if="authStore.exportarModCompra">
+          <div class="text-light mb-3" v-if="authStore.exportarModInforme">
             <button type="button" class="btn btn-success btn-sm" @click="exportarExcel">
               <i class="fa-solid fa-file-excel"></i> Excel
             </button>

@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="authStore.moduloRegistro">
     <div class="row col-12">
       <h2>Gastos</h2>
       <hr />
